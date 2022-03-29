@@ -1,12 +1,18 @@
 <template>
-  <div id="app">
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </nav>
-    <router-view />
-  </div>
+  <v-app>
+    <home-wrapper-page />
+  </v-app>
 </template>
+
+<script lang="ts">
+import Vue from "vue";
+import HomeWrapperPage from "@/views/HomeWrapperPage.vue";
+
+export default Vue.extend({
+  name: "App",
+  components: { HomeWrapperPage },
+});
+</script>
 
 <style>
 #app {
