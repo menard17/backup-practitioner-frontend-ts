@@ -28,10 +28,31 @@ export async function getAppointmentById(
 ) {
   commit("setIsLoading", { action: "getAppointmentById", value: true });
   commit("setAppointment", undefined);
-  const appointment = await getById({
+  const appointment: any = await getById({
     resource: "appointments",
     resourceId: appointmentId,
   });
-  commit("setAppointment", appointment);
+  commit("setAppointment", appointment.data);
   commit("setIsLoading", { action: "getAppointmentById", value: false });
+}
+
+export async function populateAppointment(context: any, appointmentId: string) {
+  context.commit("setIsLoading", {
+    action: "populateAppointment",
+    value: true,
+  });
+  await getAppointmentById(context, appointmentId);
+  const appointment = context.state.appointment;
+  const patientId = appointment.participant
+    .find((item: any) => item.actor.reference.includes("Patient"))
+    .actor.reference.split("/")[1];
+
+  await context.dispatch("$_patients/getPatientById", patientId, {
+    root: true,
+  });
+
+  context.commit("setIsLoading", {
+    action: "populateAppointment",
+    value: false,
+  });
 }

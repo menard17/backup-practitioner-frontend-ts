@@ -61,6 +61,7 @@ export function appointments(state: any) {
   }
 
   return appointments.map((appointment: any) => ({
+    id: appointment.id,
     practitioner: appointment.participant.find((item: any) =>
       item.actor.reference.includes("Practitioner")
     ).actor.reference,

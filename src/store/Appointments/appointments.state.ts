@@ -4,6 +4,7 @@ const state = {
   loadingData: {
     getAppointments: { isLoading: false },
     getAppointmentById: { isLoading: false },
+    populateAppointment: { isLoading: false },
   },
 };
 
