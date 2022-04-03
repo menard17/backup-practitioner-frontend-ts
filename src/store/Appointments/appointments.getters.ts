@@ -29,6 +29,12 @@ export function appointment(state: any, getters: any, rootState: any) {
 
   return {
     id: appointment.id,
+    patient: appointment.participant
+      .find((item: any) => item.actor.reference.includes("Patient"))
+      .actor.reference.split("/")[1],
+    practitionerRole: appointment.participant
+      .find((item: any) => item.actor.reference.includes("PractitionerRole"))
+      .actor.reference.split("/")[1],
     date: formatDateString(appointment.start, TimeConstants.monthDayYear),
     start: formatDateString(appointment.start, TimeConstants.time),
     end: formatDateString(appointment.end, TimeConstants.time),

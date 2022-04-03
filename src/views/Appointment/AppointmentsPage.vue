@@ -14,7 +14,7 @@
         :items-per-page="30"
         class="elevation-0"
         :search="search"
-        :loading="isLoading"
+        :loading="isLoadingAppointments || isLoadingMyAppointments"
         @click:row="rowClicked"
       >
       </v-data-table>
@@ -35,6 +35,7 @@ export default Vue.extend({
   data() {
     return {
       search: "",
+      items: ["My Appointments", "All"],
       headers: [
         {
           text: "Patient",
@@ -55,17 +56,21 @@ export default Vue.extend({
       appointments: "appointments",
     }),
     ...mapState("$_appointments", {
-      isLoading: (state: any) => state.loadingData.getAppointments.isLoading,
+      isLoadingAppointments: (state: any) =>
+        state.loadingData.getAppointments.isLoading,
+      isLoadingMyAppointments: (state: any) =>
+        state.loadingData.getAppointmentsByPractitionerId.isLoading,
     }),
   },
   created() {
     if (!this.appointments.length) {
-      this.getAppointmentsByPractitionerId();
+      this.getAppointmentsByPractitionerId({ practitionerId: "" });
     }
   },
   methods: {
     ...mapActions("$_appointments", {
       getAppointmentsByPractitionerId: "getAppointmentsByPractitionerId",
+      getAppointments: "getAppointments",
     }),
     openCreateAppointmentDialog() {
       console.log("Open Create appointment Dialog");

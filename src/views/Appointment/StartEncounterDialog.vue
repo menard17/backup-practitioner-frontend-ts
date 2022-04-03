@@ -39,6 +39,7 @@ export default {
     },
     startEncounter() {
       this.$emit("onYesClicked");
+      this.dialog = false;
     },
   },
 };

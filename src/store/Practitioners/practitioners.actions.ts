@@ -23,7 +23,7 @@ export async function getPractitionerById(
     resource: "practitioners",
     resourceId: practitionerId,
   });
-  commit("setPractitioner", practitioner.data);
+  commit("setPractitioner", practitioner);
   commit("setIsLoading", { action: "getPractitionerById", value: false });
 }
 
@@ -46,6 +46,21 @@ export async function getPractitionerRoleByPractitionerId(
     action: "getPractitionerRoleByPractitionerId",
     value: false,
   });
+}
+
+export async function getPractitionerRoleById(
+  { commit }: any,
+  practitionerRoleId: string
+) {
+  commit("setIsLoading", { action: "getPractitionerRoleById", value: true });
+  commit("setPractitionerRole", undefined);
+  const practitionerRole: any = await getById({
+    resource: "practitioner_roles",
+    resourceId: practitionerRoleId,
+  });
+  console.log("ROLE: ", practitionerRole);
+  commit("setPractitionerRole", practitionerRole);
+  commit("setIsLoading", { action: "getPractitionerRoleById", value: false });
 }
 
 export async function getPracitionerAppointments(

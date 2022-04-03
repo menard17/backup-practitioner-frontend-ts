@@ -13,3 +13,15 @@ export function setPatient(state: any, patient: any) {
 export function setAppointments(state: any, appointments: any) {
   state.appointments = appointments;
 }
+
+export function setPaymentMethods(state: any, paymentMethods: any) {
+  state.paymentMethods = paymentMethods;
+}
+
+export function setPaymentIntents(state: any, paymentIntents: any) {
+  state.paymentIntents = paymentIntents;
+}
+
+export function setDocumentReferences(state: any, documentReferences: any) {
+  state.documentReferences = documentReferences;
+}

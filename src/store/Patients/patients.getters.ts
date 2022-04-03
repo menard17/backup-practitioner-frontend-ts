@@ -72,3 +72,56 @@ export function appointments(state: any) {
     type: appointment.serviceType[0].coding[0].display,
   }));
 }
+
+export function paymentMethods(state: any) {
+  const paymentMethods = state.paymentMethods;
+
+  console.log(state.paymentMethods);
+
+  if (!paymentMethods.length) {
+    return [];
+  }
+
+  return paymentMethods.map((method: any) => ({
+    id: method.id,
+    customer: method.customer,
+    name: method.billing_details.name,
+    brand: method.card.brand.toUpperCase(),
+    last4: `x${method.card.last4}`,
+    exp: `${method.card.exp_month}-${method.card.exp_year}`,
+  }));
+}
+
+export function insuranceCard(state: any) {
+  const documentReferences = state.documentReferences;
+  if (!documentReferences.length) {
+    return [];
+  }
+  const insuranceCard = documentReferences.find((document: any) =>
+    document.type.coding.find((code: any) => code.code === "64290-0")
+  );
+
+  if (!insuranceCard) {
+    return null;
+  }
+
+  return insuranceCard.content;
+}
+
+export function medicalRecord(state: any) {
+  const documentReferences = state.documentReferences;
+
+  if (!documentReferences.length) {
+    return [];
+  }
+
+  const medicalRecord = documentReferences.find((document: any) =>
+    document.type.coding.find((code: any) => code.code === "6429-0")
+  );
+
+  if (!medicalRecord) {
+    return null;
+  }
+
+  return medicalRecord.content;
+}

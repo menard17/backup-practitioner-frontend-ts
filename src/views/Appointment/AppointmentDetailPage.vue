@@ -1,5 +1,5 @@
 <template>
-  <v-container style="max-width: 800px">
+  <v-container>
     <v-card>
       <v-card-title> Appointment Information </v-card-title>
       <v-skeleton-loader v-if="isLoading" type="article"></v-skeleton-loader>
@@ -52,6 +52,12 @@
             </v-expansion-panels>
           </v-card>
         </v-row>
+        {{ practitionerRole }}
+        <v-row>
+          <v-col>
+            <title-subtitle title="zoom" />
+          </v-col>
+        </v-row>
         <v-row>
           <v-col>
             <v-btn
@@ -63,6 +69,7 @@
             </v-btn>
           </v-col>
         </v-row>
+        {{ encounter }}
         <v-row class="mt-5" dense no-gutters>
           <v-col>
             <div class="subtitle-2 mb-2">Doctors Notes</div>
@@ -73,6 +80,8 @@
             />
           </v-col>
         </v-row>
+
+        {{ practitioner }}
 
         <v-row dense no-gutters>
           <v-col cols="6">
@@ -85,6 +94,9 @@
       @onYesClicked="startEncounter"
       ref="startEncounterDialogRef"
     />
+    <v-overlay v-model="isCreatingEncounter">
+      <v-progress-circular />
+    </v-overlay>
   </v-container>
 </template>
 
@@ -104,12 +116,19 @@ export default {
   computed: {
     ...mapState("$_appointments", {
       isLoading: (state) => state.loadingData.populateAppointment.isLoading,
+      isCreatingEncounter: (state) =>
+        state.loadingData.createEncounter.isLoading,
+      encounter: (state) => state.encounter,
     }),
     ...mapGetters("$_appointments", {
       appointment: "appointment",
     }),
     ...mapGetters("$_patients", {
       patient: "patient",
+    }),
+    ...mapState("$_practitioners", {
+      practitionerRole: "practitionerRole",
+      practitioner: "practitioner",
     }),
     patientDetails() {
       return [
@@ -143,12 +162,17 @@ export default {
   methods: {
     ...mapActions("$_appointments", {
       populateAppointment: "populateAppointment",
+      createEncounter: "createEncounter",
+      updateEncounter: "updateEncounter",
+      getEncounter: "getEncounter",
+      createDiagnosticReport: "createDiagnosticReport",
     }),
     confirmPatientJoined() {
       this.$refs.startEncounterDialogRef.toggleDialog();
     },
     startEncounter() {
       console.log("Start Encounter");
+      this.createEncounter(this.appointment);
     },
   },
 };

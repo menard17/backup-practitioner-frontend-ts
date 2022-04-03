@@ -3,6 +3,8 @@ import Vuex from "vuex";
 import $_auth from "@/modules/Auth/store";
 import $_appointments from "./Appointments";
 import $_patients from "./Patients";
+import $_practitioners from "./Practitioners";
+import $_payments from "./Payments";
 import $_account from "./Account";
 Vue.use(Vuex);
 
@@ -16,5 +18,7 @@ export default new Vuex.Store({
     $_appointments,
     $_patients,
     $_account,
+    $_practitioners,
+    $_payments,
   },
 });

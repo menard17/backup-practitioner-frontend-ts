@@ -2,7 +2,10 @@ import { RouteConfig } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import AppointmentsPage from "@/views/Appointment/AppointmentsPage.vue";
 import AppointmentDetailPage from "@/views/Appointment/AppointmentDetailPage.vue";
-import PatientDetailPage from "@/views/Patient/PatientDetailPage.vue";
+import PatientPersonalTab from "@/views/Patient/Tabs/PatientPersonalTab.vue";
+import PatientAppointmentsTab from "@/views/Patient/Tabs/PatientAppointmentsTab.vue";
+import PatientBillingTab from "@/views/Patient/Tabs/PatientBillingTab.vue";
+import PatientDetailWrapperPage from "@/views/Patient/PatientDetailWrapperPage.vue";
 import AuthPage from "@/modules/Auth/views/AuthPage.vue";
 import PatientsPage from "@/views/Patient/PatientsPage.vue";
 
@@ -51,7 +54,25 @@ export const routes: Array<RouteConfig> = [
   {
     path: "/patients/:id",
     name: "patient-detail",
-    component: PatientDetailPage,
+    component: PatientDetailWrapperPage,
+    redirect: { name: "patient-personal" },
+    children: [
+      {
+        name: "patient-personal",
+        path: "personal",
+        component: PatientPersonalTab,
+      },
+      {
+        name: "patient-appointments",
+        path: "appointments",
+        component: PatientAppointmentsTab,
+      },
+      {
+        name: "patient-billing",
+        path: "billing",
+        component: PatientBillingTab,
+      },
+    ],
     meta: {
       authRequired: true,
     },

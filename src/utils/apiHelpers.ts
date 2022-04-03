@@ -7,10 +7,15 @@ export const createResource = async ({ resource, payload }: any) => {
     return;
   }
   const idToken = await auth.currentUser.getIdTokenResult(true);
+  const email = auth.currentUser.email;
+  const payloadWithEmail = {
+    ...payload,
+    email,
+  };
 
   const response = await axios.post(
     `${process.env.VUE_APP_baseUrl}/${resource}`,
-    payload,
+    payloadWithEmail,
     {
       headers: {
         Authorization: `Bearer ${idToken.token}`,
