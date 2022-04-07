@@ -19,19 +19,59 @@ export async function getAppointmentsByPractitionerId(
   }
 
   const appointments: any = await getAppointments(context, { actorId });
-  context.commit("setAppointments", appointments.data);
+  context.commit("setAppointments", appointments);
 }
 
 export const getAppointments = async (context: any, { actorId }: any) => {
   context.commit("setIsLoading", { action: "getAppointments", value: true });
 
   // TODO: Fixed list of appointments dynamically. Hard-coding to get appointment from Feb-1
-  const appointments: any = await getAll(
-    `appointments?date=2022-02-01&actor_id=${actorId}`
+  const appointmentsList: any = await getAll(
+    `appointments?include_patient=true&include_practitioner=true&date=2022-02-01&actor_id=${actorId}`
   );
-  console.log(appointments);
+  console.log("APPTS: ", appointmentsList);
+  const appointments = appointmentsList.data.filter(
+    (appt: any) => appt.resourceType === "Appointment"
+  );
 
-  context.commit("setIsLoading", { action: "getAppointments", value: false });
+  const patients = appointmentsList.data.filter(
+    (appt: any) => appt.resourceType === "Patient"
+  );
+
+  const practitionerRoles = appointmentsList.data.filter(
+    (appt: any) => appt.resourceType === "PractitionerRole"
+  );
+
+  const practitioners = appointmentsList.data.filter(
+    (appt: any) => appt.resourceType === "Practitioner"
+  );
+
+  appointments.map((appt: any) => {
+    const practitionerRoleId = appt.participant
+      .find((item: any) => item.actor.reference.includes("PractitionerRole"))
+      .actor.reference.split("/")[1];
+
+    const practitionerId = practitionerRoles
+      .find((role: any) => role.id === practitionerRoleId)
+      .practitioner.reference.split("/")[1];
+
+    const patientId = appt.participant
+      .find((item: any) => item.actor.reference.includes("Patient"))
+      .actor.reference.split("/")[1];
+
+    appt.practitioner = practitioners.find(
+      (practitioner: any) => practitioner.id === practitionerId
+    );
+
+    appt.patient = patients.find((patient: any) => patient.id === patientId);
+  });
+
+  console.log("MOD APPTS: ", appointments);
+
+  context.commit("setIsLoading", {
+    action: "getAppointments",
+    value: false,
+  });
   return appointments;
 };
 

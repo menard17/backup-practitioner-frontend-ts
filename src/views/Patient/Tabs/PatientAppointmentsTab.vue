@@ -21,7 +21,10 @@
               <td>{{ item.start }}</td>
               <td>{{ item.end }}</td>
               <td>{{ item.type }}</td>
-              <td>{{ item.practitioner }}</td>
+              <td>
+                {{ item.practitioner.firstName }}
+                {{ item.practitioner.familyName }}
+              </td>
               <td>{{ item.status }}</td>
             </tr>
           </tbody>

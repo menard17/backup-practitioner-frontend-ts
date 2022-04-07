@@ -3,6 +3,7 @@ const state = {
   appointments: [],
   paymentMethods: [],
   documentReferences: [],
+  paymentIntents: [],
   patient: undefined,
   loadingData: {
     populatePatient: { isLoading: false },

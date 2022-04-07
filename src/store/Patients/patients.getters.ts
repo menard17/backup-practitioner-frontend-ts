@@ -30,11 +30,10 @@ export function patient(state: any) {
     return;
   }
 
-  console.log(patient.address);
-
   return {
     id: `${patient.id}`,
-    name: `${patient.name[0].family}, ${patient.name[0].given[0]}`,
+    firstName: patient.name[0].given[0],
+    familyName: patient.name[0].family,
     birthDate: patient.birthDate || "Not Provided",
     sex: (patient.gender && patient.gender.toUpperCase()) || "Not Provided",
     phone: `${
@@ -62,9 +61,11 @@ export function appointments(state: any) {
 
   return appointments.map((appointment: any) => ({
     id: appointment.id,
-    practitioner: appointment.participant.find((item: any) =>
-      item.actor.reference.includes("Practitioner")
-    ).actor.reference,
+    practitioner: {
+      id: appointment.practitioner.id,
+      firstName: appointment.practitioner.name[0].given[0],
+      familyName: appointment.practitioner.name[0].family,
+    },
     date: formatDateString(appointment.start, TimeConstants.monthDayYear),
     start: formatDateString(appointment.start, TimeConstants.time),
     end: formatDateString(appointment.end, TimeConstants.time),
@@ -75,8 +76,6 @@ export function appointments(state: any) {
 
 export function paymentMethods(state: any) {
   const paymentMethods = state.paymentMethods;
-
-  console.log(state.paymentMethods);
 
   if (!paymentMethods.length) {
     return [];
@@ -97,6 +96,8 @@ export function insuranceCard(state: any) {
   if (!documentReferences.length) {
     return [];
   }
+
+  console.log("DOCREFS: ", documentReferences);
   const insuranceCard = documentReferences.find((document: any) =>
     document.type.coding.find((code: any) => code.code === "64290-0")
   );
@@ -114,6 +115,8 @@ export function medicalRecord(state: any) {
   if (!documentReferences.length) {
     return [];
   }
+
+  console.log("DOCREFS: ", documentReferences);
 
   const medicalRecord = documentReferences.find((document: any) =>
     document.type.coding.find((code: any) => code.code === "6429-0")

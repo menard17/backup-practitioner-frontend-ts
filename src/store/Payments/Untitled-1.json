@@ -1,0 +1,123 @@
+{
+  "data": {
+    "data": [
+      {
+        "id": "35a9e4dd-3cfd-4ae2-91f8-3de4fbe0eae2",
+        "meta": {
+          "lastUpdated": "2022-04-02T20:07:29.686684+00:00",
+          "versionId": "MTY0ODkzMDA0OTY4NjY4NDAwMA"
+        },
+        "appointment": [
+          { "reference": "Appointment/cd6bdb34-d5fb-4a9d-bf00-20310a0abe64" }
+        ],
+        "class": {
+          "code": "HH",
+          "display": "home health",
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+        },
+        "participant": [
+          {
+            "individual": {
+              "reference": "PractitionerRole/95d5c072-104b-4351-81c5-f5da35baef25"
+            }
+          }
+        ],
+        "status": "in-progress",
+        "subject": {
+          "reference": "Patient/da6aae28-9300-43a8-8a39-95795338e9a0"
+        },
+        "resourceType": "Encounter"
+      },
+      {
+        "id": "cd6bdb34-d5fb-4a9d-bf00-20310a0abe64",
+        "meta": {
+          "lastUpdated": "2022-04-02T20:07:29.867187+00:00",
+          "versionId": "MTY0ODkzMDA0OTg2NzE4NzAwMA"
+        },
+        "appointmentType": {
+          "coding": [
+            {
+              "code": "WALKIN",
+              "display": "A previously unscheduled walk-in visit",
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0276"
+            }
+          ]
+        },
+        "description": "Booking practitioner role",
+        "end": "2022-03-28T12:00:00-05:00",
+        "participant": [
+          {
+            "actor": {
+              "reference": "Patient/da6aae28-9300-43a8-8a39-95795338e9a0"
+            },
+            "required": "required",
+            "status": "accepted"
+          },
+          {
+            "actor": {
+              "reference": "PractitionerRole/95d5c072-104b-4351-81c5-f5da35baef25"
+            },
+            "required": "required",
+            "status": "accepted"
+          }
+        ],
+        "serviceCategory": [
+          {
+            "coding": [
+              {
+                "code": "17",
+                "display": "General Practice",
+                "system": "http://hl7.org/fhir/codesystem-service-category.html"
+              }
+            ]
+          }
+        ],
+        "serviceType": [
+          {
+            "coding": [
+              {
+                "code": "540",
+                "display": "Online Service",
+                "system": "http://hl7.org/fhir/valueset-service-type.html"
+              }
+            ]
+          }
+        ],
+        "slot": [{ "reference": "Slot/2f734c23-8a0f-4166-9462-480eb79fffa3" }],
+        "start": "2022-03-28T11:45:00-05:00",
+        "status": "fulfilled",
+        "resourceType": "Appointment"
+      }
+    ]
+  },
+  "status": 201,
+  "statusText": "",
+  "headers": {
+    "content-length": "1702",
+    "content-type": "text/html; charset=utf-8"
+  },
+  "config": {
+    "transitional": {
+      "silentJSONParsing": true,
+      "forcedJSONParsing": true,
+      "clarifyTimeoutError": false
+    },
+    "transformRequest": [null],
+    "transformResponse": [null],
+    "timeout": 0,
+    "xsrfCookieName": "XSRF-TOKEN",
+    "xsrfHeaderName": "X-XSRF-TOKEN",
+    "maxContentLength": -1,
+    "maxBodyLength": -1,
+    "headers": {
+      "Accept": "application/json, text/plain, */*",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjQ2NDExN2FjMzk2YmM3MWM4YzU5ZmI1MTlmMDEzZTJiNWJiNmM2ZTEiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiVXppciBUaGFwYSIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQVRYQUp6VE42VHJyR0FtbTRiaVplWTAxSWJoSU5LUnBnaDZ6cXlQVy1weD1zOTYtYyIsInJvbGVzIjp7IlBhdGllbnQiOnsiaWQiOiI1NTEyN2M0OS1iZjRhLTQwODItOWYyZC0yMGY2YzVlYzRhODAifSwiUHJhY3RpdGlvbmVyIjp7ImlkIjoiMThkMWQyNzgtNjliZS00MDU1LTg0M2ItMWQ0N2FkMWU2NGZhIn19LCJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20va2l0c3VuZS1kZXYtMzEzMzEzIiwiYXVkIjoia2l0c3VuZS1kZXYtMzEzMzEzIiwiYXV0aF90aW1lIjoxNjQ4Njg2NDI5LCJ1c2VyX2lkIjoicVpWdGk4bjV1Z2Y3SzB1R3dBdkdFdW03SGE0MiIsInN1YiI6InFaVnRpOG41dWdmN0swdUd3QXZHRXVtN0hhNDIiLCJpYXQiOjE2NDg5MzAwNDksImV4cCI6MTY0ODkzMzY0OSwiZW1haWwiOiJ1emlyLnRoYXBhQHVtZWQuanAiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJnb29nbGUuY29tIjpbIjExMzMxMjg1NzQyNTgxMDA5MjIyOCJdLCJlbWFpbCI6WyJ1emlyLnRoYXBhQHVtZWQuanAiXX0sInNpZ25faW5fcHJvdmlkZXIiOiJnb29nbGUuY29tIn19.WJ6ZiPE0piTu996H2WWeCD7DwfMV8HzYCpCboxcs4M1aztiSitUi7WyAMwECOKUtEZxPVIRRfywO0PuV2guD2oHGukFi8LNqjPdQNS8w6e3hi8ZxqE6ulA84N8cc9npNxWbuWinuIUOLEd1rg9G88DR8r-pIEA0ftaFQAMceHKDwlypzNYIKz2NtoHi5gNny6Qh8XYIStFuAh6N1st1SrhMnsqTW3SI9fDXrZtT0ZSWi582_qJhL0trE5S9cgxNROqrQ2UFJIBjF7g8QQfSTK4Ih5lDrRmPUpDFoKJm3PGGb64xlJsT8C5_OZRFipbpB6IiNlmsW53kiBWx5QpBYtw"
+    },
+    "withCredentials": false,
+    "method": "post",
+    "url": "https://run-kitsune-dev-asia-northeast1-7amkfoqunq-an.a.run.app/patients/da6aae28-9300-43a8-8a39-95795338e9a0/encounters",
+    "data": "{\"appointment_id\":\"cd6bdb34-d5fb-4a9d-bf00-20310a0abe64\",\"patient_id\":\"da6aae28-9300-43a8-8a39-95795338e9a0\",\"role_id\":\"95d5c072-104b-4351-81c5-f5da35baef25\",\"email\":\"uzir.thapa@umed.jp\"}"
+  },
+  "request": {}
+}

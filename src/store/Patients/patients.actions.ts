@@ -33,6 +33,11 @@ export async function populatePatient(context: any, patientId: string) {
 
   console.log(context.state.patient);
 
+  if (!context.state.patient.extension) {
+    context.commit("setIsLoading", { action: "populatePatient", value: false });
+    return;
+  }
+
   const customerId = context.state.patient.extension.find(
     (ext: any) => ext.url === "stripe-customer-id"
   ).valueString;
@@ -40,7 +45,7 @@ export async function populatePatient(context: any, patientId: string) {
   await getPaymentMethods(context, customerId);
   await getPaymentIntents(context, customerId);
 
-  context.commit("setIsLoading", { action: "populatePatient", value: true });
+  context.commit("setIsLoading", { action: "populatePatient", value: false });
 }
 
 export async function getDocumentReferences(context: any, patientId: string) {
@@ -67,7 +72,7 @@ export async function getAppointments(context: any, patientId: string) {
     { actorId: patientId },
     { root: true }
   );
-  context.commit("setAppointments", appointments.data);
+  context.commit("setAppointments", appointments);
   context.commit("setIsLoading", { action: "getAppointments", value: false });
 }
 

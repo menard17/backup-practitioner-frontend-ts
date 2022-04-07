@@ -35,7 +35,8 @@ export function practitioner(state: any) {
 
   return {
     id: `${practitioner.id}`,
-    name: `${practitioner.name[0].family}, ${practitioner.name[0].given[0]}`,
+    firstName: practitioner.name[0].given[0],
+    familyName: practitioner.name[0].family,
     birthDate: practitioner.birthDate || "Not Provided",
     sex:
       (practitioner.gender && practitioner.gender.toUpperCase()) ||
@@ -74,4 +75,57 @@ export function appointments(state: any) {
     status: appointment.status,
     type: appointment.serviceType[0].coding[0].display,
   }));
+}
+
+export function practitionerNameEn(state: any) {
+  const practitioner = state.practitioner;
+
+  if (!practitioner) {
+    return "";
+  }
+
+  const name = practitioner.name.find(
+    (item: any) => item.extension[0].valueString === "ABC"
+  );
+
+  const fullName = `${name.prefix[0]} ${name.text}`;
+
+  console.log("P{RACTITIONERNAME: ", fullName);
+  return fullName;
+}
+
+export function practitionerNameJp(state: any) {
+  const practitioner = state.practitioner;
+
+  if (!practitioner) {
+    return "";
+  }
+
+  const name = practitioner.name.find(
+    (item: any) => item.extension[0].valueString === "IDE"
+  );
+
+  const fullName = `${name.prefix[0]} ${name.text}`;
+
+  console.log("P{RACTITIONERNAME: ", fullName);
+  return fullName;
+}
+
+export function zoomId(state: any) {
+  const practitionerRole = state.practitionerRole;
+  if (!practitionerRole) {
+    return "";
+  }
+  return practitionerRole.extension.find((item: any) => item.url === "zoom-id")
+    .valueString;
+}
+
+export function zoomPasscode(state: any) {
+  const practitionerRole = state.practitionerRole;
+  if (!practitionerRole) {
+    return "";
+  }
+  return practitionerRole.extension.find(
+    (item: any) => item.url === "zoom-passcode"
+  ).valueString;
 }

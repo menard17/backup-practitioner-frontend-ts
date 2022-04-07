@@ -21,7 +21,6 @@
         </v-btn>
       </v-row>
     </v-card>
-    {{ medicalRecord }}
     <v-card class="mt-4">
       <v-card-title> Contact Information </v-card-title>
       <grid-list :items="contact" />
@@ -52,9 +51,14 @@ export default {
         return [];
       }
 
-      const fullName = {
-        title: "Full Name",
-        subtitle: this.patient && this.patient.name,
+      const firstName = {
+        title: "First Name",
+        subtitle: this.patient && this.patient.firstName,
+      };
+
+      const familyName = {
+        title: "Family Name",
+        subtitle: this.patient && this.patient.familyName,
       };
 
       const sex = {
@@ -69,7 +73,7 @@ export default {
         subtitle: this.patient.birthDate || "Not Provided",
       };
 
-      return [fullName, sex, birthDate];
+      return [familyName, firstName, sex, birthDate];
     },
     contact() {
       if (!this.patient) {

@@ -10,9 +10,11 @@ export function appointments(state: any) {
 
   return appointments.map((appointment: any) => ({
     id: appointment.id,
-    patient: appointment.participant.find((item: any) =>
-      item.actor.reference.includes("Patient")
-    ).actor.reference,
+    patient: {
+      id: appointment.patient.id,
+      firstName: appointment.patient.name[0].given[0],
+      familyName: appointment.patient.name[0].family,
+    },
     date: formatDateString(appointment.start, TimeConstants.monthDayYear),
     start: formatDateString(appointment.start, TimeConstants.time),
     end: formatDateString(appointment.end, TimeConstants.time),

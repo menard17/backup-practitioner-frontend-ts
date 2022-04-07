@@ -19,11 +19,6 @@
             />
           </v-col>
         </v-row>
-        <v-row dense>
-          <v-col cols="6">
-            <label-text-field label="Patient" :text="`${patient.name}`" />
-          </v-col>
-        </v-row>
         <v-row dense class="mt-5 px-1">
           <v-card outlined width="100%">
             <v-expansion-panels :value="0" flat>
@@ -52,20 +47,31 @@
             </v-expansion-panels>
           </v-card>
         </v-row>
-        {{ practitionerRole }}
-        <v-row>
-          <v-col>
-            <title-subtitle title="zoom" />
-          </v-col>
+        <v-row justify="start" class="mx-4 pt-4">
+          <div class="mr-3">
+            <title-subtitle title="zoom ID" :subtitle="zoomId" />
+          </div>
+
+          <title-subtitle title="zoom Passcode" :subtitle="zoomPasscode" />
         </v-row>
+
         <v-row>
-          <v-col>
+          <v-col v-if="!encounter">
             <v-btn
               @click="confirmPatientJoined"
               class="text-none subtitle-2"
               color="primary"
             >
               Start Encounter
+            </v-btn>
+          </v-col>
+          <v-col v-else>
+            <v-btn
+              @click="confirmPatientJoined"
+              class="text-none subtitle-2"
+              color="primary"
+            >
+              End Encounter
             </v-btn>
           </v-col>
         </v-row>
@@ -81,11 +87,18 @@
           </v-col>
         </v-row>
 
-        {{ practitioner }}
-
-        <v-row dense no-gutters>
+        <v-row dense>
           <v-col cols="6">
-            <label-text-field label="Practitioner" :text="`Miwa Nishikawa`" />
+            <label-text-field
+              label="Practitioner EN"
+              :text="practitionerNameEn"
+            />
+          </v-col>
+          <v-col cols="6">
+            <label-text-field
+              label="Practitioner JP"
+              :text="practitionerNameJp"
+            />
           </v-col>
         </v-row>
       </div>
@@ -126,12 +139,28 @@ export default {
     ...mapGetters("$_patients", {
       patient: "patient",
     }),
+    ...mapGetters("$_practitioners", {
+      zoomId: "zoomId",
+      zoomPasscode: "zoomPasscode",
+      practitionerNameEn: "practitionerNameEn",
+      practitionerNameJp: "practitionerNameJp",
+    }),
     ...mapState("$_practitioners", {
       practitionerRole: "practitionerRole",
       practitioner: "practitioner",
     }),
+
     patientDetails() {
       return [
+        {
+          title: "Family Name",
+          subtitle: this.patient.familyName,
+        },
+        {
+          title: "First Name",
+          subtitle: this.patient.firstName,
+        },
+
         {
           title: "Email",
           subtitle: this.patient.email,
