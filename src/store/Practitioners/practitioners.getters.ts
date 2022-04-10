@@ -5,21 +5,21 @@ export function practitioners(state: any) {
   if (!state.practitioners.length) {
     return [];
   }
+
   return state.practitioners.map((practitioner: any) => ({
-    id: `${practitioner.resource.id}`,
-    name: `${practitioner.resource.name[0].family}, ${practitioner.resource.name[0].given[0]}`,
-    birthDate: practitioner.resource.birthDate || "Not Provided",
+    id: `${practitioner.id}`,
+    name: `${practitioner.name[0].prefix[0]}: ${practitioner.name[0].family}, ${practitioner.name[0].given[0]}`,
+    photo: {
+      type: practitioner.photo[0].contentType,
+      data: practitioner.photo[0].data,
+    },
+    birthDate: practitioner.birthDate || "Not Provided",
     sex:
-      (practitioner.resource.gender &&
-        practitioner.resource.gender.toUpperCase()) ||
+      (practitioner.gender && practitioner.gender.toUpperCase()) ||
       "Not Provided",
-    phone: `${
-      practitioner.resource.telecom.find((item: any) => item.system === "phone")
-        .value
-    }`,
     email: `${
-      practitioner.resource.telecom.find((item: any) => item.system === "email")
-        .value
+      practitioner.telecom.find((item: any) => item.system === "email").value ||
+      "Not Provided"
     }`,
   }));
 }
@@ -41,9 +41,6 @@ export function practitioner(state: any) {
     sex:
       (practitioner.gender && practitioner.gender.toUpperCase()) ||
       "Not Provided",
-    phone: `${
-      practitioner.telecom.find((item: any) => item.system === "phone").value
-    }`,
     email: `${
       practitioner.telecom.find((item: any) => item.system === "email").value
     }`,
@@ -88,9 +85,10 @@ export function practitionerNameEn(state: any) {
     (item: any) => item.extension[0].valueString === "ABC"
   );
 
-  const fullName = `${name.prefix[0]} ${name.text}`;
+  const fullName =
+    `${name && name.prefix && name.prefix[0]} ${name && name.text}` ||
+    "Not Provided";
 
-  console.log("P{RACTITIONERNAME: ", fullName);
   return fullName;
 }
 
@@ -105,9 +103,10 @@ export function practitionerNameJp(state: any) {
     (item: any) => item.extension[0].valueString === "IDE"
   );
 
-  const fullName = `${name.prefix[0]} ${name.text}`;
+  const fullName =
+    `${name && name.prefix && name.prefix[0]} ${name && name.text}` ||
+    "Not Provided";
 
-  console.log("P{RACTITIONERNAME: ", fullName);
   return fullName;
 }
 

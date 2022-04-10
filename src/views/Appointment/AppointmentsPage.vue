@@ -1,13 +1,6 @@
 <template>
   <div>
     <data-table title="Appointments">
-      <template v-slot:headerButton>
-        <v-btn @click="openCreateAppointmentDialog" depressed color="primary">
-          <span class="body-2 font-weight-medium text-none">
-            Create Appointment
-          </span>
-        </v-btn>
-      </template>
       <v-data-table
         :headers="headers"
         :items="appointments"
@@ -76,9 +69,6 @@ export default Vue.extend({
       getAppointmentsByPractitionerId: "getAppointmentsByPractitionerId",
       getAppointments: "getAppointments",
     }),
-    openCreateAppointmentDialog() {
-      console.log("Open Create appointment Dialog");
-    },
     editItem(item: any) {
       console.log("Edit item", item);
     },

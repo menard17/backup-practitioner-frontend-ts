@@ -135,6 +135,30 @@ export async function populateAppointment(context: any, appointmentId: string) {
   });
 }
 
+export async function createAppointment(context: any, payload: any) {
+  context.commit("setIsLoading", {
+    action: "createAppointment",
+    value: true,
+  });
+
+  const resource = `appointments`;
+
+  try {
+    const appointment: any = await createResource({ resource, payload });
+    context.commit("setIsLoading", {
+      action: "createAppointment",
+      value: false,
+    });
+    return appointment.data;
+  } catch (e) {
+    context.commit("setIsLoading", {
+      action: "createAppointment",
+      value: false,
+    });
+    console.error(e);
+  }
+}
+
 export async function createEncounter(context: any, appointment: any) {
   context.commit("setIsLoading", {
     action: "createEncounter",

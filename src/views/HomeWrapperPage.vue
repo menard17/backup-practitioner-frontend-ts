@@ -94,7 +94,6 @@ export default Vue.extend({
     };
   },
   created() {
-    console.log("CREATED");
     onAuthStateChanged(auth, (user) => {
       console.log(user);
       if (user) {

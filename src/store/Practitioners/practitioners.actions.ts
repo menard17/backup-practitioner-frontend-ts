@@ -9,7 +9,7 @@ export const getPractitioners = async ({ commit }: any) => {
   }
 
   const practitioners: any = await getAll(`practitioners`);
-  commit("setPractitioners", practitioners.data.entry);
+  commit("setPractitioners", practitioners.data);
   commit("setIsLoading", { action: "getPractitioners", value: false });
 };
 
@@ -58,7 +58,6 @@ export async function getPractitionerRoleById(
     resource: "practitioner_roles",
     resourceId: practitionerRoleId,
   });
-  console.log("ROLE: ", practitionerRole);
   commit("setPractitionerRole", practitionerRole);
   commit("setIsLoading", { action: "getPractitionerRoleById", value: false });
 }

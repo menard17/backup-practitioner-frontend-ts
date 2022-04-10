@@ -4,6 +4,7 @@ const state = {
   encounter: undefined,
   diagnosticReport: undefined,
   loadingData: {
+    createAppointment: { isLoading: false },
     getAppointments: { isLoading: false },
     getAppointmentsByPractitionerId: { isLoading: false },
     getAppointmentById: { isLoading: false },

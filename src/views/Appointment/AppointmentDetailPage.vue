@@ -1,7 +1,11 @@
 <template>
   <v-container>
     <v-card>
-      <v-card-title> Appointment Information </v-card-title>
+      <v-card-title>
+        <v-row>
+          <v-col> Appointment Information </v-col>
+        </v-row>
+      </v-card-title>
       <v-skeleton-loader v-if="isLoading" type="article"></v-skeleton-loader>
 
       <div class="pa-4" v-if="appointment && patient">
@@ -65,20 +69,31 @@
               Start Encounter
             </v-btn>
           </v-col>
-          <v-col v-else>
-            <v-btn
-              @click="confirmPatientJoined"
-              class="text-none subtitle-2"
-              color="primary"
-            >
-              End Encounter
-            </v-btn>
-          </v-col>
         </v-row>
         {{ encounter }}
         <v-row class="mt-5" dense no-gutters>
           <v-col>
-            <div class="subtitle-2 mb-2">Doctors Notes</div>
+            <v-row class="mb-2" align="center">
+              <v-col>
+                <div class="subtitle-2">Doctors Notes</div>
+              </v-col>
+              <v-col>
+                <v-btn
+                  color="primary"
+                  @click="openCreateAppointmentDialog"
+                  class="text-none subtitle-2"
+                  >Create a follow up
+                </v-btn>
+                <v-btn
+                  @click="confirmPatientJoined"
+                  class="text-none subtitle-2 ml-3"
+                  color="primary"
+                >
+                  End Encounter
+                </v-btn>
+              </v-col>
+            </v-row>
+
             <v-textarea
               outlined
               v-model="notes"
@@ -107,6 +122,16 @@
       @onYesClicked="startEncounter"
       ref="startEncounterDialogRef"
     />
+
+    <create-appointment-dialog
+      v-if="patient"
+      :patient="patient"
+      @onCreated="onAppointmentCreated"
+      ref="createAppointmentDialogRef"
+    />
+    <status-dialog ref="statusDialogRef">
+      <v-btn class="text-none subtitle-2"> Go to Appointment </v-btn>
+    </status-dialog>
     <v-overlay v-model="isCreatingEncounter">
       <v-progress-circular />
     </v-overlay>
@@ -118,8 +143,18 @@ import LabelTextField from "@/components/LabelTextField.vue";
 import { mapActions, mapGetters, mapState } from "vuex";
 import TitleSubtitle from "@/components/TitleSubtitle.vue";
 import StartEncounterDialog from "./StartEncounterDialog.vue";
+import CreateAppointmentDialog from "@/views/Appointment/Dialogs/CreateAppointmentDialog";
+import StatusDialog from "@/components/StatusDialog";
+import { StatusTypes } from "@/utils/constants";
+
 export default {
-  components: { LabelTextField, TitleSubtitle, StartEncounterDialog },
+  components: {
+    StatusDialog,
+    CreateAppointmentDialog,
+    LabelTextField,
+    TitleSubtitle,
+    StartEncounterDialog,
+  },
   name: "AppointmentDetailPage",
   data() {
     return {
@@ -196,6 +231,17 @@ export default {
       getEncounter: "getEncounter",
       createDiagnosticReport: "createDiagnosticReport",
     }),
+    onAppointmentCreated(appointment) {
+      const title = appointment ? "Success!" : "Failed";
+      const body = appointment
+        ? "The appointment was created successfully"
+        : "There was a problem creating the appointment";
+      const status = appointment ? StatusTypes.success : StatusTypes.error;
+      this.$refs.statusDialogRef.toggleDialog({ title, body, status });
+    },
+    openCreateAppointmentDialog() {
+      this.$refs.createAppointmentDialogRef.toggleDialog();
+    },
     confirmPatientJoined() {
       this.$refs.startEncounterDialogRef.toggleDialog();
     },
