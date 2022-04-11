@@ -261,7 +261,7 @@ export async function createDiagnosticReport(
     action: "createDiagnosticReport",
     value: true,
   });
-  context.commit("setDiagnosticReport", undefined);
+  context.commit("setDiagnosticReports", undefined);
   const payload = {
     patient_id: appointment.patient,
     role_id: appointment.practitionerRole,
@@ -271,12 +271,10 @@ export async function createDiagnosticReport(
   const resource = `diagnostic_reports`;
   try {
     const diagnosticReport: any = await createResource({ resource, payload });
-    console.log("CRETED DIAGNOSTIC REPORT: ", diagnosticReport);
-    //f08654e2-31dc-4032-9c5f-0c58f74fb521
-    context.commit("setDiagnosticReports", diagnosticReport.data);
+    context.commit("setDiagnosticReports", [diagnosticReport.data]);
   } catch (e) {
     console.error(e);
-    context.commit("setDiagnosticReport", undefined);
+    context.commit("setDiagnosticReports", undefined);
   }
   context.commit("setIsLoading", {
     action: "createDiagnosticReport",

@@ -67,7 +67,7 @@
               class="text-none subtitle-2"
               color="primary"
             >
-              Start Encounter
+              Start Session
             </v-btn>
           </v-col>
         </v-row>
@@ -82,6 +82,7 @@
                   @click="openCreateNoteDialog"
                   color="primary"
                   class="text-none subtitle-2 mr-3"
+                  v-if="(encounter && encounter.status) === 'in-progress'"
                 >
                   Create a Note
                 </v-btn>
@@ -97,7 +98,7 @@
                   class="text-none subtitle-2 ml-3"
                   color="primary"
                 >
-                  End Encounter
+                  End Session
                 </v-btn>
               </v-col>
             </v-row>
@@ -147,7 +148,7 @@
     </status-dialog>
     <create-note-dialog @onSave="createDoctorNote" ref="createNoteDialog" />
     <v-overlay v-model="isCreatingEncounter">
-      <v-progress-circular />
+      <v-progress-circular indeterminate />
     </v-overlay>
   </v-container>
 </template>
