@@ -6,9 +6,10 @@
           <v-col> Appointment Information </v-col>
         </v-row>
       </v-card-title>
+
       <v-skeleton-loader v-if="isLoading" type="article"></v-skeleton-loader>
 
-      <div class="pa-4" v-if="appointment && patient">
+      <div class="pa-4" v-else-if="appointment && patient">
         <v-row dense>
           <v-col>
             <label-text-field
@@ -51,7 +52,7 @@
             </v-expansion-panels>
           </v-card>
         </v-row>
-        <v-row justify="start" class="mx-4 pt-4">
+        <v-row justify="start" class="mx-4 pt-4" v-if="!encounter">
           <div class="mr-3">
             <title-subtitle title="zoom ID" :subtitle="zoomId" />
           </div>
@@ -59,8 +60,8 @@
           <title-subtitle title="zoom Passcode" :subtitle="zoomPasscode" />
         </v-row>
 
-        <v-row>
-          <v-col v-if="!encounter">
+        <v-row v-if="!encounter">
+          <v-col>
             <v-btn
               @click="confirmPatientJoined"
               class="text-none subtitle-2"
@@ -70,14 +71,20 @@
             </v-btn>
           </v-col>
         </v-row>
-        {{ encounter }}
         <v-row class="mt-5" dense no-gutters>
           <v-col>
             <v-row class="mb-2" align="center">
-              <v-col>
+              <v-col cols="3">
                 <div class="subtitle-2">Doctors Notes</div>
               </v-col>
               <v-col>
+                <v-btn
+                  @click="openCreateNoteDialog"
+                  color="primary"
+                  class="text-none subtitle-2 mr-3"
+                >
+                  Create a Note
+                </v-btn>
                 <v-btn
                   color="primary"
                   @click="openCreateAppointmentDialog"
@@ -85,7 +92,8 @@
                   >Create a follow up
                 </v-btn>
                 <v-btn
-                  @click="confirmPatientJoined"
+                  v-if="(encounter && encounter.status) === 'in-progress'"
+                  @click="endEncounter"
                   class="text-none subtitle-2 ml-3"
                   color="primary"
                 >
@@ -94,11 +102,16 @@
               </v-col>
             </v-row>
 
-            <v-textarea
-              outlined
-              v-model="notes"
-              placeholder="Enter your notes here"
-            />
+            <v-card
+              class="pa-4 mb-4"
+              v-for="report in diagnosticReports"
+              :key="report.id"
+            >
+              <div class="subtitle-2 mb-2">
+                {{ report.createdOn }}
+              </div>
+              {{ report.note }}
+            </v-card>
           </v-col>
         </v-row>
 
@@ -132,6 +145,7 @@
     <status-dialog ref="statusDialogRef">
       <v-btn class="text-none subtitle-2"> Go to Appointment </v-btn>
     </status-dialog>
+    <create-note-dialog @onSave="createDoctorNote" ref="createNoteDialog" />
     <v-overlay v-model="isCreatingEncounter">
       <v-progress-circular />
     </v-overlay>
@@ -146,9 +160,11 @@ import StartEncounterDialog from "./StartEncounterDialog.vue";
 import CreateAppointmentDialog from "@/views/Appointment/Dialogs/CreateAppointmentDialog";
 import StatusDialog from "@/components/StatusDialog";
 import { StatusTypes } from "@/utils/constants";
+import CreateNoteDialog from "@/views/Appointment/Dialogs/CreateNoteDialog";
 
 export default {
   components: {
+    CreateNoteDialog,
     StatusDialog,
     CreateAppointmentDialog,
     LabelTextField,
@@ -170,6 +186,7 @@ export default {
     }),
     ...mapGetters("$_appointments", {
       appointment: "appointment",
+      diagnosticReports: "diagnosticReports",
     }),
     ...mapGetters("$_patients", {
       patient: "patient",
@@ -245,9 +262,27 @@ export default {
     confirmPatientJoined() {
       this.$refs.startEncounterDialogRef.toggleDialog();
     },
+    endEncounter() {
+      this.updateEncounter({
+        appointment: this.appointment,
+        encounter: this.encounter,
+        status: "finished",
+      });
+    },
+
     startEncounter() {
-      console.log("Start Encounter");
       this.createEncounter(this.appointment);
+    },
+    createDoctorNote(note) {
+      console.log("NOTE: ", note);
+      this.createDiagnosticReport({
+        appointment: this.appointment,
+        encounter: this.encounter,
+        note,
+      });
+    },
+    openCreateNoteDialog() {
+      this.$refs.createNoteDialog.toggleDialog();
     },
   },
 };

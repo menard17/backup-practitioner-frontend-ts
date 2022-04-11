@@ -2,7 +2,7 @@ const state = {
   appointments: [],
   appointment: undefined,
   encounter: undefined,
-  diagnosticReport: undefined,
+  diagnosticReports: undefined,
   loadingData: {
     createAppointment: { isLoading: false },
     getAppointments: { isLoading: false },

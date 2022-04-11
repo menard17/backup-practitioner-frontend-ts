@@ -14,6 +14,6 @@ export function setEncounter(state: any, encounter: any) {
   state.encounter = encounter;
 }
 
-export function setDiaognosticReport(state: any, diagnosticReport: any) {
-  state.diagnosticReport = diagnosticReport;
+export function setDiagnosticReports(state: any, diagnosticReports: any) {
+  state.diagnosticReports = diagnosticReports;
 }

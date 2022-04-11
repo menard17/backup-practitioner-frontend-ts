@@ -9,6 +9,10 @@ export async function getAppointmentsByPractitionerId(
   context: any,
   { practitionerId }: any
 ) {
+  context.commit("setIsLoading", {
+    action: "getAppointmentsByPractitionerId",
+    value: true,
+  });
   context.commit("setAppointments", []);
   let actorId = "";
   if (!practitionerId) {
@@ -20,6 +24,11 @@ export async function getAppointmentsByPractitionerId(
 
   const appointments: any = await getAppointments(context, { actorId });
   context.commit("setAppointments", appointments);
+
+  context.commit("setIsLoading", {
+    action: "getAppointmentsByPractitionerId",
+    value: false,
+  });
 }
 
 export const getAppointments = async (context: any, { actorId }: any) => {
@@ -29,7 +38,7 @@ export const getAppointments = async (context: any, { actorId }: any) => {
   const appointmentsList: any = await getAll(
     `appointments?include_patient=true&include_practitioner=true&date=2022-02-01&actor_id=${actorId}`
   );
-  console.log("APPTS: ", appointmentsList);
+
   const appointments = appointmentsList.data.filter(
     (appt: any) => appt.resourceType === "Appointment"
   );
@@ -65,8 +74,6 @@ export const getAppointments = async (context: any, { actorId }: any) => {
 
     appt.patient = patients.find((patient: any) => patient.id === patientId);
   });
-
-  console.log("MOD APPTS: ", appointments);
 
   context.commit("setIsLoading", {
     action: "getAppointments",
@@ -197,13 +204,20 @@ export async function getEncounter(context: any, appointment: any) {
     .find((item: any) => item.actor.reference.includes("Patient"))
     .actor.reference.split("/")[1];
 
-  const encounter: any = await getAll(
+  const encounterList: any = await getAll(
     `patients/${patientId}/encounters?appointment_id=${appointment.id}`
   );
 
-  console.log("ENCOUNTER: ", encounter);
+  console.log("ENCOUNTER: ", encounterList);
+  const encounter = encounterList.data.filter(
+    (item: any) => item.resourceType === "Encounter"
+  )[0];
+  const diagnosticReports = encounterList.data.filter(
+    (item: any) => item.resourceType === "DiagnosticReport"
+  );
 
-  context.commit("setEncounter", encounter.data[0]);
+  context.commit("setEncounter", encounter);
+  context.commit("setDiagnosticReports", diagnosticReports);
 
   context.commit("setIsLoading", {
     action: "getEncounter",
@@ -221,13 +235,14 @@ export async function updateEncounter(
   });
   context.commit("setEncounter", undefined);
 
-  const resource = `patients/${appointment.patient}/encounters/${encounter.id}/?status=${status}`;
+  const resource = `patients/${appointment.patient}/encounters/${encounter.id}?status=${status}`;
+
+  console.log(resource);
+
   try {
-    const encounter: any = await patchResource({ resource });
-    context.commit(
-      "setEncounter",
-      encounter.data.data.find((item: any) => item.resourceType === "Encounter")
-    );
+    const encounter: any = await patchResource({ url: resource });
+    console.log("ENCOUNTER UPdate : ", encounter);
+    context.commit("setEncounter", encounter.data);
   } catch (e) {
     console.error(e);
     context.commit("setEncounter", undefined);
@@ -240,7 +255,7 @@ export async function updateEncounter(
 
 export async function createDiagnosticReport(
   context: any,
-  { appointment, encounter, notes }: any
+  { appointment, encounter, note }: any
 ) {
   context.commit("setIsLoading", {
     action: "createDiagnosticReport",
@@ -251,12 +266,14 @@ export async function createDiagnosticReport(
     patient_id: appointment.patient,
     role_id: appointment.practitionerRole,
     encounter_id: encounter.id,
-    conclusion: notes,
+    conclusion: note,
   };
   const resource = `diagnostic_reports`;
   try {
     const diagnosticReport: any = await createResource({ resource, payload });
-    context.commit("setDiagnosticReport", diagnosticReport.data);
+    console.log("CRETED DIAGNOSTIC REPORT: ", diagnosticReport);
+    //f08654e2-31dc-4032-9c5f-0c58f74fb521
+    context.commit("setDiagnosticReports", diagnosticReport.data);
   } catch (e) {
     console.error(e);
     context.commit("setDiagnosticReport", undefined);

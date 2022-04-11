@@ -44,3 +44,20 @@ export function appointment(state: any, getters: any, rootState: any) {
     type: appointment.serviceType[0].coding[0].display,
   };
 }
+
+export function diagnosticReports(state: any) {
+  const diagnosticReports = state.diagnosticReports;
+
+  if (!diagnosticReports) {
+    return [];
+  }
+
+  return diagnosticReports.map((report: any) => ({
+    id: report.id,
+    note: report.conclusion,
+    createdOn: formatDateString(
+      report.meta.lastUpdated,
+      TimeConstants.monthDayYearTime
+    ),
+  }));
+}
