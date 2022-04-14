@@ -96,8 +96,6 @@ export function insuranceCard(state: any) {
   if (!documentReferences.length) {
     return [];
   }
-
-  console.log("DOCREFS: ", documentReferences);
   const insuranceCard = documentReferences.find((document: any) =>
     document.type.coding.find((code: any) => code.code === "64290-0")
   );
@@ -116,10 +114,8 @@ export function medicalRecord(state: any) {
     return [];
   }
 
-  console.log("DOCREFS: ", documentReferences);
-
   const medicalRecord = documentReferences.find((document: any) =>
-    document.type.coding.find((code: any) => code.code === "6429-0")
+    document.type.coding.find((code: any) => code.code === "34117-2")
   );
 
   if (!medicalRecord) {

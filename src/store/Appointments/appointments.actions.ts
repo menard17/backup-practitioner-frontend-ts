@@ -110,7 +110,7 @@ export async function populateAppointment(context: any, appointmentId: string) {
     .find((item: any) => item.actor.reference.includes("PractitionerRole"))
     .actor.reference.split("/")[1];
 
-  await context.dispatch("$_patients/getPatientById", patientId, {
+  await context.dispatch("$_patients/populatePatient", patientId, {
     root: true,
   });
 

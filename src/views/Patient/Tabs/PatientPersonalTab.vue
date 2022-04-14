@@ -3,45 +3,28 @@
     <v-card>
       <v-card-title> Personal Information </v-card-title>
       <grid-list :items="personal" />
-
-      <v-row class="pa-4 px-6">
-        <v-btn
-          v-if="insuranceCard"
-          @click="openDocumentReferenceDialog('insurance')"
-          class="mr-2 subtitle-2 text-none"
-        >
-          Insurance Card
-        </v-btn>
-        <v-btn
-          v-if="medicalRecord"
-          @click="openDocumentReferenceDialog('medicalRecord')"
-          class="subtitle-2 text-none"
-        >
-          Medical Record
-        </v-btn>
-      </v-row>
+      <div class="pa-7">
+        <document-reference-wrapper />
+      </div>
     </v-card>
     <v-card class="mt-4">
       <v-card-title> Contact Information </v-card-title>
       <grid-list :items="contact" />
     </v-card>
-    <document-reference-dialog ref="documentReferenceDialogRef" />
   </v-container>
 </template>
 
 <script>
 import { mapGetters, mapState } from "vuex";
 import GridList from "@/components/GridList.vue";
-import DocumentReferenceDialog from "../DocumentReferenceDialog.vue";
+import DocumentReferenceWrapper from "../DocumentReferenceWrapper.vue";
 export default {
   name: "PatientPersonalTab",
-  components: { GridList, DocumentReferenceDialog },
+  components: { GridList, DocumentReferenceWrapper },
   computed: {
     ...mapGetters("$_patients", {
       patient: "patient",
       appointments: "appointments",
-      insuranceCard: "insuranceCard",
-      medicalRecord: "medicalRecord",
     }),
     ...mapState("$_patients", {
       isLoading: (state) => state.loadingData.getPatientById.isLoading,
@@ -97,26 +80,6 @@ export default {
       };
 
       return [email, phone, address];
-    },
-  },
-  methods: {
-    openDocumentReferenceDialog(documentType) {
-      console.log(documentType);
-      console.log(this.insuranceCard);
-      switch (documentType) {
-        case "insurance":
-          this.$refs.documentReferenceDialogRef.toggleDialog(
-            this.insuranceCard,
-            "Insurance Card"
-          );
-          break;
-        case "medicalRecord":
-          this.$refs.documentReferenceDialogRef.toggleDialog(
-            this.medicalRecord,
-            "Medical Record"
-          );
-          break;
-      }
     },
   },
 };

@@ -3,10 +3,15 @@
     <v-card>
       <v-card-title>
         <v-row>
-          <v-col> Appointment Information </v-col>
+          <v-col>
+            Appointment Information
+
+            <v-chip v-if="appointment">
+              {{ appointment.status.toUpperCase() }}</v-chip
+            >
+          </v-col>
         </v-row>
       </v-card-title>
-
       <v-skeleton-loader v-if="isLoading" type="article"></v-skeleton-loader>
 
       <div class="pa-4" v-else-if="appointment && patient">
@@ -47,6 +52,7 @@
                       />
                     </v-col>
                   </v-row>
+                  <document-reference-wrapper class="pa-3" />
                 </v-expansion-panel-content>
               </v-expansion-panel>
             </v-expansion-panels>
@@ -71,18 +77,24 @@
             </v-btn>
           </v-col>
         </v-row>
+        <v-row v-if="encounter">
+          <v-col>
+            <div class="subtitle-2">Encounter Status</div>
+            <v-chip>
+              {{ encounter.status.toUpperCase() }}
+            </v-chip>
+          </v-col>
+        </v-row>
         <v-row class="mt-5" dense no-gutters>
           <v-col>
             <v-row class="mb-2" align="center">
-              <v-col cols="3">
-                <div class="subtitle-2">Doctors Notes</div>
-              </v-col>
               <v-col>
+                <div class="subtitle-2 mb-3">Doctors Notes</div>
+
                 <v-btn
                   @click="openCreateNoteDialog"
                   color="primary"
                   class="text-none subtitle-2 mr-3"
-                  v-if="(encounter && encounter.status) === 'in-progress'"
                 >
                   Create a Note
                 </v-btn>
@@ -162,6 +174,7 @@ import CreateAppointmentDialog from "@/views/Appointment/Dialogs/CreateAppointme
 import StatusDialog from "@/components/StatusDialog";
 import { StatusTypes } from "@/utils/constants";
 import CreateNoteDialog from "@/views/Appointment/Dialogs/CreateNoteDialog";
+import DocumentReferenceWrapper from "../Patient/DocumentReferenceWrapper.vue";
 
 export default {
   components: {
@@ -171,6 +184,7 @@ export default {
     LabelTextField,
     TitleSubtitle,
     StartEncounterDialog,
+    DocumentReferenceWrapper,
   },
   name: "AppointmentDetailPage",
   data() {
