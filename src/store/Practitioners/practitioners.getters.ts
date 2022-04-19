@@ -46,9 +46,9 @@ export function practitioner(state: any) {
     }`,
     address: `${practitioner.address[0].postalCode},
     ${practitioner.address[0].state},
-    ${practitioner.address[0].city}, 
-    ${practitioner.address[0].line[0]} 
-    ${practitioner.address[0].line[1]}, 
+    ${practitioner.address[0].city},
+    ${practitioner.address[0].line[0]}
+    ${practitioner.address[0].line[1]},
     ${practitioner.address[0].country}
     `,
   };

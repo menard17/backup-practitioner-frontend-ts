@@ -44,9 +44,9 @@ export function patient(state: any) {
     }`,
     address: `${patient.address[0].postalCode},
     ${patient.address[0].state},
-    ${patient.address[0].city}, 
-    ${patient.address[0].line[0]} 
-    ${patient.address[0].line[1]}, 
+    ${patient.address[0].city},
+    ${patient.address[0].line[0]}
+    ${patient.address[0].line[1]},
     ${patient.address[0].country}
     `,
   };

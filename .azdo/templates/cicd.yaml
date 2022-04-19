@@ -1,0 +1,79 @@
+parameters:
+- name: env
+  type: string
+  default: 'dev'
+
+
+jobs:
+- job: CI${{ parameters.env }}
+  displayName: CI ${{ parameters.env }}
+  variables:
+    - group: kv-practitionerweb2-${{ parameters.env }}
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '16.x'
+    displayName: 'Install Node.js'
+  - task: Bash@3
+    inputs:
+      targetType: 'inline'
+      script: |
+        yarn install
+        yarn audit fix
+        yarn run build
+      workingDirectory: $(System.DefaultWorkingDirectory)
+    displayName: 'yarn install, audit, and build'
+    env:
+      VUE_APP_apiKey: $(apiKey)
+      VUE_APP_authDomain: $(authDomain)
+      VUE_APP_projectId: $(projectId)
+      VUE_APP_storageBucket: $(storageBucket)
+      VUE_APP_messagingSenderId: $(messagingSenderId)
+      VUE_APP_appId: $(appId)
+      VUE_APP_baseUrl: $(baseUrl)
+      VUE_APP_logic_app_url: $(logicAppUrl)
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(System.DefaultWorkingDirectory)/dist'
+      targetFolder: $(Build.ArtifactStagingDirectory)
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'drop${{ parameters.env }}/dist'
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: $(System.DefaultWorkingDirectory)
+      contents: 'firebase.json'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'drop${{ parameters.env }}'
+
+- deployment:
+  dependsOn: CI${{ parameters.env }}
+  displayName: CD ${{ parameters.env }}
+  environment: ${{ parameters.env }}
+  condition: in(variables['Build.SourceBranch'], 'refs/heads/main')
+  variables:
+    - group: kv-practitionerweb2-${{ parameters.env }}
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - task: NodeTool@0
+          inputs:
+            versionSpec: '16.x'
+          displayName: 'Install Node.js'
+        - task: DownloadBuildArtifacts@1
+          inputs:
+            buildType: 'current'
+            artifactName: drop${{ parameters.env }}
+        - script: |
+            npm install -g firebase-tools
+          displayName: 'npm install firebase'
+        - script: |
+            cd drop${{ parameters.env }}
+            firebase deploy --token $(webHostingFirebaseToken) --project $(projectId) --force -m $(Build.BuildNumber)
+          displayName: 'firebase deploy'
+          workingDirectory: $(System.ArtifactsDirectory)

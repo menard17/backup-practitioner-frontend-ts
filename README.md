@@ -25,5 +25,10 @@ yarn test:unit
 yarn lint
 ```
 
+### Generate Firebase token for CICD
+```
+firebase login:ci
+```
+
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
