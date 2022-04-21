@@ -74,6 +74,8 @@ jobs:
           displayName: 'npm install firebase'
         - script: |
             cd drop${{ parameters.env }}
+            firebase use --add $(projectId) --token $(webHostingFirebaseToken)
+            firebase target:apply hosting web $(target)
             firebase deploy --token $(webHostingFirebaseToken) --project $(projectId) --force -m $(Build.BuildNumber)
           displayName: 'firebase deploy'
           workingDirectory: $(System.ArtifactsDirectory)
