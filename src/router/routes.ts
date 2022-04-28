@@ -1,5 +1,5 @@
 import { RouteConfig } from "vue-router";
-import HomeView from "../views/HomeView.vue";
+import HomeView from "../views/Account/MyAccountPage.vue";
 import AppointmentsPage from "@/views/Appointment/AppointmentsPage.vue";
 import AppointmentDetailPage from "@/views/Appointment/AppointmentDetailPage.vue";
 import PatientPersonalTab from "@/views/Patient/Tabs/PatientPersonalTab.vue";

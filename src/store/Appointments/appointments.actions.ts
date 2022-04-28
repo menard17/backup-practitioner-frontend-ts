@@ -3,6 +3,7 @@ import {
   getById,
   createResource,
   patchResource,
+  updateResource,
 } from "@/utils/apiHelpers";
 
 export async function getAppointmentsByPractitionerId(
@@ -208,7 +209,6 @@ export async function getEncounter(context: any, appointment: any) {
     `patients/${patientId}/encounters?appointment_id=${appointment.id}`
   );
 
-  console.log("ENCOUNTER: ", encounterList);
   const encounter = encounterList.data.filter(
     (item: any) => item.resourceType === "Encounter"
   )[0];
@@ -237,11 +237,8 @@ export async function updateEncounter(
 
   const resource = `patients/${appointment.patient}/encounters/${encounter.id}?status=${status}`;
 
-  console.log(resource);
-
   try {
     const encounter: any = await patchResource({ url: resource });
-    console.log("ENCOUNTER UPdate : ", encounter);
     context.commit("setEncounter", encounter.data);
   } catch (e) {
     console.error(e);
@@ -280,4 +277,91 @@ export async function createDiagnosticReport(
     action: "createDiagnosticReport",
     value: false,
   });
+}
+
+export async function getSlotsByPractitionerRoleId(
+  context: any,
+  { start, end, practitionerId }: any
+) {
+  context.commit("setIsLoading", {
+    action: "getSlotsByPractitionerRoleId",
+    value: true,
+  });
+
+  context.commit("setSlots", []);
+  let actorId = "";
+  if (!practitionerId) {
+    await context.dispatch("$_account/getCurrentUser", null, { root: true });
+    actorId = context.rootState.$_account.practitionerRole.id;
+  } else {
+    actorId = practitionerId;
+  }
+
+  try {
+    const responseSlots: any = await getAll(
+      `practitioner_roles/${actorId}/slots?not_status=free&start=${start}&end=${end}`
+    );
+    context.commit("setSlots", responseSlots.data);
+  } catch (error) {
+    console.error(error);
+    context.commit("setSlots", []);
+  }
+
+  context.commit("setIsLoading", {
+    action: "getSlotsByPractitionerRoleId",
+    value: false,
+  });
+}
+
+export async function createSlot(
+  context: any,
+  { practitionerId, start, end }: any
+) {
+  context.commit("setIsLoading", {
+    action: "createSlot",
+    value: true,
+  });
+  const slot = {
+    start,
+    end,
+    status: "busy-unavailable",
+    comment: "Blocked",
+  };
+
+  let actorId = "";
+  if (!practitionerId) {
+    await context.dispatch("$_account/getCurrentUser", null, { root: true });
+    actorId = context.rootState.$_account.practitionerRole.id;
+  } else {
+    actorId = practitionerId;
+  }
+
+  const respSlot = await createResource({
+    resource: `practitioner_roles/${actorId}/slots`,
+    payload: slot,
+  });
+
+  context.commit("setIsLoading", {
+    action: "createSlot",
+    value: false,
+  });
+
+  return respSlot;
+}
+
+export async function freeSlot({ commit }: any, { slotId }: any) {
+  commit("setIsLoading", {
+    action: "freeSlot",
+    value: true,
+  });
+  const resp = await updateResource({
+    url: `slots/${slotId}/free`,
+    payload: {},
+  });
+
+  commit("setIsLoading", {
+    action: "freeSlot",
+    value: false,
+  });
+  return resp;
 }

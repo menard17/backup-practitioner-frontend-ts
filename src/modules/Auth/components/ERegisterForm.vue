@@ -102,7 +102,6 @@ export default {
               this.$router.push({ path: "/" });
             }
           });
-          console.log("user register");
         })
         .catch((err) => {
           console.log(err);

@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-card outlined>
+    <v-card outlined class="mb-10">
       <v-card-title>
         <v-flex>
           <v-layout>
@@ -13,17 +13,17 @@
               <slot name="headerButton" />
             </v-flex>
           </v-layout>
-          <v-layout>
-            <v-flex xs5>
-              <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Search"
-                single-line
-                hide-details
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
+          <!--          <v-layout>-->
+          <!--            <v-flex xs5>-->
+          <!--              <v-text-field-->
+          <!--                v-model="search"-->
+          <!--                append-icon="mdi-magnify"-->
+          <!--                label="Search"-->
+          <!--                single-line-->
+          <!--                hide-details-->
+          <!--              ></v-text-field>-->
+          <!--            </v-flex>-->
+          <!--          </v-layout>-->
         </v-flex>
       </v-card-title>
       <slot></slot>

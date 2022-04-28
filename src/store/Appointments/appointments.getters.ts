@@ -61,3 +61,40 @@ export function diagnosticReports(state: any) {
     ),
   }));
 }
+
+export function slots(state: any) {
+  const slots = state.slots;
+
+  if (!slots.length) {
+    return [];
+  }
+
+  return slots;
+}
+
+export function events(state: any) {
+  const slots = state.slots;
+
+  if (!slots.length) {
+    return [];
+  }
+
+  return slots.map((item: any) => {
+    const startDate = new Date(item.start);
+    const endDate = new Date(item.end);
+    const start = `${startDate.getFullYear()}-${
+      startDate.getMonth() + 1
+    }-${startDate.getDate()} ${startDate.getHours()}:${startDate.getMinutes()}`;
+    const end = `${endDate.getFullYear()}-${
+      endDate.getMonth() + 1
+    }-${endDate.getDate()} ${endDate.getHours()}:${endDate.getMinutes()}`;
+    return {
+      start,
+      end,
+      name: item.status === "busy-unavailable" ? "Blocked" : "Busy",
+      color: item.status === "busy-unavailable" ? "red" : "blue",
+      slotId: item.id,
+      status: item.status,
+    };
+  });
+}

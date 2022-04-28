@@ -3,6 +3,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   UserCredential,
+  signInWithEmailAndPassword,
 } from "firebase/auth";
 
 export async function signOut(context: any) {
@@ -18,6 +19,19 @@ export async function signOut(context: any) {
         reject(error);
       });
   });
+}
+
+export async function userLogin({ commit }: any, { email, password }: any) {
+  return new Promise<void>((resolve, reject) =>
+    signInWithEmailAndPassword(auth, email, password)
+      .then((firebaseUser: UserCredential) => {
+        commit("setFirebaseUser", firebaseUser);
+        resolve();
+      })
+      .catch((err) => {
+        reject(err);
+      })
+  );
 }
 
 export async function socialLogin(context: any, website: string) {

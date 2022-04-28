@@ -166,7 +166,7 @@
 </template>
 
 <script>
-import LabelTextField from "@/components/LabelTextField.vue";
+import LabelTextField from "@/components/LabelCard.vue";
 import { mapActions, mapGetters, mapState } from "vuex";
 import TitleSubtitle from "@/components/TitleSubtitle.vue";
 import StartEncounterDialog from "./StartEncounterDialog.vue";
@@ -289,7 +289,6 @@ export default {
       this.createEncounter(this.appointment);
     },
     createDoctorNote(note) {
-      console.log("NOTE: ", note);
       this.createDiagnosticReport({
         appointment: this.appointment,
         encounter: this.encounter,

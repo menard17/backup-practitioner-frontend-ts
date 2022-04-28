@@ -81,7 +81,6 @@ export async function postPaymentIntent(
     url: "payments/payment-intent",
     data,
   });
-  console.log(config);
   return new Promise((resolve, reject) => {
     axios(config)
       .then((response) => {

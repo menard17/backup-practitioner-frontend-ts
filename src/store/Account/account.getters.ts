@@ -1,51 +1,66 @@
-export function patients(state: any) {
-  if (!state.patients.length) {
-    return [];
-  }
-  return state.patients.map((patient: any) => ({
-    id: `${patient.resource.id}`,
-    name: `${patient.resource.name[0].family}, ${patient.resource.name[0].given[0]}`,
-    birthDate: patient.resource.birthDate || "Not Provided",
-    sex:
-      (patient.resource.gender && patient.resource.gender.toUpperCase()) ||
-      "Not Provided",
-    phone: `${
-      patient.resource.telecom.find((item: any) => item.system === "phone")
-        .value
-    }`,
-    email: `${
-      patient.resource.telecom.find((item: any) => item.system === "email")
-        .value
-    }`,
-  }));
-}
+export function practitioner(state: any) {
+  const practitioner = state.practitioner;
 
-export function patient(state: any) {
-  const patient = state.patient;
-
-  if (!patient) {
+  if (!practitioner) {
     return;
   }
 
-  console.log(patient.address);
+  const nameEn = practitioner.name.find(
+    (item: any) => item.extension[0].valueString === "ABC"
+  );
+  const nameJp = practitioner.name.find(
+    (item: any) => item.extension[0].valueString === "IDE"
+  );
+
+  const bioEn = practitioner.extension.find(
+    (item: any) => item.extension[0].valueString === "en"
+  ).valueString;
+
+  const bioJp = practitioner.extension.find(
+    (item: any) => item.extension[0].valueString === "ja"
+  ).valueString;
 
   return {
-    id: `${patient.id}`,
-    name: `${patient.name[0].family}, ${patient.name[0].given[0]}`,
-    birthDate: patient.birthDate || "Not Provided",
-    sex: (patient.gender && patient.gender.toUpperCase()) || "Not Provided",
-    phone: `${
-      patient.telecom.find((item: any) => item.system === "phone").value
-    }`,
+    id: `${practitioner.id}`,
+    en: {
+      firstName: nameEn.given[0],
+      familyName: nameEn.family,
+      bio: bioEn,
+    },
+    jp: {
+      firstName: nameJp.given[0],
+      familyName: nameJp.family,
+      bio: bioJp,
+    },
+    photo: {
+      type: practitioner.photo[0].contentType,
+      data: practitioner.photo[0].data,
+    },
+    sex:
+      (practitioner.gender && practitioner.gender.toUpperCase()) ||
+      "Not Provided",
     email: `${
-      patient.telecom.find((item: any) => item.system === "email").value
+      practitioner.telecom.find((item: any) => item.system === "email").value
     }`,
-    address: `${patient.address[0].postalCode},
-    ${patient.address[0].state},
-    ${patient.address[0].city},
-    ${patient.address[0].line[0]}
-    ${patient.address[0].line[1]},
-    ${patient.address[0].country}
-    `,
+  };
+}
+
+export function practitionerRole(state: any) {
+  const practitionerRole = state.practitionerRole;
+
+  if (!practitionerRole) {
+    return;
+  }
+
+  return {
+    id: practitionerRole.id,
+    availableTime: practitionerRole.availableTime,
+    zoomId: practitionerRole.extension.find(
+      (item: any) => item.url === "zoom-id"
+    ).valueString,
+    zoomPasscode: practitionerRole.extension.find(
+      (item: any) => item.url === "zoom-passcode"
+    ).valueString,
+    roleType: practitionerRole.code[0].coding[0].code.toUpperCase(),
   };
 }

@@ -90,7 +90,6 @@ export default {
       getAppointments: "getAppointments",
     }),
     onAppointmentCreated(appointment) {
-      console.log("New APpT: ", appointment);
       const title = appointment ? "Success!" : "Failed";
       const body = appointment
         ? "The appointment was created successfully"

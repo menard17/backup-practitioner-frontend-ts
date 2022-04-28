@@ -1,11 +1,20 @@
 import { auth } from "@/plugins/firebase";
-import { getAll, getById } from "@/utils/apiHelpers";
+import {
+  createResource,
+  getAll,
+  getById,
+  patchResource,
+  updateResource,
+} from "@/utils/apiHelpers";
 import { getIdTokenResult, User } from "firebase/auth";
 
 export const getCurrentUser = async ({ commit }: any) => {
   commit("setIsLoading", { action: "getCurrentUser", value: true });
   commit("setPractitioner", undefined);
   commit("setPractitionerRole", undefined);
+  commit("setUser", undefined);
+
+  console.log(auth.currentUser);
 
   if (!auth.currentUser) {
     return;
@@ -13,10 +22,17 @@ export const getCurrentUser = async ({ commit }: any) => {
 
   const user: User = auth.currentUser;
   const tokenResult: any = await getIdTokenResult(user);
+
+  console.log(tokenResult);
+
+  commit("setUser", user);
+
   if (!tokenResult.claims.roles) {
+    commit("setIsLoading", { action: "getCurrentUser", value: false });
     return;
   }
   if (!tokenResult.claims.roles.Practitioner) {
+    commit("setIsLoading", { action: "getCurrentUser", value: false });
     return;
   }
 
@@ -35,3 +51,91 @@ export const getCurrentUser = async ({ commit }: any) => {
   commit("setPractitionerRole", practitionerRole);
   commit("setIsLoading", { action: "getCurrentUser", value: false });
 };
+
+export async function updateMyPractitionerRole(
+  context: any,
+  { changeFields }: any
+) {
+  context.commit("setIsLoading", {
+    action: "updateMyPractitionerRole",
+    value: true,
+  });
+  const practitionerRoleId = context.state.practitionerRole.id;
+  const url = `practitioner_roles/${practitionerRoleId}`;
+  const payload = {
+    ...changeFields,
+  };
+
+  try {
+    const practitionerRole: any = await updateResource({ url, payload });
+
+    const practitionerRoleData = practitionerRole.data.entry.find(
+      (item: any) => item.resource.resourceType === "PractitionerRole"
+    );
+
+    if (practitionerRoleData) {
+      context.commit("setPractitionerRole", practitionerRoleData.resource);
+    }
+
+    const practitionerData = practitionerRole.data.entry.find(
+      (item: any) => item.resource.resourceType === "Practitioner"
+    );
+
+    if (practitionerData) {
+      context.commit("setPractitioner", practitionerData.resource);
+    }
+  } catch (e) {
+    console.error(e);
+  }
+
+  context.commit("setIsLoading", {
+    action: "updateMyPractitionerRole",
+    value: false,
+  });
+}
+
+export async function createMyPractitionerWithPractitionerRole(
+  context: any,
+  { changeFields }: any
+) {
+  context.commit("setIsLoading", {
+    action: "createMyPractitionerWithPractitionerRole",
+    value: true,
+  });
+
+  const resource = `practitioner_roles`;
+
+  const payload = {
+    ...changeFields,
+    available_time: [],
+    zoom_id: "",
+    zoom_password: "",
+  };
+
+  try {
+    const practitionerRole: any = await createResource({ resource, payload });
+    context.commit(
+      "setPractitionerRole",
+      practitionerRole.data.entry.find(
+        (item: any) => item.resource.resourceType === "PractitionerRole"
+      )
+    );
+
+    context.commit(
+      "setPractitioner",
+      practitionerRole.data.entry.find(
+        (item: any) => item.resource.resourceType === "Practitioner"
+      )
+    );
+  } catch (e) {
+    console.error(e);
+    context.commit("setIsLoading", {
+      action: "createMyPractitionerWithPractitionerRole",
+      value: false,
+    });
+  }
+  context.commit("setIsLoading", {
+    action: "createMyPractitionerWithPractitionerRole",
+    value: false,
+  });
+}

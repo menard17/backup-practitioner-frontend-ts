@@ -3,7 +3,7 @@
     <div class="mb-2 subtitle-2">
       {{ label }}
     </div>
-    <v-text-field
+    <v-textarea
       dense
       outlined
       hide-details
@@ -15,7 +15,7 @@
 
 <script>
 export default {
-  name: "LabelTextField",
+  name: "LabelTextArea",
   inheritAttrs: false,
   props: {
     value: {

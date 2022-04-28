@@ -69,7 +69,6 @@ export const getAll = async (resource: string) => {
     return;
   }
   const idToken = await auth.currentUser.getIdTokenResult(true);
-  console.log("ID TOKEN: ", idToken);
   return new Promise((resolve, reject) => {
     const [baseResource, params] = resource.split("?");
     axios

@@ -71,23 +71,23 @@ export default Vue.extend({
       mini: false,
       items: [
         {
-          title: "Dashboard",
-          icon: "mdi-calendar-multiple",
+          title: "My Account",
+          icon: "mdi-account",
           to: "/",
         },
         {
-          title: "Appointments",
+          title: "My Appointments",
           icon: "mdi-calendar-multiple",
           to: "/appointments",
         },
-        {
-          title: "Practitioners",
-          icon: "mdi-calendar-multiple",
-          to: "/practitioners",
-        },
+        // {
+        //   title: "Practitioners",
+        //   icon: "mdi-calendar-multiple",
+        //   to: "/practitioners",
+        // },
         {
           title: "Patients",
-          icon: "mdi-calendar-multiple",
+          icon: "mdi-account-multiple",
           to: "/patients",
         },
       ],
@@ -95,7 +95,6 @@ export default Vue.extend({
   },
   created() {
     onAuthStateChanged(auth, (user) => {
-      console.log(user);
       if (user) {
         this.drawer = true;
       } else {
@@ -112,8 +111,7 @@ export default Vue.extend({
           this.$router.push({ path: "/sign-in" });
         })
         .catch((err) => {
-          console.log(err);
-          //this.err = "Could not login";
+          console.error(err);
         });
     },
   },

@@ -17,3 +17,7 @@ export function setEncounter(state: any, encounter: any) {
 export function setDiagnosticReports(state: any, diagnosticReports: any) {
   state.diagnosticReports = diagnosticReports;
 }
+
+export function setSlots(state: any, slots: any) {
+  state.slots = slots;
+}

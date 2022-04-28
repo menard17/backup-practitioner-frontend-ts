@@ -1,9 +1,9 @@
 <template>
-  <v-dialog max-width="580" v-model="dialog">
+  <v-dialog v-model="dialog" width="300">
     <v-card>
       <v-card-title>
         <v-row>
-          <v-col align="start"> Select Date & Time </v-col>
+          <v-col align="start"> Select Time </v-col>
           <v-col align="end">
             <v-btn icon @click="cancel">
               <v-icon>mdi-close</v-icon>
@@ -11,8 +11,14 @@
           </v-col>
         </v-row>
       </v-card-title>
-      <v-date-picker v-model="datePicker"></v-date-picker>
-      <v-time-picker v-model="timePicker" :allowed-minutes="allowedStep" />
+      <div class="text-center">
+        <date-picker
+          mode="time"
+          v-model="timePicker"
+          :model-config="modelConfig"
+          :minute-increment="15"
+        />
+      </div>
       <v-card-actions>
         <v-spacer />
         <v-btn
@@ -26,7 +32,7 @@
         <v-btn
           color="primary"
           class="text-none subtitle-2"
-          @click="onDateSelected"
+          @click="onTimeSelected"
         >
           Save
         </v-btn>
@@ -36,22 +42,20 @@
 </template>
 
 <script>
+import DatePicker from "v-calendar/lib/components/date-picker.umd";
+
 export default {
-  name: "DateTimeSelectDialog",
-  props: {
-    date: {
-      type: String,
-      default() {
-        return "";
-      },
-    },
-  },
+  name: "TimeSelectDialog",
+  components: { DatePicker },
   data() {
     return {
       dialog: false,
-      datePicker: "",
       timePicker: "",
       allowedStep: (m) => m % 15 === 0,
+      modelConfig: {
+        type: "string",
+        mask: "HH:mm", // Uses 'iso' if missing
+      },
     };
   },
   methods: {
@@ -59,25 +63,14 @@ export default {
       this.dialog = !this.dialog;
     },
     cancel() {
-      this.datePicker = "";
-      this.timePicker = "";
       this.dialog = false;
     },
-    onDateSelected() {
-      this.$emit(
-        "onDateSelected",
-        this.dateStringToDate(`${this.datePicker} ${this.timePicker}`)
-      );
-      this.dialog = false;
-    },
-    dateStringToDate(dbDateString) {
-      if (typeof dbDateString !== "string") {
-        return dbDateString;
-      }
-      return new Date(dbDateString.replace(/-/g, "-").replace(/\..*$/, ""));
+    onTimeSelected() {
+      this.$emit("onTimeSelected", this.timePicker);
+      this.cancel();
     },
   },
 };
 </script>
 
-<style></style>
+<style scoped></style>

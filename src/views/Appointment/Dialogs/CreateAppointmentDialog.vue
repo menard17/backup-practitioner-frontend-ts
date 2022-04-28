@@ -255,7 +255,6 @@ export default {
           TimeConstants.militaryTime
         )}+09:00`
       ).toISOString();
-      console.log("NEW DATE TIME: ", newDateTime);
       return newDateTime;
     },
     openDateTimeDialog(selected) {
@@ -285,9 +284,7 @@ export default {
       this.selectedPractitionerRoleId = this.practitionerRole.id;
     },
     async save() {
-      console.log("Creating Appointment", this.payload);
       const appointment = await this.createAppointment(this.payload);
-      console.log("NEW APPT: ", appointment);
       this.$emit("onCreated", appointment);
       this.cancel();
     },

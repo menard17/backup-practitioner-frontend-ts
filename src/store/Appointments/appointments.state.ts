@@ -3,6 +3,7 @@ const state = {
   appointment: undefined,
   encounter: undefined,
   diagnosticReports: undefined,
+  slots: [],
   loadingData: {
     createAppointment: { isLoading: false },
     getAppointments: { isLoading: false },
@@ -13,6 +14,9 @@ const state = {
     getEncounter: { isLoading: false },
     updateEncounter: { isLoading: false },
     createDiagnosticReport: { isLoading: false },
+    getSlotsByPractitionerRoleId: { isLoading: false },
+    createSlot: { isLoading: false },
+    freeSlot: { isLoading: false },
   },
 };
 

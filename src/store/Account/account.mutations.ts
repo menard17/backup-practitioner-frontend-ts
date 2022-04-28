@@ -9,3 +9,7 @@ export function setIsLoading(state: any, { action, value }: any) {
 export function setPractitionerRole(state: any, practitionerRole: any) {
   state.practitionerRole = practitionerRole;
 }
+
+export function setUser(state: any, user: any) {
+  state.user = user;
+}

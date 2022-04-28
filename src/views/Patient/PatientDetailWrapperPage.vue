@@ -24,10 +24,6 @@ export default {
     }),
   },
   async created() {
-    console.log(this.$route);
-    //  this.getPatientById(this.$route.params.id);
-    // this.getAppointments(this.$route.params.id);
-    // this.getPaymentMethods(this.$route.params.id);
     this.populatePatient(this.$route.params.id);
   },
   methods: {

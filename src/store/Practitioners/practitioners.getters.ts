@@ -31,8 +31,6 @@ export function practitioner(state: any) {
     return;
   }
 
-  console.log(practitioner.address);
-
   return {
     id: `${practitioner.id}`,
     firstName: practitioner.name[0].given[0],
@@ -44,13 +42,13 @@ export function practitioner(state: any) {
     email: `${
       practitioner.telecom.find((item: any) => item.system === "email").value
     }`,
-    address: `${practitioner.address[0].postalCode},
-    ${practitioner.address[0].state},
-    ${practitioner.address[0].city},
-    ${practitioner.address[0].line[0]}
-    ${practitioner.address[0].line[1]},
-    ${practitioner.address[0].country}
-    `,
+    // address: `${practitioner.address[0].postalCode},
+    // ${practitioner.address[0].state},
+    // ${practitioner.address[0].city},
+    // ${practitioner.address[0].line[0]}
+    // ${practitioner.address[0].line[1]},
+    // ${practitioner.address[0].country}
+    // `,
   };
 }
 

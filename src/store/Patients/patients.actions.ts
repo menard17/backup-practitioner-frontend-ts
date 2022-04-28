@@ -31,8 +31,6 @@ export async function populatePatient(context: any, patientId: string) {
   await getAppointments(context, patientId);
   await getDocumentReferences(context, patientId);
 
-  console.log(context.state.patient);
-
   if (!context.state.patient.extension) {
     context.commit("setIsLoading", { action: "populatePatient", value: false });
     return;
@@ -77,7 +75,6 @@ export async function getAppointments(context: any, patientId: string) {
 }
 
 export async function getPaymentMethods(context: any, customerId: string) {
-  console.log(context.state);
   context.commit("setIsLoading", { action: "getPaymentMethods", value: true });
   context.commit("setPaymentMethods", []);
 
@@ -92,7 +89,6 @@ export async function getPaymentMethods(context: any, customerId: string) {
 }
 
 export async function getPaymentIntents(context: any, customerId: string) {
-  console.log(context.state);
   context.commit("setIsLoading", { action: "getPaymentIntents", value: true });
   context.commit("setPaymentIntents", []);
 
@@ -102,7 +98,6 @@ export async function getPaymentIntents(context: any, customerId: string) {
     { root: true }
   );
 
-  console.log("PMI:", paymentIntents);
   context.commit("setPaymentIntents", paymentIntents);
   context.commit("setIsLoading", { action: "getPaymentIntents", value: false });
 }
