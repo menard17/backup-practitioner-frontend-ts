@@ -23,7 +23,7 @@ export const getCurrentUser = async ({ commit }: any) => {
   const user: User = auth.currentUser;
   const tokenResult: any = await getIdTokenResult(user);
 
-  console.log(tokenResult);
+  console.log("TOKEN RESULT: ", tokenResult);
 
   commit("setUser", user);
 
@@ -104,13 +104,19 @@ export async function createMyPractitionerWithPractitionerRole(
   });
 
   const resource = `practitioner_roles`;
-
-  const payload = {
-    ...changeFields,
-    available_time: [],
-    zoom_id: "",
-    zoom_password: "",
-  };
+  let payload;
+  if (changeFields.role_type === "doctor") {
+    payload = {
+      ...changeFields,
+      available_time: [{}],
+      zoom_id: "zoom id placeholder",
+      zoom_password: "zoom passcode placeholder",
+    };
+  } else {
+    payload = {
+      ...changeFields,
+    };
+  }
 
   try {
     const practitionerRole: any = await createResource({ resource, payload });
