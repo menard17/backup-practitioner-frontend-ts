@@ -8,7 +8,7 @@ import {
 
 export async function getAppointmentsByPractitionerId(
   context: any,
-  { practitionerId }: any
+  { practitionerId, dateFrom, dateTo }: any
 ) {
   context.commit("setIsLoading", {
     action: "getAppointmentsByPractitionerId",
@@ -23,7 +23,11 @@ export async function getAppointmentsByPractitionerId(
     actorId = practitionerId;
   }
 
-  const appointments: any = await getAppointments(context, { actorId });
+  const appointments: any = await getAppointments(context, {
+    actorId,
+    dateFrom,
+    dateTo,
+  });
   context.commit("setAppointments", appointments);
 
   context.commit("setIsLoading", {
@@ -32,12 +36,33 @@ export async function getAppointmentsByPractitionerId(
   });
 }
 
-export const getAppointments = async (context: any, { actorId }: any) => {
+export const getAppointments = async (
+  context: any,
+  { actorId, dateFrom, dateTo }: any
+) => {
   context.commit("setIsLoading", { action: "getAppointments", value: true });
 
-  // TODO: Fixed list of appointments dynamically. Hard-coding to get appointment from Feb-1
+  const searchParams = [
+    "include_patient=true",
+    "include_practitioner=true",
+    `actor_id=${actorId}`,
+  ];
+
+  if (dateFrom !== undefined) {
+    searchParams.push(`start_date=${dateFrom}`);
+  } else {
+    // default to some hardcoded date
+    const date = new Date();
+    date.setDate(date.getDate() - 30);
+    searchParams.push(`start_date=${date.toISOString()}`);
+  }
+
+  if (dateTo !== undefined) {
+    searchParams.push(`end_date=${dateTo}`);
+  }
+
   const appointmentsList: any = await getAll(
-    `appointments?include_patient=true&include_practitioner=true&date=2022-02-01&actor_id=${actorId}`
+    `appointments?${searchParams.join("&")}`
   );
 
   const appointments = appointmentsList.data.filter(

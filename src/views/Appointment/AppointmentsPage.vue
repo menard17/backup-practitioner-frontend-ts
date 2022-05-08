@@ -2,19 +2,81 @@
   <div>
     <data-table title="My Appointments">
       <template v-slot:headerButton>
-        <v-btn-toggle v-model="viewOption" borderless>
-          <v-btn value="list">
-            <v-icon left> mdi-format-list-bulleted </v-icon>
-            <span class="hidden-sm-and-down">List</span>
-          </v-btn>
+        <v-row>
+          <v-col cols="4">
+            <v-menu
+              ref="menuFrom"
+              v-model="menuFrom"
+              :close-on-content-click="false"
+              transition="scale-transition"
+              offset-y
+              max-width="290px"
+              min-width="290px"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field
+                  v-model="dateFrom"
+                  label="From"
+                  append-icon="mdi-calendar"
+                  v-bind="attrs"
+                  v-on="on"
+                />
+              </template>
+              <v-date-picker
+                v-model="dateRange"
+                color="primary"
+                :max="maxDate"
+                no-title
+                range
+                @input="menuFrom = false"
+              />
+            </v-menu>
+          </v-col>
+          <v-col cols="4">
+            <v-menu
+              ref="menuTo"
+              v-model="menuTo"
+              :close-on-content-click="false"
+              transition="scale-transition"
+              offset-y
+              max-width="290px"
+              min-width="290px"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field
+                  v-model="dateTo"
+                  label="To"
+                  append-icon="mdi-calendar"
+                  v-bind="attrs"
+                  v-on="on"
+                />
+              </template>
+              <v-date-picker
+                v-model="dateRange"
+                color="primary"
+                no-title
+                range
+                @input="menuTo = false"
+                :min="minCurrentMonth"
+                :max="maxDate"
+              />
+            </v-menu>
+          </v-col>
+          <v-col cols="4">
+            <v-btn-toggle v-model="viewOption" borderless>
+              <v-btn value="list">
+                <v-icon left> mdi-format-list-bulleted </v-icon>
+                <span class="hidden-sm-and-down">List</span>
+              </v-btn>
 
-          <v-btn value="calendar">
-            <v-icon left> mdi-calendar </v-icon>
-            <span class="hidden-sm-and-down">Calendar</span>
-          </v-btn>
-        </v-btn-toggle>
+              <v-btn value="calendar">
+                <v-icon left> mdi-calendar </v-icon>
+                <span class="hidden-sm-and-down">Calendar</span>
+              </v-btn>
+            </v-btn-toggle>
+          </v-col>
+        </v-row>
       </template>
-
       <v-data-table
         v-if="viewOption === 'list'"
         :headers="headers"
@@ -134,7 +196,24 @@ export default Vue.extend({
           value: "status",
         },
       ],
+      dateRange: [],
+      menuFrom: false,
+      menuTo: false,
     };
+  },
+  watch: {
+    // whenever question changes, this function will run
+    // refresh the appointment data once we get both start and end date
+    dateRange(newDateRange, _oldDateRange) {
+      if (newDateRange.length == 2) {
+        this.getAppointmentsByPractitionerId({
+          practitionerId: "",
+          dateFrom: this.dateFrom,
+          dateTo: this.dateTo,
+        });
+      }
+      return newDateRange;
+    },
   },
   computed: {
     ...mapGetters("$_appointments", {
@@ -163,6 +242,29 @@ export default Vue.extend({
     },
     isShowingCalendar() {
       return this.viewOption === "calendar";
+    },
+    // sort the date, always put the smaller one as the `dateFrom` and larger one as `dateTo`
+    dateFrom() {
+      return this.compareDate(this.dateRange[0], this.dateRange[1])
+        ? this.dateRange[1]
+        : this.dateRange[0];
+    },
+    dateTo() {
+      return this.compareDate(this.dateRange[0], this.dateRange[1])
+        ? this.dateRange[0]
+        : this.dateRange[1];
+    },
+    minCurrentMonth() {
+      if (this.dateRange.length) {
+        let current = new Date(this.dateFrom);
+        current.setDate(current.getDate() + 1);
+        return current.toISOString().slice(0, 10);
+      } else {
+        return new Date().toISOString().slice(0, 10);
+      }
+    },
+    maxDate() {
+      return new Date().toISOString().slice(0, 10);
     },
   },
   mounted() {
@@ -235,6 +337,17 @@ export default Vue.extend({
         return;
       }
       setInterval(() => this.cal.updateTimes(), 60 * 1000);
+    },
+    compareDate(date1, date2) {
+      if (date1 === undefined || date2 === undefined) return false;
+
+      const [year1, month1, day1] = date1.split("-");
+      const [year2, month2, day2] = date2.split("-");
+
+      if (year1 > year2) return true;
+      if (month1 > month2) return true;
+      if (day1 > day2) return true;
+      return false;
     },
   },
 });
