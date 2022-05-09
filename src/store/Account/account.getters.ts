@@ -52,9 +52,15 @@ export function practitionerRole(state: any) {
     return;
   }
 
+  // backend will return a response of [{}] when the available time is empty.
+  // this filters empty response out.
+  const availableTime = practitionerRole.availableTime.filter(
+    (av: any) => av.availableStartTime !== undefined
+  );
+
   return {
     id: practitionerRole.id,
-    availableTime: practitionerRole.availableTime,
+    availableTime: availableTime,
     zoomId: practitionerRole.extension.find(
       (item: any) => item.url === "zoom-id"
     ).valueString,
