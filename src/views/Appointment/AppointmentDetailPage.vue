@@ -66,7 +66,7 @@
           <title-subtitle title="zoom Passcode" :subtitle="zoomPasscode" />
         </v-row>
 
-        <v-row v-if="!encounter">
+        <v-row v-if="!encounter" justify="start">
           <v-col>
             <v-btn
               @click="confirmPatientJoined"
@@ -74,6 +74,16 @@
               color="primary"
             >
               Start Session
+            </v-btn>
+          </v-col>
+          <v-col>
+            <v-btn
+              @click="updateAppointmentStatus(appointment, 'cancelled')"
+              class="text-none subtitle-2"
+              outlined
+              color="error"
+            >
+              Cancel Appointment
             </v-btn>
           </v-col>
         </v-row>
@@ -146,6 +156,7 @@
     </v-card>
     <start-encounter-dialog
       @onYesClicked="startEncounter"
+      @onNoShowClicked="updateAppointmentStatus(appointment, 'noshow')"
       ref="startEncounterDialogRef"
     />
 
@@ -258,6 +269,7 @@ export default {
   methods: {
     ...mapActions("$_appointments", {
       populateAppointment: "populateAppointment",
+      updateAppointment: "updateAppointment",
       createEncounter: "createEncounter",
       updateEncounter: "updateEncounter",
       getEncounter: "getEncounter",
@@ -270,6 +282,12 @@ export default {
         : "There was a problem creating the appointment";
       const status = appointment ? StatusTypes.success : StatusTypes.error;
       this.$refs.statusDialogRef.toggleDialog({ title, body, status });
+    },
+    updateAppointmentStatus(appointment, status) {
+      this.updateAppointment({
+        appointmentId: appointment.id,
+        status,
+      });
     },
     openCreateAppointmentDialog() {
       this.$refs.createAppointmentDialogRef.toggleDialog();

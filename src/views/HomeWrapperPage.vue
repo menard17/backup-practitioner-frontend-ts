@@ -62,6 +62,7 @@
 import Vue from "vue";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/plugins/firebase";
+import { mapGetters } from "vuex";
 
 export default Vue.extend({
   name: "HomeWrapperPage",
@@ -69,7 +70,17 @@ export default Vue.extend({
     return {
       drawer: false,
       mini: false,
-      items: [
+    };
+  },
+  computed: {
+    ...mapGetters("$_account", {
+      practitioner: "practitioner",
+    }),
+    items() {
+      if (!this.practitioner) {
+        return [];
+      }
+      return [
         {
           title: "My Account",
           icon: "mdi-account",
@@ -90,8 +101,8 @@ export default Vue.extend({
           icon: "mdi-account-multiple",
           to: "/patients",
         },
-      ],
-    };
+      ];
+    },
   },
   created() {
     onAuthStateChanged(auth, (user) => {

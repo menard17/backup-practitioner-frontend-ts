@@ -13,7 +13,7 @@
       </v-card-title>
       <div class="my-5">Did the patient join the Zoom Call?</div>
       <v-card-actions>
-        <v-btn @click="dialog = false" color="red" outlined class="subtitle-2">
+        <v-btn @click="noShow" color="red" outlined class="subtitle-2">
           No show
         </v-btn>
         <v-spacer> </v-spacer>
@@ -39,6 +39,10 @@ export default {
     },
     startEncounter() {
       this.$emit("onYesClicked");
+      this.dialog = false;
+    },
+    noShow() {
+      this.$emit("onNoShowClicked");
       this.dialog = false;
     },
   },

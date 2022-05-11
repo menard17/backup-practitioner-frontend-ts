@@ -1,3 +1,5 @@
+import { updateAppointment } from "@/store/Appointments/appointments.actions";
+
 const state = {
   appointments: [],
   appointment: undefined,
@@ -6,6 +8,7 @@ const state = {
   slots: [],
   loadingData: {
     createAppointment: { isLoading: false },
+    updateAppointment: { isLoading: false },
     getAppointments: { isLoading: false },
     getAppointmentsByPractitionerId: { isLoading: false },
     getAppointmentById: { isLoading: false },

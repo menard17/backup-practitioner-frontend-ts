@@ -192,6 +192,34 @@ export async function createAppointment(context: any, payload: any) {
   }
 }
 
+export async function updateAppointment(
+  context: any,
+  { appointmentId, status }: any
+) {
+  context.commit("setIsLoading", {
+    action: "updateAppointment",
+    value: true,
+  });
+  context.commit("setAppointment", undefined);
+
+  const resource = `appointments/${appointmentId}/status`;
+  const payload = {
+    status,
+  };
+
+  try {
+    const appointment: any = await updateResource({ url: resource, payload });
+    context.commit("setAppointment", appointment.data);
+  } catch (e) {
+    console.error(e);
+    context.commit("setAppointment", undefined);
+  }
+  context.commit("setIsLoading", {
+    action: "updateAppointment",
+    value: false,
+  });
+}
+
 export async function createEncounter(context: any, appointment: any) {
   context.commit("setIsLoading", {
     action: "createEncounter",
