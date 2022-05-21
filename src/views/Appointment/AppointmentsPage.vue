@@ -137,7 +137,8 @@
         </v-row>
         <v-progress-linear indeterminate v-if="isLoadingSlots" />
         <v-calendar
-          :events="events"
+          :events="showingEvents"
+          :event-ripple="false"
           ref="calendarRef"
           v-model="focus"
           :type="calendarRangeOption"
@@ -145,15 +146,80 @@
           interval-count="14"
           first-interval="7"
           @change="updateSelectedRange"
+          @mousedown:event="startDrag"
+          @mousedown:time="startTime"
+          @mousemove:time="mouseMove"
+          @mouseup:time="endDrag"
+          @click:event="showEvent"
         >
-          <template v-slot:day-body="{ date, week }">
+          <template v-slot:event="{ event, timed, eventSummary }">
+            <div class="v-event-draggable" v-html="eventSummary()"></div>
             <div
-              class="v-current-time"
-              :class="{ first: date === week[0].date }"
-              :style="{ top: nowY }"
+              v-if="timed && event.status == null"
+              class="v-event-drag-bottom"
+              @mousedown.stop="extendBottom(event)"
             ></div>
           </template>
         </v-calendar>
+        <v-menu
+          v-model="selectedOpen"
+          :close-on-content-click="false"
+          :activator="selectedElement"
+          offset-x
+        >
+          <v-card color="grey lighten-4" min-width="350px" flat>
+            <v-toolbar :color="selectedEvent.color" dark>
+              <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-btn icon>
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </v-toolbar>
+            <v-card-text v-if="selectedEvent.status == null">
+              Click 'Save' button to create a new block schedule from
+              <b>
+                {{ new Date(selectedEvent.start).getHours() }}:
+                {{ new Date(selectedEvent.start).getMinutes() }}
+              </b>
+              to
+              <b>
+                {{ new Date(selectedEvent.end).getHours() }}:
+                {{ new Date(selectedEvent.end).getMinutes() }}
+              </b>
+            </v-card-text>
+            <v-card-text v-if="selectedEvent.status">
+              <span v-html="selectedEvent.start"></span>
+              to
+              <span v-html="selectedEvent.end"></span>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                v-if="selectedEvent.status === 'busy-unavailable'"
+                text
+                color="primary"
+                @click="removeSlot()"
+              >
+                Remove
+              </v-btn>
+              <v-btn
+                v-if="selectedEvent.status == null"
+                text
+                color="primary"
+                @click="removeSlot(true)"
+              >
+                Remove
+              </v-btn>
+              <v-btn
+                v-if="selectedEvent.status == null"
+                text
+                color="primary"
+                @click="saveSlot()"
+              >
+                Save
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-menu>
         <v-card height="200" flat> </v-card>
       </v-sheet>
     </data-table>
@@ -196,6 +262,14 @@ export default Vue.extend({
           value: "status",
         },
       ],
+      showingEvents: [],
+      newSlot: null,
+      extendingBottom: false,
+      isDragging: false,
+      selectedEvent: {},
+      selectedElement: null,
+      selectedOpen: false,
+      selectedRange: null,
       dateRange: [],
       menuFrom: false,
       menuTo: false,
@@ -299,13 +373,17 @@ export default Vue.extend({
         end: end,
         practitionerRoleId:
           (this.practitionerRole && this.practitionerRole.id) || "",
+      }).then(() => {
+        this.showingEvents = this.events;
       });
     },
     setToday() {
       this.focus = "";
     },
     updateSelectedRange(timeRange) {
+      this.selectedRange = timeRange;
       this.populateSlots(timeRange.start.date, timeRange.end.date);
+      this.newSlot = null;
     },
     prev() {
       const calendarRef = this.$refs.calendarRef;
@@ -337,6 +415,122 @@ export default Vue.extend({
         return;
       }
       setInterval(() => this.cal.updateTimes(), 60 * 1000);
+    },
+    startDrag(event, timed) {
+      if (event && timed) {
+        this.isDragging = true;
+      }
+    },
+    startTime(tms) {
+      if (!this.isDragging && !this.newSlot) {
+        const mouse = this.toTime(tms);
+
+        const startTime = this.roundTime(mouse);
+        const endTime = this.createStart + 15 * 60 * 1000;
+
+        this.newSlot = {
+          name: `New`,
+          color: "#FEAB87",
+          start: startTime,
+          end: endTime,
+          timed: true,
+        };
+
+        this.showingEvents.push(this.newSlot);
+      }
+    },
+    endDrag() {
+      this.extendingBottom = false;
+      this.isDragging = false;
+    },
+    mouseMove(tms) {
+      const mouse = this.toTime(tms);
+
+      if (this.newSlot && this.isDragging) {
+        const start = this.newSlot.start;
+        const end = this.newSlot.end;
+        const duration = end - start;
+        const newStart = this.roundTime(mouse);
+        const newEnd = newStart + duration;
+
+        this.newSlot.start = newStart;
+        this.newSlot.end = newEnd;
+      } else if (this.newSlot && this.extendingBottom) {
+        const mouseRounded = this.roundTime(mouse, false);
+        const min = Math.min(mouseRounded, this.newSlot.start);
+        const max = Math.max(mouseRounded, this.newSlot.start);
+
+        this.newSlot.start = min;
+        this.newSlot.end = max;
+      }
+    },
+    extendBottom(event) {
+      this.newSlot = event;
+      this.extendingBottom = true;
+    },
+    roundTime(time, down = true) {
+      const roundTo = 15; // minutes
+      const roundDownTime = roundTo * 60 * 1000;
+
+      return down
+        ? time - (time % roundDownTime)
+        : time + (roundDownTime - (time % roundDownTime));
+    },
+    toTime(tms) {
+      return new Date(
+        tms.year,
+        tms.month - 1,
+        tms.day,
+        tms.hour,
+        tms.minute
+      ).getTime();
+    },
+    showEvent({ nativeEvent, event }) {
+      const open = () => {
+        this.selectedEvent = event;
+        this.selectedElement = nativeEvent.target;
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            this.selectedOpen = true;
+          });
+        });
+      };
+      if (this.selectedOpen) {
+        this.selectedOpen = false;
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => open());
+        });
+      } else {
+        open();
+      }
+      nativeEvent.stopPropagation();
+    },
+    saveSlot() {
+      this.selectedOpen = false;
+
+      const start = new Date(this.newSlot.start);
+      const end = new Date(this.newSlot.end);
+      this.createSlot({
+        practitionerId: this.practitionerRole.id,
+        start: start.toISOString(),
+        end: end.toISOString(),
+      }).then(() => {
+        this.newSlot = null;
+        this.updateSelectedRange(this.selectedRange);
+      });
+    },
+    removeSlot(isNewSlot = false) {
+      this.selectedOpen = false;
+      if (isNewSlot) {
+        this.newSlot = null;
+        this.showingEvents.pop();
+      } else {
+        this.freeSlot({
+          slotId: this.selectedEvent.slotId,
+        }).then(() => {
+          this.updateSelectedRange(this.selectedRange);
+        });
+      }
     },
     compareDate(date1, date2) {
       if (date1 === undefined || date2 === undefined) return false;
@@ -371,5 +565,36 @@ export default Vue.extend({
   border-radius: 50%;
   margin-top: -5px;
   margin-left: -6.5px;
+}
+
+.v-event-draggable {
+  padding-left: 6px;
+}
+.v-event-timed {
+  user-select: none;
+  -webkit-user-select: none;
+}
+.v-event-drag-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4px;
+  height: 4px;
+  cursor: ns-resize;
+}
+.v-event-drag-bottom::after {
+  display: none;
+  position: absolute;
+  left: 50%;
+  height: 4px;
+  border-top: 1px solid white;
+  border-bottom: 1px solid white;
+  width: 16px;
+  margin-left: -8px;
+  opacity: 0.8;
+  content: "";
+}
+.v-event-drag-bottom:hover::after {
+  display: block;
 }
 </style>
