@@ -40,6 +40,16 @@
                   Patient Details
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
+                  <div class="mt-5">
+                    <v-btn
+                      color="primary"
+                      outlined
+                      class="subtitle-2 text-none"
+                      @click="openEditPatientDetailsDialog"
+                    >
+                      Edit Patient
+                    </v-btn>
+                  </div>
                   <v-row class="mt-3">
                     <v-col
                       v-for="item in patientDetails"
@@ -76,9 +86,9 @@
               Start Session
             </v-btn>
           </v-col>
-          <v-col>
+          <v-col v-if="appointment.status !== 'cancelled'">
             <v-btn
-              @click="updateAppointmentStatus(appointment, 'cancelled')"
+              @click="openCancelAppointmentDialog"
               class="text-none subtitle-2"
               outlined
               color="error"
@@ -169,7 +179,12 @@
     <status-dialog ref="statusDialogRef">
       <v-btn class="text-none subtitle-2"> Go to Appointment </v-btn>
     </status-dialog>
+    <edit-patient-dialog ref="editPatientDialog" />
     <create-note-dialog @onSave="createDoctorNote" ref="createNoteDialog" />
+    <confirm-cancel-appointment-dialog
+      @save="confirmCancelAppointment"
+      ref="confirmCancelAppointmentDialogRef"
+    />
     <v-overlay v-model="isCreatingEncounter">
       <v-progress-circular indeterminate />
     </v-overlay>
@@ -186,9 +201,13 @@ import StatusDialog from "@/components/StatusDialog";
 import { StatusTypes } from "@/utils/constants";
 import CreateNoteDialog from "@/views/Appointment/Dialogs/CreateNoteDialog";
 import DocumentReferenceWrapper from "../Patient/DocumentReferenceWrapper.vue";
+import EditPatientDialog from "@/views/Patient/Dialogs/EditPatientDialog";
+import ConfirmCancelAppointmentDialog from "@/views/Appointment/Dialogs/ConfirmCancelAppointmentDialog";
 
 export default {
   components: {
+    ConfirmCancelAppointmentDialog,
+    EditPatientDialog,
     CreateNoteDialog,
     StatusDialog,
     CreateAppointmentDialog,
@@ -222,6 +241,9 @@ export default {
       zoomPasscode: "zoomPasscode",
       practitionerNameEn: "practitionerNameEn",
       practitionerNameJp: "practitionerNameJp",
+    }),
+    ...mapState("$_patients", {
+      patientObject: "patient",
     }),
     ...mapState("$_practitioners", {
       practitionerRole: "practitionerRole",
@@ -295,6 +317,12 @@ export default {
     confirmPatientJoined() {
       this.$refs.startEncounterDialogRef.toggleDialog();
     },
+    openCancelAppointmentDialog() {
+      this.$refs.confirmCancelAppointmentDialogRef.toggleDialog();
+    },
+    confirmCancelAppointment() {
+      this.updateAppointmentStatus(this.appointment, "cancelled");
+    },
     endEncounter() {
       this.updateEncounter({
         appointment: this.appointment,
@@ -315,6 +343,10 @@ export default {
     },
     openCreateNoteDialog() {
       this.$refs.createNoteDialog.toggleDialog();
+    },
+    openEditPatientDetailsDialog(e) {
+      e.preventDefault();
+      this.$refs.editPatientDialog.toggleDialog(this.patientObject);
     },
   },
 };

@@ -32,8 +32,8 @@ export function patient(state: any) {
 
   return {
     id: `${patient.id}`,
-    firstName: patient.name[0].given[0],
-    familyName: patient.name[0].family,
+    firstName: patient && patient.name[0] && patient.name[0].given[0],
+    familyName: patient && patient.name[0] && patient.name[0].family,
     birthDate: patient.birthDate || "Not Provided",
     sex: (patient.gender && patient.gender.toUpperCase()) || "Not Provided",
     phone: `${

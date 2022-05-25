@@ -1,5 +1,10 @@
 import { auth } from "@/plugins/firebase";
-import { getAll, getById } from "@/utils/apiHelpers";
+import {
+  getAll,
+  getById,
+  patchResource,
+  updateResource,
+} from "@/utils/apiHelpers";
 
 export const getPatients = async ({ commit }: any) => {
   commit("setIsLoading", { action: "getPatients", value: true });
@@ -100,4 +105,23 @@ export async function getPaymentIntents(context: any, customerId: string) {
 
   context.commit("setPaymentIntents", paymentIntents);
   context.commit("setIsLoading", { action: "getPaymentIntents", value: false });
+}
+
+export async function updatePatient(context: any, { patientId, payload }: any) {
+  context.commit("setIsLoading", { action: "updatePatient", value: true });
+  context.commit("setPatient", undefined);
+  const resource = `patients/${patientId}`;
+
+  try {
+    const patient: any = await updateResource({
+      url: resource,
+      payload: payload,
+    });
+    context.commit("setPatient", patient.data.data);
+  } catch (e) {
+    console.error(e);
+    context.commit("setPatient", undefined);
+  }
+
+  context.commit("setIsLoading", { action: "updatePatient", value: false });
 }

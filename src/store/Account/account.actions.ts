@@ -8,35 +8,13 @@ import {
 } from "@/utils/apiHelpers";
 import { getIdTokenResult, User } from "firebase/auth";
 
-export const getCurrentUser = async ({ commit }: any) => {
-  commit("setIsLoading", { action: "getCurrentUser", value: true });
-  commit("setPractitioner", undefined);
-  commit("setPractitionerRole", undefined);
-  commit("setUser", undefined);
+export const getCurrentUser = async (context: any) => {
+  context.commit("setIsLoading", { action: "getCurrentUser", value: true });
+  context.commit("setPractitioner", undefined);
+  context.commit("setPractitionerRole", undefined);
+  context.commit("setUser", undefined);
 
-  console.log(auth.currentUser);
-
-  if (!auth.currentUser) {
-    return;
-  }
-
-  const user: User = auth.currentUser;
-  const tokenResult: any = await getIdTokenResult(user);
-
-  console.log("TOKEN RESULT: ", tokenResult);
-
-  commit("setUser", user);
-
-  if (!tokenResult.claims.roles) {
-    commit("setIsLoading", { action: "getCurrentUser", value: false });
-    return;
-  }
-  if (!tokenResult.claims.roles.Practitioner) {
-    commit("setIsLoading", { action: "getCurrentUser", value: false });
-    return;
-  }
-
-  const practitionerId = tokenResult.claims.roles.Practitioner.id;
+  const practitionerId = await getCurrentUserRole(context);
   const practitioner: any = await getById({
     resource: "practitioners",
     resourceId: practitionerId,
@@ -47,10 +25,41 @@ export const getCurrentUser = async ({ commit }: any) => {
   );
 
   const practitionerRole = practitionerRoles[0];
-  commit("setPractitioner", practitioner);
-  commit("setPractitionerRole", practitionerRole);
-  commit("setIsLoading", { action: "getCurrentUser", value: false });
+  context.commit("setPractitioner", practitioner);
+  context.commit("setPractitionerRole", practitionerRole);
+  context.commit("setIsLoading", { action: "getCurrentUser", value: false });
 };
+
+export async function getCurrentUserRole({ commit }: any) {
+  commit("setIsLoading", { action: "getCurrentUserRole", value: true });
+  commit("setUser", undefined);
+
+  if (!auth.currentUser) {
+    commit("setIsPractitioner", false);
+    return;
+  }
+
+  const user: User = auth.currentUser;
+  const tokenResult: any = await getIdTokenResult(user);
+
+  commit("setUser", user);
+
+  if (!tokenResult.claims.roles) {
+    commit("setIsLoading", { action: "getCurrentUserRole", value: false });
+    commit("setIsPractitioner", false);
+    return;
+  }
+  if (!tokenResult.claims.roles.Practitioner) {
+    commit("setIsLoading", { action: "getCurrentUserRole", value: false });
+    commit("setIsPractitioner", false);
+    return;
+  }
+
+  commit("setIsPractitioner", true);
+  commit("setIsLoading", { action: "getCurrentUserRole", value: false });
+
+  return tokenResult.claims.roles.Practitioner.id;
+}
 
 export async function updateMyPractitionerRole(
   context: any,

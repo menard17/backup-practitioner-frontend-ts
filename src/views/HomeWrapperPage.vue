@@ -62,7 +62,7 @@
 import Vue from "vue";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/plugins/firebase";
-import { mapGetters } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 export default Vue.extend({
   name: "HomeWrapperPage",
@@ -73,11 +73,11 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapGetters("$_account", {
-      practitioner: "practitioner",
+    ...mapState("$_account", {
+      isPractitioner: "isPractitioner",
     }),
     items() {
-      if (!this.practitioner) {
+      if (!this.isPractitioner) {
         return [];
       }
       return [
@@ -112,9 +112,14 @@ export default Vue.extend({
         this.drawer = false;
       }
     });
+
+    this.getCurrentUserRole();
   },
 
   methods: {
+    ...mapActions("$_account", {
+      getCurrentUserRole: "getCurrentUserRole",
+    }),
     signOut() {
       this.$store
         .dispatch("$_auth/signOut")

@@ -8,6 +8,7 @@ const state = {
   loadingData: {
     populatePatient: { isLoading: false },
     getPatients: { isLoading: false },
+    updatePatient: { isLoading: false },
     getPatientById: { isLoading: false },
     getAppointments: { isLoading: false },
     getPaymentMethods: { isLoading: false },
