@@ -147,6 +147,51 @@
             </v-card>
           </v-col>
         </v-row>
+        <v-row class="mt-5" dense no-gutters>
+          <v-col>
+            <v-row class="mb-2" align="center">
+              <v-col>
+                <div class="subtitle-2 mb-3">Send Emails</div>
+                <v-btn
+                  @click="
+                    openEmailConfirmationDialog(
+                      'covid',
+                      'Cov-19 Test Kit Delivery'
+                    )
+                  "
+                  color="primary"
+                  class="text-none subtitle-2 mr-3"
+                >
+                  Cov-19 Deliver email
+                </v-btn>
+                <v-btn
+                  @click="
+                    openEmailConfirmationDialog(
+                      'doctornote',
+                      'Doctor note updates',
+                      patient.email,
+                      patient.familyName
+                    )
+                  "
+                  color="primary"
+                  class="text-none subtitle-2 mr-3"
+                  >Doctor Note email
+                </v-btn>
+              </v-col>
+            </v-row>
+
+            <v-card
+              class="pa-4 mb-4"
+              v-for="report in diagnosticReports"
+              :key="report.id"
+            >
+              <div class="subtitle-2 mb-2">
+                {{ report.createdOn }}
+              </div>
+              {{ report.note }}
+            </v-card>
+          </v-col>
+        </v-row>
 
         <v-row dense>
           <v-col cols="6">
@@ -179,11 +224,16 @@
     <status-dialog ref="statusDialogRef">
       <v-btn class="text-none subtitle-2"> Go to Appointment </v-btn>
     </status-dialog>
+    <status-dialog ref="emailStatusDialogRef" />
     <edit-patient-dialog ref="editPatientDialog" />
     <create-note-dialog @onSave="createDoctorNote" ref="createNoteDialog" />
     <confirm-cancel-appointment-dialog
       @save="confirmCancelAppointment"
       ref="confirmCancelAppointmentDialogRef"
+    />
+    <email-confirmation-dialog
+      ref="emailConfirmationDialogRef"
+      @onSent="onEmailSent"
     />
     <v-overlay v-model="isCreatingEncounter">
       <v-progress-circular indeterminate />
@@ -203,6 +253,7 @@ import CreateNoteDialog from "@/views/Appointment/Dialogs/CreateNoteDialog";
 import DocumentReferenceWrapper from "../Patient/DocumentReferenceWrapper.vue";
 import EditPatientDialog from "@/views/Patient/Dialogs/EditPatientDialog";
 import ConfirmCancelAppointmentDialog from "@/views/Appointment/Dialogs/ConfirmCancelAppointmentDialog";
+import EmailConfirmationDialog from "@/views/Appointment/Dialogs/EmailConfirmationDialog";
 
 export default {
   components: {
@@ -211,6 +262,7 @@ export default {
     CreateNoteDialog,
     StatusDialog,
     CreateAppointmentDialog,
+    EmailConfirmationDialog,
     LabelTextField,
     TitleSubtitle,
     StartEncounterDialog,
@@ -305,6 +357,12 @@ export default {
       const status = appointment ? StatusTypes.success : StatusTypes.error;
       this.$refs.statusDialogRef.toggleDialog({ title, body, status });
     },
+    onEmailSent(sent) {
+      const title = sent ? "Email is sent" : "Failed to send";
+      const body = "";
+      const status = "";
+      this.$refs.emailStatusDialogRef.toggleDialog({ title, body, status });
+    },
     updateAppointmentStatus(appointment, status) {
       this.updateAppointment({
         appointmentId: appointment.id,
@@ -319,6 +377,14 @@ export default {
     },
     openCancelAppointmentDialog() {
       this.$refs.confirmCancelAppointmentDialogRef.toggleDialog();
+    },
+    openEmailConfirmationDialog(type, content) {
+      this.$refs.emailConfirmationDialogRef.toggleDialog(
+        type,
+        content,
+        this.patient.email,
+        this.patient.familyName
+      );
     },
     confirmCancelAppointment() {
       this.updateAppointmentStatus(this.appointment, "cancelled");
