@@ -12,14 +12,10 @@ export function patients(state: any) {
     sex:
       (patient.resource.gender && patient.resource.gender.toUpperCase()) ||
       "Not Provided",
-    phone: `${
-      patient.resource.telecom.find((item: any) => item.system === "phone")
-        .value
-    }`,
-    email: `${
-      patient.resource.telecom.find((item: any) => item.system === "email")
-        .value
-    }`,
+    phone: patient.resource.telecom.find((item: any) => item.system === "phone")
+      .value,
+    email: patient.resource.telecom.find((item: any) => item.system === "email")
+      .value,
   }));
 }
 
@@ -30,25 +26,32 @@ export function patient(state: any) {
     return;
   }
 
+  const addressList = [];
+  if (patient.address[0].postalCode != "") {
+    addressList.push(patient.address[0].postalCode);
+  }
+  if (patient.address[0].city != "") {
+    addressList.push(patient.address[0].city);
+  }
+  if (patient.address[0].line && patient.address[0].line.length > 0) {
+    addressList.push(patient.address[0].line[0]);
+  }
+  if (patient.address[0].line && patient.address[0].line.length > 1) {
+    addressList.push(patient.address[0].line[1]);
+  }
+  if (patient.address[0].country != "") {
+    addressList.push(patient.address[0].country);
+  }
+
   return {
     id: `${patient.id}`,
     firstName: patient && patient.name[0] && patient.name[0].given[0],
     familyName: patient && patient.name[0] && patient.name[0].family,
     birthDate: patient.birthDate || "Not Provided",
     sex: (patient.gender && patient.gender.toUpperCase()) || "Not Provided",
-    phone: `${
-      patient.telecom.find((item: any) => item.system === "phone").value
-    }`,
-    email: `${
-      patient.telecom.find((item: any) => item.system === "email").value
-    }`,
-    address: `${patient.address[0].postalCode},
-    ${patient.address[0].state},
-    ${patient.address[0].city},
-    ${patient.address[0].line[0]}
-    ${patient.address[0].line[1]},
-    ${patient.address[0].country}
-    `,
+    phone: patient.telecom.find((item: any) => item.system === "phone").value,
+    email: patient.telecom.find((item: any) => item.system === "email").value,
+    address: addressList.toString(),
   };
 }
 

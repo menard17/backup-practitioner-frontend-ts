@@ -148,49 +148,36 @@
           </v-col>
         </v-row>
         <v-row class="mt-5" dense no-gutters>
-          <v-col>
-            <v-row class="mb-2" align="center">
-              <v-col>
-                <div class="subtitle-2 mb-3">Send Emails</div>
-                <v-btn
-                  @click="
-                    openEmailConfirmationDialog(
-                      'covid',
-                      'Cov-19 Test Kit Delivery'
-                    )
-                  "
-                  color="primary"
-                  class="text-none subtitle-2 mr-3"
-                >
-                  Cov-19 Deliver email
-                </v-btn>
-                <v-btn
-                  @click="
-                    openEmailConfirmationDialog(
-                      'doctornote',
-                      'Doctor note updates',
-                      patient.email,
-                      patient.familyName
-                    )
-                  "
-                  color="primary"
-                  class="text-none subtitle-2 mr-3"
-                  >Doctor Note email
-                </v-btn>
-              </v-col>
-            </v-row>
-
-            <v-card
-              class="pa-4 mb-4"
-              v-for="report in diagnosticReports"
-              :key="report.id"
-            >
-              <div class="subtitle-2 mb-2">
-                {{ report.createdOn }}
-              </div>
-              {{ report.note }}
-            </v-card>
-          </v-col>
+          <v-row class="mb-2" align="center">
+            <v-col>
+              <div class="subtitle-2 mb-3">Send Emails</div>
+              <v-btn
+                @click="
+                  openEmailConfirmationDialog(
+                    'covid',
+                    'Cov-19 Test Kit Delivery'
+                  )
+                "
+                color="primary"
+                class="text-none subtitle-2 mr-3"
+              >
+                Cov-19 Deliver email
+              </v-btn>
+              <v-btn
+                @click="
+                  openEmailConfirmationDialog(
+                    'doctornote',
+                    'Doctor note updates',
+                    patient.email,
+                    patient.familyName
+                  )
+                "
+                color="primary"
+                class="text-none subtitle-2 mr-3"
+                >Doctor Note email
+              </v-btn>
+            </v-col>
+          </v-row>
         </v-row>
 
         <v-row dense>
@@ -214,7 +201,6 @@
       @onNoShowClicked="updateAppointmentStatus(appointment, 'noshow')"
       ref="startEncounterDialogRef"
     />
-
     <create-appointment-dialog
       v-if="patient"
       :patient="patient"

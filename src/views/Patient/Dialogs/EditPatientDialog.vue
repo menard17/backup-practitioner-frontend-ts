@@ -120,8 +120,15 @@ export default {
   },
   computed: {
     changeFields() {
+      const addressLine = [];
+      if (this.addressLine1 != "") {
+        addressLine.push(this.addressLine1);
+      }
+      if (this.addressLine2 != "") {
+        addressLine.push(this.addressLine2);
+      }
       return {
-        given_name: this.firstName,
+        given_name: [this.firstName],
         family_name: this.familyName,
         gender: this.selectedGender.toLowerCase(),
         dob: this.birthDate,
@@ -132,7 +139,7 @@ export default {
             type: "both",
             city: this.city,
             country: "JP",
-            line: [this.addressLine1, this.addressLine2],
+            line: addressLine,
             postalCode: this.postalCode,
             state: this.state,
           },
@@ -162,8 +169,21 @@ export default {
       this.dialog = false;
     },
     save() {
-      this.updatePatient({ patientId: this.id, payload: this.changeFields });
-      this.cancel();
+      if (
+        !(
+          this.familyName == "" ||
+          this.firstName == "" ||
+          this.phone == "" ||
+          this.city == "" ||
+          this.state == "" ||
+          this.postalCode == "" ||
+          this.country == "" ||
+          this.birthDate == ""
+        )
+      ) {
+        this.updatePatient({ patientId: this.id, payload: this.changeFields });
+        this.cancel();
+      }
     },
     toggleDialog(patient) {
       this.dialog = !this.dialog;
@@ -177,10 +197,19 @@ export default {
         this.phone = patient.telecom.find(
           (item) => item.system === "phone"
         ).value;
+
+        let addressLine1 = "";
+        let addressLine2 = "";
+        if (patient.address[0].line && patient.address[0].line.length == 2) {
+          addressLine2 = patient.address[0].line[1];
+        }
+        if (patient.address[0].line && patient.address[0].line.length > 0) {
+          addressLine1 = patient.address[0].line[0];
+        }
         this.birthDate = patient.birthDate;
         this.selectedGender = patient.gender.toUpperCase();
-        this.addressLine1 = patient.address[0].line[0];
-        this.addressLine2 = patient.address[0].line[1];
+        this.addressLine1 = addressLine1;
+        this.addressLine2 = addressLine2;
         this.city = patient.address[0].city;
         this.state = patient.address[0].state;
         this.postalCode = patient.address[0].postalCode;
