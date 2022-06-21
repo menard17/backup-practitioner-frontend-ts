@@ -15,6 +15,12 @@ export const getCurrentUser = async (context: any) => {
   context.commit("setUser", undefined);
 
   const practitionerId = await getCurrentUserRole(context);
+
+  if (!practitionerId) {
+    context.commit("setIsLoading", { action: "getCurrentUser", value: false });
+    return;
+  }
+
   const practitioner: any = await getById({
     resource: "practitioners",
     resourceId: practitionerId,
@@ -30,12 +36,12 @@ export const getCurrentUser = async (context: any) => {
   context.commit("setIsLoading", { action: "getCurrentUser", value: false });
 };
 
-export async function getCurrentUserRole({ commit }: any) {
+export const getCurrentUserRole = async ({ commit }: any) => {
   commit("setIsLoading", { action: "getCurrentUserRole", value: true });
   commit("setUser", undefined);
 
   if (!auth.currentUser) {
-    commit("setIsPractitioner", false);
+    commit("setFirebaseRole", "");
     return;
   }
 
@@ -46,20 +52,26 @@ export async function getCurrentUserRole({ commit }: any) {
 
   if (!tokenResult.claims.roles) {
     commit("setIsLoading", { action: "getCurrentUserRole", value: false });
-    commit("setIsPractitioner", false);
+    commit("setFirebaseRole", "");
     return;
   }
-  if (!tokenResult.claims.roles.Practitioner) {
+  if (
+    !tokenResult.claims.roles.Practitioner &&
+    !tokenResult.claims.roles.Staff
+  ) {
     commit("setIsLoading", { action: "getCurrentUserRole", value: false });
-    commit("setIsPractitioner", false);
+    commit("setFirebaseRole", "");
     return;
+  } else if (tokenResult.claims.roles.Practitioner) {
+    commit("setIsLoading", { action: "getCurrentUserRole", value: false });
+    commit("setFirebaseRole", "Practitioner");
+    return tokenResult.claims.roles.Practitioner.id;
+  } else if (tokenResult.claims.roles.Staff) {
+    commit("setFirebaseRole", "Staff");
+    return tokenResult.claims.roles.Staff.id;
   }
-
-  commit("setIsPractitioner", true);
-  commit("setIsLoading", { action: "getCurrentUserRole", value: false });
-
-  return tokenResult.claims.roles.Practitioner.id;
-}
+  return;
+};
 
 export async function updateMyPractitionerRole(
   context: any,

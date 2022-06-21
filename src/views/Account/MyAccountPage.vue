@@ -28,7 +28,7 @@
       </v-row>
       <v-card class="mt-10" flat>
         <v-row v-if="practitioner && user">
-          <v-col cols="4">
+          <v-col :cols="4 + 8 * (this.practitionerRole.roleType != 'DOCTOR')">
             <practitioner-details-card
               :practitioner="practitioner"
               :practitionerRole="practitionerRole"
@@ -37,7 +37,7 @@
             />
           </v-col>
 
-          <v-col>
+          <v-col v-if="this.practitionerRole.roleType == 'DOCTOR'">
             <div class="headline">
               <v-row>
                 <v-col> Your Zoom Info </v-col>

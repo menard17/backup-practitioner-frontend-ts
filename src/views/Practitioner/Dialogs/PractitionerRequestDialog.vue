@@ -19,13 +19,14 @@
         </v-row>
         <v-row dense>
           <v-col>
-            <div class="subtitle-2 mb-2">Role Type?</div>
+            <div class="subtitle-2 mb-2">Role Type</div>
             <v-select
+              :disabled="!this.isNewPractitioner"
               v-model="selectedRoleType"
               outlined
               hide-details
               dense
-              :items="['DOCTOR', 'NURSE']"
+              :items="['DOCTOR', 'NURSE', 'STAFF']"
             />
           </v-col>
           <v-col align="start">
@@ -49,7 +50,7 @@
               <v-col>
                 <label-text-field label="First Name" v-model="firstNameJp" />
               </v-col>
-              <v-col cols="12">
+              <v-col cols="12" v-if="this.selectedRoleType != 'STAFF'">
                 <label-text-area label="Biography" v-model="bioJp" />
               </v-col>
             </v-row>
@@ -65,7 +66,7 @@
               <v-col>
                 <label-text-field label="First Name" v-model="firstNameEn" />
               </v-col>
-              <v-col cols="12">
+              <v-col cols="12" v-if="this.selectedRoleType != 'STAFF'">
                 <label-text-area label="Biography" v-model="bioEn" />
               </v-col>
             </v-row>
@@ -73,7 +74,7 @@
         </v-row>
 
         <v-row dense class="mt-2">
-          <v-col>
+          <v-col v-if="this.selectedRoleType != 'STAFF'">
             <div class="subtitle-2 mb-2">Upload a Photo</div>
             <v-file-input
               dense

@@ -1,6 +1,6 @@
 <template>
   <v-card class="text-center pa-4">
-    <v-row>
+    <v-row v-if="practitionerRole.roleType != 'STAFF'">
       <v-col>
         <v-avatar color="blue" size="150">
           <v-img
@@ -40,6 +40,7 @@
           :text="`${practitioner.jp.familyName}, ${practitioner.jp.firstName}`"
         />
         <label-card
+          v-if="practitionerRole.roleType != 'STAFF'"
           class="text-left mt-2"
           label="Biography"
           :text="practitioner.jp.bio"
@@ -57,6 +58,7 @@
           :text="`${practitioner.en.familyName}, ${practitioner.en.firstName}`"
         />
         <label-card
+          v-if="practitionerRole.roleType != 'STAFF'"
           class="text-left mt-2"
           label="Biography"
           :text="practitioner.en.bio"

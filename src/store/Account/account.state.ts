@@ -1,8 +1,10 @@
-const state = {
+import { AccountState } from "./types";
+
+const state: AccountState = {
   practitioner: undefined,
   practitionerRole: undefined,
   user: undefined,
-  isPractitioner: false,
+  firebaseRole: "",
   loadingData: {
     getCurrentUser: { isLoading: false },
     getCurrentUserRole: { isLoading: false },

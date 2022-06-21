@@ -74,34 +74,60 @@ export default Vue.extend({
   },
   computed: {
     ...mapState("$_account", {
-      isPractitioner: "isPractitioner",
+      firebaseRole: "firebaseRole",
     }),
     items() {
-      if (!this.isPractitioner) {
+      if (!this.firebaseRole) {
+        return [];
+      } else if (this.firebaseRole == "Staff") {
+        return [
+          {
+            title: "My Account",
+            icon: "mdi-account",
+            to: "/",
+          },
+          {
+            title: "Appointments",
+            icon: "mdi-calendar-multiple",
+            to: "/appointments",
+          },
+          {
+            title: "Patients",
+            icon: "mdi-account-multiple",
+            to: "/patients",
+          },
+          {
+            title: "Practitioners",
+            icon: "mdi-doctor",
+            to: "/practitioners",
+          },
+          {
+            title: "Payments",
+            icon: "mdi-cash-multiple",
+            to: "/payments",
+          },
+        ];
+      } else if (this.firebaseRole == "Practitioner") {
+        return [
+          {
+            title: "My Account",
+            icon: "mdi-account",
+            to: "/",
+          },
+          {
+            title: "My Appointments",
+            icon: "mdi-calendar-multiple",
+            to: "/appointments",
+          },
+          {
+            title: "Patients",
+            icon: "mdi-account-multiple",
+            to: "/patients",
+          },
+        ];
+      } else {
         return [];
       }
-      return [
-        {
-          title: "My Account",
-          icon: "mdi-account",
-          to: "/",
-        },
-        {
-          title: "My Appointments",
-          icon: "mdi-calendar-multiple",
-          to: "/appointments",
-        },
-        // {
-        //   title: "Practitioners",
-        //   icon: "mdi-calendar-multiple",
-        //   to: "/practitioners",
-        // },
-        {
-          title: "Patients",
-          icon: "mdi-account-multiple",
-          to: "/patients",
-        },
-      ];
     },
   },
   created() {
