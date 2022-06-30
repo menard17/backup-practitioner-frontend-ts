@@ -1,20 +1,32 @@
 import { auth } from "@/plugins/firebase";
-import {
-  getAll,
-  getById,
-  patchResource,
-  updateResource,
-} from "@/utils/apiHelpers";
+import { getAll, getById, updateResource } from "@/utils/apiHelpers";
 
-export const getPatients = async ({ commit }: any) => {
+export const getPatients = async ({ commit, state }: any, fhirLink: string) => {
   commit("setIsLoading", { action: "getPatients", value: true });
   commit("setPatients", []);
   if (!auth.currentUser) {
     return;
   }
 
-  // TODO: Fixed list of appointments dynamically. Hard-coding to get appointment from Feb-1
-  const patients: any = await getAll(`patients`);
+  let params = `count=${state.pagination.pageSize}`;
+  if (fhirLink !== undefined) {
+    params += `&next_link=${encodeURIComponent(fhirLink)}`;
+  }
+  const patients: any = await getAll(`patients?${params}`);
+
+  // setting up pagination
+  const links = patients.data.link;
+  const nextLink = links.find((link: { relation: string }) => {
+    return link.relation === "next";
+  });
+  state.pagination.nextLinkUrl =
+    nextLink !== undefined ? nextLink.url : undefined;
+
+  // set the disable of the button
+  state.pagination.isNextDisabled = state.pagination.nextLinkUrl === undefined;
+  state.pagination.isPrevDisabled = state.pagination.urlStack.length == 0;
+
+  commit("setPagination", state.pagination);
   commit("setPatients", patients.data.entry);
   commit("setIsLoading", { action: "getPatients", value: false });
 };
@@ -124,4 +136,24 @@ export async function updatePatient(context: any, { patientId, payload }: any) {
   }
 
   context.commit("setIsLoading", { action: "updatePatient", value: false });
+}
+
+export async function moveToNext(context: any) {
+  const pagination = context.state.pagination;
+
+  pagination.urlStack.push(pagination.currentLinkUrl);
+  pagination.currentLinkUrl = pagination.nextLinkUrl;
+  context.commit("setPagination", pagination);
+
+  await getPatients(context, pagination.nextLinkUrl);
+}
+
+export async function moveToPrev(context: any) {
+  const pagination = context.state.pagination;
+  const prevUrl = pagination.urlStack.pop();
+  pagination.nextLinkUrl = pagination.currentLinkUrl;
+  pagination.currentLinkUrl = prevUrl;
+  context.commit("setPagination", pagination);
+
+  await getPatients(context, prevUrl);
 }

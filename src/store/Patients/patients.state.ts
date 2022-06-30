@@ -15,6 +15,14 @@ const state = {
     getPaymentIntents: { isLoading: false },
     getDocumentReferences: { isLoading: false },
   },
+  pagination: {
+    pageSize: 15,
+    isNextDisabled: true,
+    isPrevDisabled: true,
+    currentLinkUrl: undefined,
+    nextLinkUrl: undefined,
+    urlStack: [],
+  },
 };
 
 export default state;

@@ -1,6 +1,5 @@
 import { auth } from "@/plugins/firebase";
 import axios from "axios";
-import { convertParams } from "@/utils/urlHelpers";
 
 export const createResource = async ({ resource, payload }: any) => {
   if (!auth.currentUser) {
@@ -39,7 +38,7 @@ export const patchResource = async ({ url, payload }: any) => {
       headers: {
         Authorization: `Bearer ${idToken.token}`,
       },
-      params: convertParams(params),
+      params: new URLSearchParams(params),
       withCredentials: false,
     }
   );
@@ -71,12 +70,13 @@ export const getAll = async (resource: string) => {
   const idToken = await auth.currentUser.getIdTokenResult(true);
   return new Promise((resolve, reject) => {
     const [baseResource, params] = resource.split("?");
+
     axios
       .get(`${process.env.VUE_APP_baseUrl}/${baseResource}`, {
         headers: {
           Authorization: `Bearer ${idToken.token}`,
         },
-        params: convertParams(params),
+        params: new URLSearchParams(params),
         withCredentials: false,
       })
       .then((response) => {

@@ -25,3 +25,7 @@ export function setPaymentIntents(state: any, paymentIntents: any) {
 export function setDocumentReferences(state: any, documentReferences: any) {
   state.documentReferences = documentReferences;
 }
+
+export function setPagination(state: any, pagination: any) {
+  state.pagination = pagination;
+}

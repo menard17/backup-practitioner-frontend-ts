@@ -46,6 +46,7 @@ export const getAppointments = async (
     "include_patient=true",
     "include_practitioner=true",
     `actor_id=${actorId}`,
+    "count=900", // Hardcode one, assuming it should be enough
   ];
 
   if (dateFrom !== undefined) {

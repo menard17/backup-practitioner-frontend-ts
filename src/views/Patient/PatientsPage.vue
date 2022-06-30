@@ -4,14 +4,24 @@
       <v-data-table
         :headers="headers"
         :items="patients"
-        :items-per-page="30"
+        :items-per-page="itemsPerPage"
         class="elevation-0"
         :search="search"
         :loading="isLoading"
         @click:row="rowClicked"
+        hide-default-footer
       >
       </v-data-table>
     </data-table>
+    <div class="text-center">
+      <v-btn small icon :disabled="isPrevDisabled" @click="prevClicked">
+        <v-icon>$prev</v-icon>
+      </v-btn>
+
+      <v-btn small icon :disabled="isNextDisabled" @click="nextClicked">
+        <v-icon>$next</v-icon>
+      </v-btn>
+    </div>
   </div>
 </template>
 
@@ -58,6 +68,9 @@ export default Vue.extend({
     }),
     ...mapState("$_patients", {
       isLoading: (state: any) => state.loadingData.getPatients.isLoading,
+      isPrevDisabled: (state: any) => state.pagination.isPrevDisabled,
+      isNextDisabled: (state: any) => state.pagination.isNextDisabled,
+      itemsPerPage: (state: any) => state.pagination.pageSize,
     }),
   },
   created() {
@@ -68,6 +81,8 @@ export default Vue.extend({
   methods: {
     ...mapActions("$_patients", {
       getPatients: "getPatients",
+      moveToNext: "moveToNext",
+      moveToPrev: "moveToPrev",
     }),
     editItem(item: any) {
       console.log("Edit item", item);
@@ -77,6 +92,12 @@ export default Vue.extend({
     },
     formatDate(date: string) {
       return formatDateString(date, TimeConstants.monthDayYearTime);
+    },
+    nextClicked() {
+      this.moveToNext();
+    },
+    prevClicked() {
+      this.moveToPrev();
     },
   },
 });
