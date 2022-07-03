@@ -89,7 +89,6 @@ export async function updateMyPractitionerRole(
 
   try {
     const practitionerRole: any = await updateResource({ url, payload });
-
     const practitionerRoleData = practitionerRole.data.entry.find(
       (item: any) => item.resource.resourceType === "PractitionerRole"
     );

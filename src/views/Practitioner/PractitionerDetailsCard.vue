@@ -1,14 +1,5 @@
 <template>
   <v-card class="text-center pa-4">
-    <v-row v-if="practitionerRole.roleType != 'STAFF'">
-      <v-col>
-        <v-avatar color="blue" size="150">
-          <v-img
-            :src="`data:${practitioner.photo.type};base64,${practitioner.photo.data}`"
-          />
-        </v-avatar>
-      </v-col>
-    </v-row>
     <v-row dense>
       <v-col cols="12">
         <label-card class="text-left mt-2" label="Email" :text="user.email" />

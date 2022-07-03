@@ -71,6 +71,7 @@ export const practitioner = (state: AccountState) => {
       "Not Provided",
     email: practitioner.telecom.find((item: Telecom) => item.system === "email")
       .value,
+    active: practitioner.active,
   };
 };
 
@@ -106,5 +107,6 @@ export const practitionerRole = (state: AccountState) => {
       (item: Extension) => item.url === "zoom-passcode"
     ).valueString,
     roleType: practitionerRole.code[0].coding[0].code.toUpperCase(),
+    active: practitionerRole.active,
   };
 };

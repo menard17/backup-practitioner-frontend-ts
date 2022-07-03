@@ -18,6 +18,7 @@
       app
       absolute
       permanent
+      :mini-variant.sync="mini"
       class="pa-0 text-left"
     >
       <v-list-item>
@@ -51,6 +52,18 @@
           </v-list-item-content>
         </v-list-item>
       </v-list>
+      <template v-slot:append>
+        <v-divider />
+        <v-row>
+          <v-col align="end">
+            <v-btn class="ma-1" icon @click.stop="mini = !mini">
+              <v-icon>
+                {{ mini ? "mdi-chevron-right" : "mdi-chevron-left" }}</v-icon
+              >
+            </v-btn>
+          </v-col>
+        </v-row>
+      </template>
     </v-navigation-drawer>
     <v-main class="text-left">
       <router-view />

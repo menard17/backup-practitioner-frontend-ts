@@ -21,6 +21,7 @@ export function practitioners(state: any) {
       practitioner.telecom.find((item: any) => item.system === "email").value ||
       "Not Provided"
     }`,
+    active: practitioner.active,
   }));
 }
 
@@ -42,13 +43,7 @@ export function practitioner(state: any) {
     email: `${
       practitioner.telecom.find((item: any) => item.system === "email").value
     }`,
-    // address: `${practitioner.address[0].postalCode},
-    // ${practitioner.address[0].state},
-    // ${practitioner.address[0].city},
-    // ${practitioner.address[0].line[0]}
-    // ${practitioner.address[0].line[1]},
-    // ${practitioner.address[0].country}
-    // `,
+    active: practitioner.active,
   };
 }
 
