@@ -13,6 +13,7 @@
       </v-card-title>
       <div class="pa-4">
         <v-select
+          v-if="noteType === 'doctorNote'"
           @change="setNoteTemplate"
           v-model="selectedTemplate"
           label="Note Templates"
@@ -62,6 +63,7 @@ export default {
       dialog: false,
       selectedTemplate: null,
       isLoadingNote: false,
+      noteType: "",
     };
   },
   computed: {
@@ -81,10 +83,17 @@ export default {
     cancel() {
       this.note = "";
       this.selectedTemplate = null;
+      this.noteType = "";
       this.dialog = false;
     },
-    toggleDialog() {
+    toggleDialog(type, note, isEditing = false) {
       this.dialog = !this.dialog;
+      if (this.dialog) {
+        this.noteType = type;
+        if (isEditing) {
+          this.note = note;
+        }
+      }
     },
     setNoteTemplate(noteTemplate) {
       switch (noteTemplate) {

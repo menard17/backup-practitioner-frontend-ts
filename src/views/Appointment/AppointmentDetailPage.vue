@@ -112,7 +112,7 @@
                 <div class="subtitle-2 mb-3">Doctors Notes</div>
 
                 <v-btn
-                  @click="openCreateNoteDialog"
+                  @click="openCreateNoteDialog('doctorNote')"
                   color="primary"
                   class="text-none subtitle-2 mr-3"
                 >
@@ -134,50 +134,112 @@
                 </v-btn>
               </v-col>
             </v-row>
-
-            <v-card
-              class="pa-4 mb-4"
-              v-for="report in diagnosticReports"
-              :key="report.id"
-            >
-              <div class="subtitle-2 mb-2">
-                {{ report.createdOn }}
-              </div>
-              {{ report.note }}
-            </v-card>
+            <div v-if="diagnosticReports.length">
+              <v-card
+                class="pa-4 mb-4"
+                v-for="report in diagnosticReports"
+                :key="report.id"
+              >
+                <v-row>
+                  <v-col>
+                    <div class="subtitle-2 mb-2">
+                      {{ report.createdOn }}
+                    </div>
+                  </v-col>
+                  <v-col align="end">
+                    <v-btn
+                      icon
+                      @click="
+                        openCreateNoteDialog('doctorNote', report.note, true)
+                      "
+                    >
+                      <v-icon> mdi-pencil </v-icon>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                {{ report.note }}
+              </v-card>
+            </div>
+            <v-skeleton-loader v-else type="article"></v-skeleton-loader>
           </v-col>
         </v-row>
         <v-row class="mt-5" dense no-gutters>
-          <v-row class="mb-2" align="center">
-            <v-col>
-              <div class="subtitle-2 mb-3">Send Emails</div>
-              <v-btn
-                @click="
-                  openEmailConfirmationDialog(
-                    'covid',
-                    'Cov-19 Test Kit Delivery'
-                  )
-                "
-                color="primary"
-                class="text-none subtitle-2 mr-3"
-              >
-                Cov-19 Deliver email
-              </v-btn>
-              <v-btn
-                @click="
-                  openEmailConfirmationDialog(
-                    'doctornote',
-                    'Doctor note updates',
-                    patient.email,
-                    patient.familyName
-                  )
-                "
-                color="primary"
-                class="text-none subtitle-2 mr-3"
-                >Doctor Note email
-              </v-btn>
-            </v-col>
-          </v-row>
+          <v-col>
+            <v-row class="mb-2" align="center">
+              <v-col>
+                <div class="subtitle-2 mb-3">Send Emails</div>
+                <v-btn
+                  @click="
+                    openEmailConfirmationDialog(
+                      'covid',
+                      'Cov-19 Test Kit Delivery'
+                    )
+                  "
+                  color="primary"
+                  class="text-none subtitle-2 mr-3"
+                >
+                  Cov-19 Deliver email
+                </v-btn>
+                <v-btn
+                  @click="
+                    openEmailConfirmationDialog(
+                      'doctornote',
+                      'Doctor note updates',
+                      patient.email,
+                      patient.familyName
+                    )
+                  "
+                  color="primary"
+                  class="text-none subtitle-2 mr-3"
+                  >Doctor Note email
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+
+        <v-row class="mt-5" dense no-gutters>
+          <v-col>
+            <v-row class="mb-2" align="center">
+              <v-col>
+                <div class="subtitle-2 mb-3">Clinical Notes</div>
+
+                <v-btn
+                  @click="openCreateNoteDialog('clinicalNote')"
+                  color="primary"
+                  class="text-none subtitle-2 mr-3"
+                >
+                  Create a Note
+                </v-btn>
+              </v-col>
+            </v-row>
+
+            <v-card class="pa-4 mb-4" v-if="!isCreatingClinicalNote">
+              <div class="subtitle-2 mb-2">
+                <v-row>
+                  <v-col>
+                    {{ clinicalNote.createdOn }}
+                  </v-col>
+                  <v-col align="end">
+                    <v-btn
+                      icon
+                      @click="
+                        openCreateNoteDialog(
+                          'clinical',
+                          clinicalNote.note,
+                          true
+                        )
+                      "
+                    >
+                      <v-icon> mdi-pencil </v-icon>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </div>
+              {{ clinicalNote.note }}
+            </v-card>
+            <v-skeleton-loader v-else type="article"></v-skeleton-loader>
+          </v-col>
         </v-row>
 
         <v-row dense>
@@ -212,7 +274,14 @@
     </status-dialog>
     <status-dialog ref="emailStatusDialogRef" />
     <edit-patient-dialog ref="editPatientDialog" />
-    <create-note-dialog @onSave="createDoctorNote" ref="createNoteDialog" />
+    <create-note-dialog
+      @onSave="createDoctorNote"
+      ref="createDoctorNoteDialog"
+    />
+    <create-note-dialog
+      @onSave="createClinicalNote"
+      ref="createClinicalNoteDialog"
+    />
     <confirm-cancel-appointment-dialog
       @save="confirmCancelAppointment"
       ref="confirmCancelAppointmentDialogRef"
@@ -265,7 +334,10 @@ export default {
       isLoading: (state) => state.loadingData.populateAppointment.isLoading,
       isCreatingEncounter: (state) =>
         state.loadingData.createEncounter.isLoading,
+      isCreatingClinicalNote: (state) =>
+        state.loadingData.createClinicalNote.isLoading,
       encounter: (state) => state.encounter,
+      clinicalNote: (state) => state.clinicalNote,
     }),
     ...mapGetters("$_appointments", {
       appointment: "appointment",
@@ -287,7 +359,6 @@ export default {
       practitionerRole: "practitionerRole",
       practitioner: "practitioner",
     }),
-
     patientDetails() {
       return [
         {
@@ -334,6 +405,7 @@ export default {
       updateEncounter: "updateEncounter",
       getEncounter: "getEncounter",
       createDiagnosticReport: "createDiagnosticReport",
+      createClinicalNoteAction: "createClinicalNote",
     }),
     onAppointmentCreated(appointment) {
       const title = appointment ? "Success!" : "Failed";
@@ -393,8 +465,26 @@ export default {
         note,
       });
     },
-    openCreateNoteDialog() {
-      this.$refs.createNoteDialog.toggleDialog();
+    createClinicalNote(note) {
+      this.createClinicalNoteAction({
+        appointment: this.appointment,
+        encounter: this.encounter,
+        note,
+      });
+    },
+    openCreateNoteDialog(type, note = "", isEditing = false) {
+      switch (type) {
+        case "doctorNote":
+          this.$refs.createDoctorNoteDialog.toggleDialog(type, note, isEditing);
+          break;
+        case "clinicalNote":
+          this.$refs.createClinicalNoteDialog.toggleDialog(
+            type,
+            note,
+            isEditing
+          );
+          break;
+      }
     },
     openEditPatientDetailsDialog(e) {
       e.preventDefault();

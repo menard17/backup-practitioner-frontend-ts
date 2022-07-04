@@ -10,6 +10,10 @@ export function setAppointment(state: any, appointment: any) {
   state.appointment = appointment;
 }
 
+export function setClinicalNote(state: any, clinicalNote: any) {
+  state.clinicalNote = clinicalNote;
+}
+
 export function setEncounter(state: any, encounter: any) {
   state.encounter = encounter;
 }

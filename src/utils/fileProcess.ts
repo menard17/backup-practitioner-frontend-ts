@@ -1,3 +1,11 @@
+export const stringToBase64 = (str: string) =>
+  new Promise((resolve, reject) => {
+    resolve(btoa(unescape(encodeURIComponent(str))));
+  });
+
+export const base64ToString = (str: string) =>
+  decodeURIComponent(escape(atob(str)));
+
 export const toBase64 = (file: Blob) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();

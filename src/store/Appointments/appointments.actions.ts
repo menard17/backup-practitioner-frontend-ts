@@ -5,6 +5,9 @@ import {
   patchResource,
   updateResource,
 } from "@/utils/apiHelpers";
+import { stringToBase64, base64ToString } from "@/utils/fileProcess";
+import { formatDateString } from "@/utils/dateHelpers";
+import { TimeConstants } from "@/utils/constants";
 
 export async function getAppointmentsByPractitionerId(
   context: any,
@@ -270,6 +273,8 @@ export async function getEncounter(context: any, appointment: any) {
     (item: any) => item.resourceType === "DiagnosticReport"
   );
 
+  await getClinicalNote(context, { appointment, encounter });
+
   context.commit("setEncounter", encounter);
   context.commit("setDiagnosticReports", diagnosticReports);
 
@@ -329,6 +334,99 @@ export async function createDiagnosticReport(
   }
   context.commit("setIsLoading", {
     action: "createDiagnosticReport",
+    value: false,
+  });
+}
+
+export async function createClinicalNote(
+  context: any,
+  { appointment, encounter, note }: any
+) {
+  context.commit("setIsLoading", {
+    action: "createClinicalNote",
+    value: true,
+  });
+
+  const convertedNote = await stringToBase64(note);
+  const payload = {
+    subject: `Patient/${appointment.patient}`,
+    document_type: "clinical_note",
+    encounter_id: encounter.id,
+    pages: [
+      {
+        data: convertedNote,
+        title: "page1",
+      },
+    ],
+  };
+  const resource = `document_references`;
+  try {
+    const documentReference: any = await createResource({ resource, payload });
+
+    const clinicalNote = {
+      note: base64ToString(documentReference.data.content[0].attachment.data),
+
+      createdOn: formatDateString(
+        documentReference.data.date,
+        TimeConstants.monthDayYearTime
+      ),
+    };
+
+    context.commit("setClinicalNote", clinicalNote);
+  } catch (e) {
+    console.error(e);
+    context.commit("setClinicalNote", undefined);
+  }
+
+  context.commit("setIsLoading", {
+    action: "createClinicalNote",
+    value: false,
+  });
+}
+
+export async function getClinicalNote(
+  context: any,
+  { appointment, encounter }: any
+) {
+  context.commit("setIsLoading", {
+    action: "getClinicalNote",
+    value: true,
+  });
+
+  let documentReferences = context.rootState.$_patients.documentReferences;
+
+  if (!documentReferences.length) {
+    await context.dispatch("$_patients/getDocumentReferences", null, {
+      root: true,
+    });
+    documentReferences = context.rootState.$_patients.documentReferences;
+  }
+
+  const appointmentClinicalNote = documentReferences.find((document: any) => {
+    if (document.context) {
+      if (
+        document.context.encounter[0].reference.split("/")[1] ===
+          encounter.id &&
+        document.category[0].coding[0].code === "clinical-note"
+      ) {
+        return document;
+      }
+    }
+  });
+
+  const clinicalNote = {
+    note: base64ToString(appointmentClinicalNote.content[0].attachment.data),
+
+    createdOn: formatDateString(
+      appointmentClinicalNote.date,
+      TimeConstants.monthDayYearTime
+    ),
+  };
+
+  context.commit("setClinicalNote", clinicalNote);
+
+  context.commit("setIsLoading", {
+    action: "getClinicalNote",
     value: false,
   });
 }

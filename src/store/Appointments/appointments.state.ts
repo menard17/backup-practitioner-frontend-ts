@@ -1,10 +1,9 @@
-import { updateAppointment } from "@/store/Appointments/appointments.actions";
-
 const state = {
   appointments: [],
   appointment: undefined,
   encounter: undefined,
   diagnosticReports: undefined,
+  clinicalNote: undefined,
   slots: [],
   loadingData: {
     createAppointment: { isLoading: false },
@@ -20,6 +19,8 @@ const state = {
     getSlotsByPractitionerRoleId: { isLoading: false },
     createSlot: { isLoading: false },
     freeSlot: { isLoading: false },
+    createClinicalNote: { isLoading: false },
+    getClinicalNote: { isLoading: false },
   },
 };
 
