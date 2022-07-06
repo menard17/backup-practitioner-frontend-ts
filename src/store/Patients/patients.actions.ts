@@ -1,14 +1,15 @@
 import { auth } from "@/plugins/firebase";
 import { getAll, getById, updateResource } from "@/utils/apiHelpers";
+import { Context } from "../types";
 
-export const getPatients = async ({ commit, state }: any, fhirLink: string) => {
-  commit("setIsLoading", { action: "getPatients", value: true });
-  commit("setPatients", []);
+export const getPatients = async (context: Context, fhirLink: string) => {
+  context.commit("setIsLoading", { action: "getPatients", value: true });
+  context.commit("setPatients", []);
   if (!auth.currentUser) {
     return;
   }
 
-  let params = `count=${state.pagination.pageSize}`;
+  let params = `count=${context.state.pagination.pageSize}`;
   if (fhirLink !== undefined) {
     params += `&next_link=${encodeURIComponent(fhirLink)}`;
   }
@@ -19,30 +20,32 @@ export const getPatients = async ({ commit, state }: any, fhirLink: string) => {
   const nextLink = links.find((link: { relation: string }) => {
     return link.relation === "next";
   });
-  state.pagination.nextLinkUrl =
+  context.state.pagination.nextLinkUrl =
     nextLink !== undefined ? nextLink.url : undefined;
 
   // set the disable of the button
-  state.pagination.isNextDisabled = state.pagination.nextLinkUrl === undefined;
-  state.pagination.isPrevDisabled = state.pagination.urlStack.length == 0;
+  context.state.pagination.isNextDisabled =
+    context.state.pagination.nextLinkUrl === undefined;
+  context.state.pagination.isPrevDisabled =
+    context.state.pagination.urlStack.length == 0;
 
-  commit("setPagination", state.pagination);
-  commit("setPatients", patients.data.entry);
-  commit("setIsLoading", { action: "getPatients", value: false });
+  context.commit("setPagination", context.state.pagination);
+  context.commit("setPatients", patients.data.entry);
+  context.commit("setIsLoading", { action: "getPatients", value: false });
 };
 
-export async function getPatientById({ commit }: any, patientId: string) {
-  commit("setIsLoading", { action: "getPatientById", value: true });
-  commit("setPatient", undefined);
+export async function getPatientById(context: Context, patientId: string) {
+  context.commit("setIsLoading", { action: "getPatientById", value: true });
+  context.commit("setPatient", undefined);
   const patient: any = await getById({
     resource: "patients",
     resourceId: patientId,
   });
-  commit("setPatient", patient.data);
-  commit("setIsLoading", { action: "getPatientById", value: false });
+  context.commit("setPatient", patient.data);
+  context.commit("setIsLoading", { action: "getPatientById", value: false });
 }
 
-export async function populatePatient(context: any, patientId: string) {
+export async function populatePatient(context: Context, patientId: string) {
   context.commit("setIsLoading", { action: "populatePatient", value: true });
   await getPatientById(context, patientId);
   await getAppointments(context, patientId);
@@ -63,7 +66,10 @@ export async function populatePatient(context: any, patientId: string) {
   context.commit("setIsLoading", { action: "populatePatient", value: false });
 }
 
-export async function getDocumentReferences(context: any, patientId: string) {
+export async function getDocumentReferences(
+  context: Context,
+  patientId: string
+) {
   context.commit("setIsLoading", {
     action: "getDocumentReferences",
     value: true,
@@ -79,7 +85,7 @@ export async function getDocumentReferences(context: any, patientId: string) {
   });
 }
 
-export async function getAppointments(context: any, patientId: string) {
+export async function getAppointments(context: Context, patientId: string) {
   context.commit("setIsLoading", { action: "getAppointments", value: true });
   context.commit("setAppointments", []);
   const appointments = await context.dispatch(
@@ -91,7 +97,7 @@ export async function getAppointments(context: any, patientId: string) {
   context.commit("setIsLoading", { action: "getAppointments", value: false });
 }
 
-export async function getPaymentMethods(context: any, customerId: string) {
+export async function getPaymentMethods(context: Context, customerId: string) {
   context.commit("setIsLoading", { action: "getPaymentMethods", value: true });
   context.commit("setPaymentMethods", []);
 
@@ -105,7 +111,7 @@ export async function getPaymentMethods(context: any, customerId: string) {
   context.commit("setIsLoading", { action: "getPaymentMethods", value: false });
 }
 
-export async function getPaymentIntents(context: any, customerId: string) {
+export async function getPaymentIntents(context: Context, customerId: string) {
   context.commit("setIsLoading", { action: "getPaymentIntents", value: true });
   context.commit("setPaymentIntents", []);
 
@@ -119,7 +125,10 @@ export async function getPaymentIntents(context: any, customerId: string) {
   context.commit("setIsLoading", { action: "getPaymentIntents", value: false });
 }
 
-export async function updatePatient(context: any, { patientId, payload }: any) {
+export async function updatePatient(
+  context: Context,
+  { patientId, payload }: any
+) {
   context.commit("setIsLoading", { action: "updatePatient", value: true });
   context.commit("setPatient", undefined);
   const resource = `patients/${patientId}`;
@@ -138,7 +147,7 @@ export async function updatePatient(context: any, { patientId, payload }: any) {
   context.commit("setIsLoading", { action: "updatePatient", value: false });
 }
 
-export async function moveToNext(context: any) {
+export async function moveToNext(context: Context) {
   const pagination = context.state.pagination;
 
   pagination.urlStack.push(pagination.currentLinkUrl);
@@ -148,7 +157,7 @@ export async function moveToNext(context: any) {
   await getPatients(context, pagination.nextLinkUrl);
 }
 
-export async function moveToPrev(context: any) {
+export async function moveToPrev(context: Context) {
   const pagination = context.state.pagination;
   const prevUrl = pagination.urlStack.pop();
   pagination.nextLinkUrl = pagination.currentLinkUrl;

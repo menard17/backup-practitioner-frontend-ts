@@ -8,9 +8,10 @@ import {
 import { stringToBase64, base64ToString } from "@/utils/fileProcess";
 import { formatDateString } from "@/utils/dateHelpers";
 import { TimeConstants } from "@/utils/constants";
+import { Context } from "../types";
 
 export async function getAppointmentsByPractitionerId(
-  context: any,
+  context: Context,
   { practitionerId, dateFrom, dateTo }: any
 ) {
   context.commit("setIsLoading", {
@@ -40,7 +41,7 @@ export async function getAppointmentsByPractitionerId(
 }
 
 export const getAppointments = async (
-  context: any,
+  context: Context,
   { actorId, dateFrom, dateTo }: any
 ) => {
   context.commit("setIsLoading", { action: "getAppointments", value: true });
@@ -113,20 +114,26 @@ export const getAppointments = async (
 };
 
 export async function getAppointmentById(
-  { commit }: any,
+  context: Context,
   appointmentId: string
 ) {
-  commit("setIsLoading", { action: "getAppointmentById", value: true });
-  commit("setAppointment", undefined);
+  context.commit("setIsLoading", { action: "getAppointmentById", value: true });
+  context.commit("setAppointment", undefined);
   const appointment: any = await getById({
     resource: "appointments",
     resourceId: appointmentId,
   });
-  commit("setAppointment", appointment.data);
-  commit("setIsLoading", { action: "getAppointmentById", value: false });
+  context.commit("setAppointment", appointment.data);
+  context.commit("setIsLoading", {
+    action: "getAppointmentById",
+    value: false,
+  });
 }
 
-export async function populateAppointment(context: any, appointmentId: string) {
+export async function populateAppointment(
+  context: Context,
+  appointmentId: string
+) {
   context.commit("setIsLoading", {
     action: "populateAppointment",
     value: true,
@@ -172,7 +179,7 @@ export async function populateAppointment(context: any, appointmentId: string) {
   });
 }
 
-export async function createAppointment(context: any, payload: any) {
+export async function createAppointment(context: Context, payload: any) {
   context.commit("setIsLoading", {
     action: "createAppointment",
     value: true,
@@ -197,7 +204,7 @@ export async function createAppointment(context: any, payload: any) {
 }
 
 export async function updateAppointment(
-  context: any,
+  context: Context,
   { appointmentId, status }: any
 ) {
   context.commit("setIsLoading", {
@@ -224,7 +231,7 @@ export async function updateAppointment(
   });
 }
 
-export async function createEncounter(context: any, appointment: any) {
+export async function createEncounter(context: Context, appointment: any) {
   context.commit("setIsLoading", {
     action: "createEncounter",
     value: true,
@@ -252,7 +259,7 @@ export async function createEncounter(context: any, appointment: any) {
   });
 }
 
-export async function getEncounter(context: any, appointment: any) {
+export async function getEncounter(context: Context, appointment: any) {
   context.commit("setIsLoading", {
     action: "getEncounter",
     value: true,
@@ -285,7 +292,7 @@ export async function getEncounter(context: any, appointment: any) {
 }
 
 export async function updateEncounter(
-  context: any,
+  context: Context,
   { appointment, encounter, status }: any
 ) {
   context.commit("setIsLoading", {
@@ -310,7 +317,7 @@ export async function updateEncounter(
 }
 
 export async function createDiagnosticReport(
-  context: any,
+  context: Context,
   { appointment, encounter, note }: any
 ) {
   context.commit("setIsLoading", {
@@ -339,7 +346,7 @@ export async function createDiagnosticReport(
 }
 
 export async function createClinicalNote(
-  context: any,
+  context: Context,
   { appointment, encounter, note }: any
 ) {
   context.commit("setIsLoading", {
@@ -385,7 +392,7 @@ export async function createClinicalNote(
 }
 
 export async function getClinicalNote(
-  context: any,
+  context: Context,
   { appointment, encounter }: any
 ) {
   context.commit("setIsLoading", {
@@ -432,7 +439,7 @@ export async function getClinicalNote(
 }
 
 export async function getSlotsByPractitionerRoleId(
-  context: any,
+  context: Context,
   { start, end, practitionerId }: any
 ) {
   context.commit("setIsLoading", {
@@ -466,7 +473,7 @@ export async function getSlotsByPractitionerRoleId(
 }
 
 export async function createSlot(
-  context: any,
+  context: Context,
   { practitionerId, start, end }: any
 ) {
   context.commit("setIsLoading", {
@@ -501,8 +508,8 @@ export async function createSlot(
   return respSlot;
 }
 
-export async function freeSlot({ commit }: any, { slotId }: any) {
-  commit("setIsLoading", {
+export async function freeSlot(context: Context, { slotId }: any) {
+  context.commit("setIsLoading", {
     action: "freeSlot",
     value: true,
   });
@@ -511,7 +518,7 @@ export async function freeSlot({ commit }: any, { slotId }: any) {
     payload: {},
   });
 
-  commit("setIsLoading", {
+  context.commit("setIsLoading", {
     action: "freeSlot",
     value: false,
   });

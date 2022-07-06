@@ -23,7 +23,7 @@ export function appointments(state: any) {
   }));
 }
 
-export function appointment(state: any, getters: any, rootState: any) {
+export function appointment(state: any) {
   const appointment = state.appointment;
   if (!appointment) {
     return;

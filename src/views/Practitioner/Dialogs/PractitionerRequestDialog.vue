@@ -111,7 +111,6 @@ import LabelTextArea from "@/components/LabelTextArea";
 import LabelCard from "@/components/LabelCard";
 import { toBase64, resizeImage } from "@/utils/fileProcess";
 import { mapActions } from "vuex";
-import { createMyPractitionerWithPractitionerRole } from "@/store/Account/account.actions";
 
 export default {
   name: "PractitionerRequestDialog",

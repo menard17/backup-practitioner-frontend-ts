@@ -1,4 +1,5 @@
 import { auth } from "@/plugins/firebase";
+import { Context } from "@/store/types";
 import {
   GoogleAuthProvider,
   signInWithPopup,
@@ -6,7 +7,7 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 
-export async function signOut(context: any) {
+export async function signOut(context: Context) {
   return new Promise<void>((resolve, reject) => {
     auth
       .signOut()
@@ -21,11 +22,11 @@ export async function signOut(context: any) {
   });
 }
 
-export async function userLogin({ commit }: any, { email, password }: any) {
+export async function userLogin(context: Context, { email, password }: any) {
   return new Promise<void>((resolve, reject) =>
     signInWithEmailAndPassword(auth, email, password)
       .then((firebaseUser: UserCredential) => {
-        commit("setFirebaseUser", firebaseUser);
+        context.commit("setFirebaseUser", firebaseUser);
         resolve();
       })
       .catch((err) => {
@@ -34,7 +35,7 @@ export async function userLogin({ commit }: any, { email, password }: any) {
   );
 }
 
-export async function socialLogin(context: any, website: string) {
+export async function socialLogin(context: Context, website: string) {
   return new Promise<void>((resolve, reject) => {
     switch (website) {
       case "google":

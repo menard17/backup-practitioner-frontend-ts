@@ -1,5 +1,5 @@
 export const stringToBase64 = (str: string) =>
-  new Promise((resolve, reject) => {
+  new Promise((resolve) => {
     resolve(btoa(unescape(encodeURIComponent(str))));
   });
 

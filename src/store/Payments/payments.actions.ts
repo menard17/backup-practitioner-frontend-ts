@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { auth } from "@/plugins/firebase";
 import axios from "axios";
+import { Context } from "../types";
 
 async function configSetup({ method, url, data }: any) {
   if (!auth.currentUser) {
@@ -33,7 +34,7 @@ async function configSetup({ method, url, data }: any) {
 }
 
 export async function getPaymentMethod(
-  { commit }: any,
+  context: Context,
   { paymentMethodId }: any
 ) {
   const config: any = await configSetup({
@@ -53,7 +54,7 @@ export async function getPaymentMethod(
   });
 }
 
-export async function getPaymentMethods({ commit }: any, { customerId }: any) {
+export async function getPaymentMethods(context: Context, { customerId }: any) {
   const config: any = await configSetup({
     method: "get",
     url: `payments/${customerId}/payment-methods`,
@@ -72,7 +73,7 @@ export async function getPaymentMethods({ commit }: any, { customerId }: any) {
 }
 
 export async function postPaymentIntent(
-  { commit }: any,
+  context: Context,
   { customerId, paymentMethodId, amount }: any
 ) {
   const data = { customerId, paymentMethodId, amount };
@@ -94,7 +95,7 @@ export async function postPaymentIntent(
   });
 }
 
-export async function getPaymentIntents({ commit }: any, { customerId }: any) {
+export async function getPaymentIntents(context: Context, { customerId }: any) {
   const config: any = await configSetup({
     method: "get",
     url: `payments/${customerId}/payment-intents`,

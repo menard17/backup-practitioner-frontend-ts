@@ -278,7 +278,7 @@ export default Vue.extend({
   watch: {
     // whenever question changes, this function will run
     // refresh the appointment data once we get both start and end date
-    dateRange(newDateRange, _oldDateRange) {
+    dateRange(newDateRange) {
       if (newDateRange.length == 2) {
         this.getAppointmentsByPractitionerId({
           practitionerId: "",

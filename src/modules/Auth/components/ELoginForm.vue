@@ -64,7 +64,6 @@
 import { mapActions } from "vuex";
 import { auth } from "@/plugins/firebase";
 import EPasswordResetForm from "./EPasswordResetForm.vue";
-import { UserCredential } from "firebase/auth";
 
 export default {
   components: {

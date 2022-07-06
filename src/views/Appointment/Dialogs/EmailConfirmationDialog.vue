@@ -73,7 +73,7 @@ export default {
           this.$emit("onSent", true);
           this.cancel();
         })
-        .catch((_) => {
+        .catch(() => {
           this.isLoading = false;
           this.$emit("onSent", false);
           this.cancel();

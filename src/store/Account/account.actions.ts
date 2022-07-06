@@ -3,12 +3,12 @@ import {
   createResource,
   getAll,
   getById,
-  patchResource,
   updateResource,
 } from "@/utils/apiHelpers";
 import { getIdTokenResult, User } from "firebase/auth";
+import { Context } from "../types";
 
-export const getCurrentUser = async (context: any) => {
+export const getCurrentUser = async (context: Context) => {
   context.commit("setIsLoading", { action: "getCurrentUser", value: true });
   context.commit("setPractitioner", undefined);
   context.commit("setPractitionerRole", undefined);
@@ -36,45 +36,54 @@ export const getCurrentUser = async (context: any) => {
   context.commit("setIsLoading", { action: "getCurrentUser", value: false });
 };
 
-export const getCurrentUserRole = async ({ commit }: any) => {
-  commit("setIsLoading", { action: "getCurrentUserRole", value: true });
-  commit("setUser", undefined);
+export const getCurrentUserRole = async (context: Context) => {
+  context.commit("setIsLoading", { action: "getCurrentUserRole", value: true });
+  context.commit("setUser", undefined);
 
   if (!auth.currentUser) {
-    commit("setFirebaseRole", "");
+    context.commit("setFirebaseRole", "");
     return;
   }
 
   const user: User = auth.currentUser;
   const tokenResult: any = await getIdTokenResult(user);
 
-  commit("setUser", user);
+  context.commit("setUser", user);
 
   if (!tokenResult.claims.roles) {
-    commit("setIsLoading", { action: "getCurrentUserRole", value: false });
-    commit("setFirebaseRole", "");
+    context.commit("setIsLoading", {
+      action: "getCurrentUserRole",
+      value: false,
+    });
+    context.commit("setFirebaseRole", "");
     return;
   }
   if (
     !tokenResult.claims.roles.Practitioner &&
     !tokenResult.claims.roles.Staff
   ) {
-    commit("setIsLoading", { action: "getCurrentUserRole", value: false });
-    commit("setFirebaseRole", "");
+    context.commit("setIsLoading", {
+      action: "getCurrentUserRole",
+      value: false,
+    });
+    context.commit("setFirebaseRole", "");
     return;
   } else if (tokenResult.claims.roles.Practitioner) {
-    commit("setIsLoading", { action: "getCurrentUserRole", value: false });
-    commit("setFirebaseRole", "Practitioner");
+    context.commit("setIsLoading", {
+      action: "getCurrentUserRole",
+      value: false,
+    });
+    context.commit("setFirebaseRole", "Practitioner");
     return tokenResult.claims.roles.Practitioner.id;
   } else if (tokenResult.claims.roles.Staff) {
-    commit("setFirebaseRole", "Staff");
+    context.commit("setFirebaseRole", "Staff");
     return tokenResult.claims.roles.Staff.id;
   }
   return;
 };
 
 export async function updateMyPractitionerRole(
-  context: any,
+  context: Context,
   { changeFields }: any
 ) {
   context.commit("setIsLoading", {
@@ -115,7 +124,7 @@ export async function updateMyPractitionerRole(
 }
 
 export async function createMyPractitionerWithPractitionerRole(
-  context: any,
+  context: Context,
   { changeFields }: any
 ) {
   context.commit("setIsLoading", {
