@@ -139,6 +139,7 @@
           Cancel</v-btn
         >
         <v-btn
+          id="save"
           :loading="isLoadingCreateAppointment"
           :disabled="isLoadingCreateAppointment"
           color="primary"
@@ -159,8 +160,7 @@
 <script>
 import { mapActions, mapGetters, mapState } from "vuex";
 import DateTimeSelectDialog from "@/components/DateTimeSelectDialog";
-import { format, add } from "date-fns";
-import { TimeConstants } from "@/utils/constants";
+import { add, format } from "date-fns";
 
 export default {
   name: "CreateAppointmentDialog",
@@ -233,29 +233,25 @@ export default {
       createAppointment: "createAppointment",
     }),
     setEndTimeFromDuration(duration) {
+      const startDate = new Date(this.start);
       switch (duration) {
         case this.durations.quarterHour:
-          this.end = add(this.start, { minutes: 15 });
+          this.end = add(startDate, { minutes: 15 });
           break;
         case this.durations.halfHour:
-          this.end = add(this.start, { minutes: 30 });
+          this.end = add(startDate, { minutes: 30 });
           break;
         case this.durations.threeQuarterHour:
-          this.end = add(this.start, { minutes: 45 });
+          this.end = add(startDate, { minutes: 45 });
           break;
         case this.durations.oneHour:
-          this.end = add(this.start, { minutes: 60 });
+          this.end = add(startDate, { minutes: 60 });
           break;
       }
     },
     formatAppointmentDateTime(dateTime) {
-      const newDateTime = new Date(
-        `${format(dateTime, TimeConstants.yearMonthDay)}T${format(
-          dateTime,
-          TimeConstants.militaryTime
-        )}+09:00`
-      ).toISOString();
-      return newDateTime;
+      // ISO8601
+      return format(new Date(dateTime), "yyyy-MM-dd'T'HH:mm:ssXXX");
     },
     openDateTimeDialog(selected) {
       this.selected = selected;
@@ -284,6 +280,7 @@ export default {
       this.selectedPractitionerRoleId = this.practitionerRole.id;
     },
     async save() {
+      if (!this.start || !this.duration || !this.service || !this.end) return;
       const appointment = await this.createAppointment(this.payload);
       this.$emit("onCreated", appointment);
       this.cancel();

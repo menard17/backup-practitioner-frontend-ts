@@ -64,10 +64,10 @@ export default {
       this.dialog = false;
     },
     onDateSelected() {
-      this.$emit(
-        "onDateSelected",
-        this.dateStringToDate(`${this.datePicker} ${this.timePicker}`)
-      );
+      if (!this.datePicker || !this.timePicker) {
+        return;
+      }
+      this.$emit("onDateSelected", `${this.datePicker} ${this.timePicker}`);
       this.dialog = false;
     },
     dateStringToDate(dbDateString) {
