@@ -421,6 +421,15 @@ export async function getClinicalNote(
     }
   });
 
+  if (!appointmentClinicalNote) {
+    context.commit("setIsLoading", {
+      action: "getClinicalNote",
+      value: false,
+    });
+    context.commit("setClinicalNote", undefined);
+    return;
+  }
+
   const clinicalNote = {
     note: base64ToString(appointmentClinicalNote.content[0].attachment.data),
 

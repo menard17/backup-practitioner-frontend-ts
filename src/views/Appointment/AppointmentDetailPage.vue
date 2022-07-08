@@ -160,7 +160,10 @@
                 {{ report.note }}
               </v-card>
             </div>
-            <v-skeleton-loader v-else type="article"></v-skeleton-loader>
+            <v-skeleton-loader
+              v-if="isCreatingDoctorNote"
+              type="article"
+            ></v-skeleton-loader>
           </v-col>
         </v-row>
         <v-row class="mt-5" dense no-gutters>
@@ -213,32 +216,33 @@
                 </v-btn>
               </v-col>
             </v-row>
-
-            <v-card class="pa-4 mb-4" v-if="!isCreatingClinicalNote">
-              <div class="subtitle-2 mb-2">
-                <v-row>
-                  <v-col>
-                    {{ clinicalNote.createdOn }}
-                  </v-col>
-                  <v-col align="end">
-                    <v-btn
-                      icon
-                      @click="
-                        openCreateNoteDialog(
-                          'clinical',
-                          clinicalNote.note,
-                          true
-                        )
-                      "
-                    >
-                      <v-icon> mdi-pencil </v-icon>
-                    </v-btn>
-                  </v-col>
-                </v-row>
-              </div>
-              {{ clinicalNote.note }}
-            </v-card>
-            <v-skeleton-loader v-else type="article"></v-skeleton-loader>
+            <div v-if="clinicalNote">
+              <v-card class="pa-4 mb-4" v-if="!isCreatingClinicalNote">
+                <div class="subtitle-2 mb-2">
+                  <v-row>
+                    <v-col>
+                      {{ clinicalNote.createdOn }}
+                    </v-col>
+                    <v-col align="end">
+                      <v-btn
+                        icon
+                        @click="
+                          openCreateNoteDialog(
+                            'clinical',
+                            clinicalNote.note,
+                            true
+                          )
+                        "
+                      >
+                        <v-icon> mdi-pencil </v-icon>
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </div>
+                {{ clinicalNote.note }}
+              </v-card>
+              <v-skeleton-loader v-else type="article"></v-skeleton-loader>
+            </div>
           </v-col>
         </v-row>
 
@@ -336,6 +340,8 @@ export default {
         state.loadingData.createEncounter.isLoading,
       isCreatingClinicalNote: (state) =>
         state.loadingData.createClinicalNote.isLoading,
+      isCreatingDoctorNote: (state) =>
+        state.loadingData.createDiagnosticReport.isLoading,
       encounter: (state) => state.encounter,
       clinicalNote: (state) => state.clinicalNote,
     }),

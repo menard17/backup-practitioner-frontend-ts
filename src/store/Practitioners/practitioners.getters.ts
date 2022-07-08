@@ -10,8 +10,8 @@ export function practitioners(state: any) {
     id: `${practitioner.id}`,
     name: `${practitioner.name[0].prefix[0]}: ${practitioner.name[0].family}, ${practitioner.name[0].given[0]}`,
     photo: {
-      type: practitioner.photo[0].contentType,
-      data: practitioner.photo[0].data,
+      type: practitioner.photo ? practitioner.photo[0].contentType : "",
+      data: practitioner.photo ? practitioner.photo[0].data : "",
     },
     birthDate: practitioner.birthDate || "Not Provided",
     sex:
