@@ -409,6 +409,15 @@ export async function getClinicalNote(
     documentReferences = context.rootState.$_patients.documentReferences;
   }
 
+  if (!encounter) {
+    context.commit("setIsLoading", {
+      action: "getClinicalNote",
+      value: false,
+    });
+    context.commit("setClinicalNote", undefined);
+    return;
+  }
+
   const appointmentClinicalNote = documentReferences.find((document: any) => {
     if (document.context) {
       if (
