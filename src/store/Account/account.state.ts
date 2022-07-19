@@ -5,11 +5,13 @@ const state: AccountState = {
   practitionerRole: undefined,
   user: undefined,
   firebaseRole: "",
+  accounts: [],
   loadingData: {
     getCurrentUser: { isLoading: false },
     getCurrentUserRole: { isLoading: false },
     updateMyPractitionerRole: { isLoading: false },
     createMyPractitionerWithPractitionerRole: { isLoading: false },
+    getAccounts: { isLoading: false },
   },
 };
 

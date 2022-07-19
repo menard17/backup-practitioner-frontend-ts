@@ -1,5 +1,11 @@
 import { auth } from "@/plugins/firebase";
-import { getAll, getById } from "@/utils/apiHelpers";
+import {
+  getAll,
+  getById,
+  patchResource,
+  updateResource,
+} from "@/utils/apiHelpers";
+
 import { Context } from "../types";
 
 export const getPractitioners = async (context: Context) => {
@@ -13,6 +19,45 @@ export const getPractitioners = async (context: Context) => {
   context.commit("setPractitioners", practitioners.data);
   context.commit("setIsLoading", { action: "getPractitioners", value: false });
 };
+
+export async function getPractitionerRoles({ commit }: any, role: string) {
+  commit("setIsLoading", { action: "getPractitionerRoles", value: true });
+  commit("setPractitionerRoles", []);
+  if (!auth.currentUser) {
+    return;
+  }
+
+  const practitionerRolesData: any = await getAll(
+    `practitioner_roles?role_type=${role}&include_practitioner=true`
+  );
+
+  const practitionerRoles: any = practitionerRolesData.filter(
+    (practitionerRole: any) =>
+      practitionerRole.resourceType === "PractitionerRole"
+  );
+
+  const practitioners: any = practitionerRolesData.filter(
+    (practitioner: any) => practitioner.resourceType === "Practitioner"
+  );
+
+  practitionerRoles.map((practitionerRole: any) => {
+    const practitioner = practitioners.find(
+      (practitioner: any) =>
+        practitioner.id ===
+        practitionerRole.practitioner.reference.split("/")[1]
+    );
+    practitionerRole.practitionerObj = practitioner;
+  });
+
+  if (role) {
+    commit("setPractitionerRoles", practitionerRoles);
+  } else {
+    console.warn("No Type Selected, Getting all");
+    commit("setPractitionerRoles", practitionerRoles);
+  }
+
+  commit("setIsLoading", { action: "getPractitionerRoles", value: false });
+}
 
 export async function getPractitionerById(
   context: Context,
@@ -75,12 +120,12 @@ export async function getPractitionerRoleById(
   });
 }
 
-export async function getPracitionerAppointments(
+export async function getPractitionerAppointments(
   context: Context,
   practitionerId: string
 ) {
   context.commit("setIsLoading", {
-    action: "getPracitionerAppointments",
+    action: "getPractitionerAppointments",
     value: true,
   });
   context.commit("setAppointments", []);
@@ -91,7 +136,76 @@ export async function getPracitionerAppointments(
   );
   context.commit("setAppointments", appointments.data);
   context.commit("setIsLoading", {
-    action: "getPracitionerAppointments",
+    action: "getPractitionerAppointments",
     value: false,
+  });
+}
+
+export async function updatePractitioner(
+  context: any,
+  { payload, practitionerRoleId }: any
+) {
+  context.commit("setIsLoading", {
+    action: "updatePractitioner",
+    value: true,
+  });
+
+  const url = `practitioner_roles/${practitionerRoleId}`;
+
+  try {
+    const practitionerRole: any = await updateResource({ url, payload });
+
+    const practitionerRoleData = practitionerRole.data.entry.find(
+      (item: any) => item.resource.resourceType === "PractitionerRole"
+    );
+
+    if (practitionerRoleData) {
+      context.commit("setPractitionerRole", practitionerRoleData.resource);
+    }
+
+    const practitionerData = practitionerRole.data.entry.find(
+      (item: any) => item.resource.resourceType === "Practitioner"
+    );
+
+    if (practitionerData) {
+      context.commit("setPractitioner", practitionerData.resource);
+    }
+
+    return practitionerRole;
+  } catch (e) {
+    console.error(e);
+  }
+
+  context.commit("setIsLoading", {
+    action: "updatePractitioner",
+    value: false,
+  });
+}
+
+export async function updatePractitionerStatus(
+  context: any,
+  { practitionerStatus, practitionerRoleId }: any
+) {
+  context.commit("setIsLoading", {
+    action: "updatePractitionerStatus",
+    value: true,
+  });
+
+  const url = `practitioner_roles/${practitionerRoleId}?active=${practitionerStatus}`;
+
+  return new Promise((resolve, reject) => {
+    patchResource({ url, payload: null })
+      .then(() => {
+        resolve(practitionerRoleId);
+      })
+      .catch((e) => {
+        console.error(e);
+        reject(e);
+      });
+
+    context.commit("setIsLoading", {
+      action: "updatePractitionerStatus",
+      value: false,
+    });
   });
 }

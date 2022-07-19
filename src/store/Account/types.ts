@@ -3,11 +3,13 @@ export interface AccountState {
   practitionerRole: any;
   user: any;
   firebaseRole: string;
+  accounts: any;
   loadingData: {
     getCurrentUser: { isLoading: boolean };
     getCurrentUserRole: { isLoading: boolean };
     updateMyPractitionerRole: { isLoading: boolean };
     createMyPractitionerWithPractitionerRole: { isLoading: boolean };
+    getAccounts: { isLoading: boolean };
   };
 }
 

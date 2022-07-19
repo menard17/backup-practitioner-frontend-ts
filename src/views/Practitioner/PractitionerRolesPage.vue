@@ -1,6 +1,6 @@
 <template>
   <div>
-    <data-table title="Practitioners">
+    <data-table title="Practitioner Roles">
       <template v-slot:headerButton>
         <v-select
           hide-details
@@ -28,10 +28,9 @@
 <script>
 import DataTable from "@/components/DataTable";
 import { mapActions, mapGetters, mapState } from "vuex";
-import { getPractitionerRoles } from "@/store/Practitioners/practitioners.actions";
 
 export default {
-  name: "PractitionersPage",
+  name: "PractitionerRolesPage",
   components: { DataTable },
   data() {
     return {
@@ -39,32 +38,16 @@ export default {
       selectedType: "doctor",
       headers: [
         {
-          text: "En First Name",
-          value: "en.firstName",
+          text: "Last Name",
+          value: "practitionerObj.name[0].family",
         },
         {
-          text: "En Family Name",
-          value: "en.familyName",
+          text: "First Name",
+          value: "practitionerObj.name[0].given[0]",
         },
         {
-          text: "Jp First Name",
-          value: "jp.firstName",
-        },
-        {
-          text: "Jp Family Name",
-          value: "jp.familyName",
-        },
-        {
-          text: "Email",
-          value: "email",
-        },
-        {
-          text: "Gender",
-          value: "sex",
-        },
-        {
-          text: "Type",
-          value: "roleType",
+          text: "Role",
+          value: "code[0].coding[0].code",
         },
         {
           text: "Active",
@@ -74,31 +57,26 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("$_practitioners", {
-      practitioners: "practitioner",
-      practitionerRoles: "practitionerRoles",
-    }),
     ...mapState("$_practitioners", {
       isLoading: (state) => state.loadingData.getPractitionerRoles.isLoading,
     }),
+    ...mapState("$_practitioners", {
+      practitionerRoles: "practitionerRoles",
+    }),
   },
   created() {
-    if (this.practitionerRoles) {
-      return;
-    }
-
     this.getPractitionerRoles(this.selectedType);
   },
   methods: {
     ...mapActions("$_practitioners", {
       getPractitionerRoles: "getPractitionerRoles",
     }),
-    rowClicked(item) {
-      console.log(item);
-      this.$router.push(`/practitioners/${item.id}`);
-    },
     onTypeChange() {
       this.getPractitionerRoles(this.selectedType);
+    },
+    rowClicked(item) {
+      console.log("row:", item);
+      this.$router.push(`/practitioners/${item.practitionerObj.id}`);
     },
   },
 };

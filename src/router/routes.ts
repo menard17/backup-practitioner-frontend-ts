@@ -8,6 +8,9 @@ import PatientBillingTab from "@/views/Patient/Tabs/PatientBillingTab.vue";
 import PatientDetailWrapperPage from "@/views/Patient/PatientDetailWrapperPage.vue";
 import AuthPage from "@/modules/Auth/views/AuthPage.vue";
 import PatientsPage from "@/views/Patient/PatientsPage.vue";
+import PractitionersPage from "@/views/Practitioner/PractitionersPage.vue";
+import PractitionerRolesPage from "@/views/Practitioner/PractitionerRolesPage.vue";
+import PractitionerDetailsWrapperPage from "@/views/Practitioner/PractitionerDetailsWrapperPage.vue";
 
 export const routes: Array<RouteConfig> = [
   {
@@ -20,6 +23,30 @@ export const routes: Array<RouteConfig> = [
     path: "/",
     name: "dashboard",
     component: HomeView,
+    meta: {
+      authRequired: true,
+    },
+  },
+  {
+    path: "/practitioners",
+    name: "practitioner",
+    component: PractitionersPage,
+    meta: {
+      authRequired: true,
+    },
+  },
+  {
+    path: "/practitioners/:id",
+    name: "practitioner-detail",
+    component: PractitionerDetailsWrapperPage,
+    meta: {
+      authRequired: true,
+    },
+  },
+  {
+    path: "/practitioner-roles",
+    name: "practitioner-roles",
+    component: PractitionerRolesPage,
     meta: {
       authRequired: true,
     },

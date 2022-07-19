@@ -14,7 +14,7 @@ export function practitioners(state: any) {
       data: practitioner.photo ? practitioner.photo[0].data : "",
     },
     birthDate: practitioner.birthDate || "Not Provided",
-    sex:
+    gender:
       (practitioner.gender && practitioner.gender.toUpperCase()) ||
       "Not Provided",
     email: `${
@@ -25,6 +25,53 @@ export function practitioners(state: any) {
   }));
 }
 
+function formatPractitioner(practitioner: any, practitionerRole: any = null) {
+  const nameEn = practitioner.name.find(
+    (item: any) => item.extension[0].valueString === "ABC"
+  );
+  const nameJp = practitioner.name.find(
+    (item: any) => item.extension[0].valueString === "IDE"
+  );
+
+  const bioEn = practitioner.extension.find(
+    (item: any) =>
+      item && item.extension[0] && item.extension[0].valueString === "en"
+  ).valueString;
+
+  const bioJpExt = practitioner.extension.find((item: any) => {
+    return item.extension[0].valueString === "ja";
+  });
+  const bioJp = bioJpExt && bioJpExt.valueString;
+
+  return {
+    id: `${practitioner.id}`,
+    en: {
+      firstName: nameEn.given[0],
+      familyName: nameEn.family,
+      bio: bioEn,
+    },
+    jp: {
+      firstName: (nameJp && nameJp.given[0]) || "Not Provided",
+      familyName: (nameJp && nameJp.family) || "Not Provided",
+      bio: bioJp || "Not Provided",
+    },
+    photo: {
+      type: practitioner.photo[0].contentType,
+      data: practitioner.photo[0].data,
+    },
+    sex:
+      (practitioner.gender && practitioner.gender.toUpperCase()) ||
+      "Not Provided",
+    email:
+      practitioner.telecom.find((item: any) => item.system === "email").value ||
+      "Not Provided",
+    active: practitioner.active,
+    roleType: practitionerRole
+      ? practitionerRole.code[0].coding[0].code
+      : "Not Provided",
+  };
+}
+
 export function practitioner(state: any) {
   const practitioner = state.practitioner;
 
@@ -32,19 +79,7 @@ export function practitioner(state: any) {
     return;
   }
 
-  return {
-    id: `${practitioner.id}`,
-    firstName: practitioner.name[0].given[0],
-    familyName: practitioner.name[0].family,
-    birthDate: practitioner.birthDate || "Not Provided",
-    sex:
-      (practitioner.gender && practitioner.gender.toUpperCase()) ||
-      "Not Provided",
-    email: `${
-      practitioner.telecom.find((item: any) => item.system === "email").value
-    }`,
-    active: practitioner.active,
-  };
+  return formatPractitioner(practitioner);
 }
 
 export function appointments(state: any) {
@@ -120,4 +155,48 @@ export function zoomPasscode(state: any) {
   return practitionerRole.extension.find(
     (item: any) => item.url === "zoom-passcode"
   ).valueString;
+}
+
+export function practitionerRole(state: any) {
+  const practitionerRole = state.practitionerRole;
+
+  if (!practitionerRole) {
+    return;
+  }
+
+  // backend will return a response of [{}] when the available time is empty.
+  // this filters empty response out.
+  const availableTime = practitionerRole.availableTime.filter(
+    (av: any) => av.availableStartTime !== undefined
+  );
+
+  return {
+    id: practitionerRole.id,
+    availableTime: availableTime,
+    zoomId: practitionerRole.extension.find(
+      (item: any) => item.url === "zoom-id"
+    ).valueString,
+    zoomPasscode: practitionerRole.extension.find(
+      (item: any) => item.url === "zoom-passcode"
+    ).valueString,
+    roleType: practitionerRole.code[0].coding[0].code.toUpperCase(),
+  };
+}
+
+export function practitionerRoles(state: any) {
+  const practitionerRoles = state.practitionerRoles;
+
+  if (!practitionerRoles.length) {
+    return;
+  }
+
+  return practitionerRoles.map((practitionerRole: any) => {
+    const practitioner = practitionerRole.practitionerObj;
+
+    const formattedPractitioner = formatPractitioner(
+      practitioner,
+      practitionerRole
+    );
+    return formattedPractitioner;
+  });
 }

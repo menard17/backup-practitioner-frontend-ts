@@ -2,7 +2,11 @@
   <v-card class="text-center pa-4">
     <v-row dense>
       <v-col cols="12">
-        <label-card class="text-left mt-2" label="Email" :text="user.email" />
+        <label-card
+          class="text-left mt-2"
+          label="Email"
+          :text="practitioner.email"
+        />
       </v-col>
       <v-col cols="12">
         <label-card

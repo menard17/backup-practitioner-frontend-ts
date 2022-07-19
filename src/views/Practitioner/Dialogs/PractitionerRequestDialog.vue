@@ -13,7 +13,7 @@
       </v-card-title>
       <v-form class="text-left px-5">
         <v-row>
-          <v-col>
+          <v-col v-if="user">
             <label-card label="Email" :text="user.email" />
           </v-col>
         </v-row>
@@ -122,7 +122,7 @@ export default {
     },
     user: {
       type: Object,
-      required: true,
+      default: () => null,
     },
   },
   data() {
@@ -148,6 +148,8 @@ export default {
           value.size < 6250000 ||
           "photo size should be less than ~ 5 MB!",
       ],
+      isMyPractitioner: false,
+      practitionerRoleId: "",
     };
   },
   computed: {
@@ -171,6 +173,9 @@ export default {
     },
   },
   methods: {
+    ...mapActions("$_practitioners", {
+      updatePractitioner: "updatePractitioner",
+    }),
     ...mapActions("$_account", {
       updateMyPractitionerRole: "updateMyPractitionerRole",
       createMyPractitionerWithPractitionerRole:
@@ -186,9 +191,15 @@ export default {
       this.isNewPhoto = true;
       this.photo = await toBase64(resizedImage).catch((e) => Error(e));
     },
-    toggleDialog(practitioner, practitionerRole, isNewPractitioner) {
+    toggleDialog(
+      practitioner,
+      practitionerRole,
+      isNewPractitioner,
+      isMyPractitioner
+    ) {
       this.dialog = !this.dialog;
       this.isNewPractitioner = isNewPractitioner;
+      this.isMyPractitioner = isMyPractitioner;
       if (this.dialog && practitioner && practitionerRole) {
         this.familyNameJp = practitioner.jp.familyName;
         this.firstNameJp = practitioner.jp.firstName;
@@ -199,12 +210,23 @@ export default {
         this.zoomId = practitionerRole.zoomId;
         this.zoomPasscode = practitionerRole.zoomPasscode;
         this.selectedRoleType = practitionerRole.roleType.toUpperCase();
+        this.practitionerRoleId = practitionerRole.id;
         this.photo = practitioner.photo;
         this.selectedGender = practitioner.sex.toUpperCase();
         this.image = null;
       }
     },
     save() {
+      if (!this.isMyPractitioner) {
+        this.updatePractitioner({
+          payload: this.changeFields,
+          practitionerRoleId: this.practitionerRoleId,
+        });
+
+        this.cancel();
+        return;
+      }
+
       if (this.isNewPractitioner) {
         this.createMyPractitionerWithPractitionerRole({
           changeFields: this.changeFields,
@@ -230,6 +252,7 @@ export default {
       this.isNewPhoto = false;
       this.image = null;
       this.dialog = false;
+      this.isMyPractitioner = false;
     },
   },
 };
