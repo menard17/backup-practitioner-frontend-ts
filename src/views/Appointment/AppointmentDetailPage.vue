@@ -104,6 +104,64 @@
               {{ encounter.status.toUpperCase() }}
             </v-chip>
           </v-col>
+          <v-col>
+            <v-btn
+              v-if="(encounter && encounter.status) === 'in-progress'"
+              @click="endEncounter"
+              class="text-none subtitle-2 ml-3"
+              color="primary"
+            >
+              End Session
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-row class="mt-5" dense no-gutters>
+          <v-col>
+            <v-row class="mb-2" align="center">
+              <v-col>
+                <div class="subtitle-2 mb-3">Clinical Notes</div>
+
+                <v-btn
+                  @click="openCreateNoteDialog('clinicalNote')"
+                  color="primary"
+                  class="text-none subtitle-2 mr-3"
+                >
+                  Create a Note
+                </v-btn>
+              </v-col>
+            </v-row>
+            <div v-if="clinicalNote">
+              <v-card
+                class="pa-4 mb-4"
+                style="white-space: pre-line"
+                v-if="!isCreatingClinicalNote"
+              >
+                <div class="subtitle-2 mb-2">
+                  <v-row>
+                    <v-col>
+                      {{ clinicalNote.createdOn }}
+                    </v-col>
+                    <v-col align="end">
+                      <v-btn
+                        icon
+                        @click="
+                          openCreateNoteDialog(
+                            'clinicalNote',
+                            clinicalNote.note,
+                            true
+                          )
+                        "
+                      >
+                        <v-icon> mdi-pencil </v-icon>
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </div>
+                {{ clinicalNote.note }}
+              </v-card>
+              <v-skeleton-loader v-else type="article"></v-skeleton-loader>
+            </div>
+          </v-col>
         </v-row>
         <v-row class="mt-5" dense no-gutters>
           <v-col>
@@ -124,19 +182,12 @@
                   class="text-none subtitle-2"
                   >Create a follow up
                 </v-btn>
-                <v-btn
-                  v-if="(encounter && encounter.status) === 'in-progress'"
-                  @click="endEncounter"
-                  class="text-none subtitle-2 ml-3"
-                  color="primary"
-                >
-                  End Session
-                </v-btn>
               </v-col>
             </v-row>
             <div v-if="diagnosticReports.length">
               <v-card
                 class="pa-4 mb-4"
+                style="white-space: pre-line"
                 v-for="report in diagnosticReports"
                 :key="report.id"
               >
@@ -198,51 +249,6 @@
                 </v-btn>
               </v-col>
             </v-row>
-          </v-col>
-        </v-row>
-
-        <v-row class="mt-5" dense no-gutters>
-          <v-col>
-            <v-row class="mb-2" align="center">
-              <v-col>
-                <div class="subtitle-2 mb-3">Clinical Notes</div>
-
-                <v-btn
-                  @click="openCreateNoteDialog('clinicalNote')"
-                  color="primary"
-                  class="text-none subtitle-2 mr-3"
-                >
-                  Create a Note
-                </v-btn>
-              </v-col>
-            </v-row>
-            <div v-if="clinicalNote">
-              <v-card class="pa-4 mb-4" v-if="!isCreatingClinicalNote">
-                <div class="subtitle-2 mb-2">
-                  <v-row>
-                    <v-col>
-                      {{ clinicalNote.createdOn }}
-                    </v-col>
-                    <v-col align="end">
-                      <v-btn
-                        icon
-                        @click="
-                          openCreateNoteDialog(
-                            'clinical',
-                            clinicalNote.note,
-                            true
-                          )
-                        "
-                      >
-                        <v-icon> mdi-pencil </v-icon>
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                </div>
-                {{ clinicalNote.note }}
-              </v-card>
-              <v-skeleton-loader v-else type="article"></v-skeleton-loader>
-            </div>
           </v-col>
         </v-row>
 

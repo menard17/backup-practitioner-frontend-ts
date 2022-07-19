@@ -1,9 +1,9 @@
 <template>
-  <v-dialog v-model="dialog" width="500">
+  <v-dialog v-model="dialog" width="700">
     <v-card>
       <v-card-title>
         <v-row>
-          <v-col align="start"> Add a Note </v-col>
+          <v-col align="start"> Add a {{ noteTypeTitle }} Note </v-col>
           <v-col align="end">
             <v-btn @click="cancel" icon>
               <v-icon> mdi-close </v-icon>
@@ -13,12 +13,13 @@
       </v-card-title>
       <div class="pa-4">
         <v-select
-          v-if="noteType === 'doctorNote'"
-          @change="setNoteTemplate"
-          v-model="selectedTemplate"
           label="Note Templates"
           class="align-start"
-          :items="Object.values(noteTemplates)"
+          :items="templates"
+          v-model="selectedTemplate"
+          @change="setNoteTemplate"
+          item-text="title"
+          item-value="text"
         />
         <v-textarea
           outlined
@@ -53,7 +54,7 @@
 </template>
 
 <script>
-import { NoteConstants } from "@/utils/constants";
+import { mapActions, mapState } from "vuex";
 
 export default {
   name: "CreateNoteDialog",
@@ -67,15 +68,24 @@ export default {
     };
   },
   computed: {
-    noteTemplates() {
-      return {
-        patternOneJp: "Pattern 1 Jp",
-        patternTwoJp: "Pattern 2 Jp",
-        patternOneEn: "Pattern 1 En",
-      };
+    ...mapState("$_application", {
+      templates: "templates",
+    }),
+    noteTypeTitle() {
+      switch (this.noteType) {
+        case "clinicalNote":
+          return "Clinical";
+        case "doctorNote":
+          return "Doctors";
+        default:
+          return "";
+      }
     },
   },
   methods: {
+    ...mapActions("$_application", {
+      getTemplates: "getTemplates",
+    }),
     save() {
       this.$emit("onSave", this.note);
       this.cancel();
@@ -90,23 +100,14 @@ export default {
       this.dialog = !this.dialog;
       if (this.dialog) {
         this.noteType = type;
+        this.getTemplates({ type });
         if (isEditing) {
           this.note = note;
         }
       }
     },
-    setNoteTemplate(noteTemplate) {
-      switch (noteTemplate) {
-        case this.noteTemplates.patternOneJp:
-          this.note = NoteConstants.patternOneJp;
-          break;
-        case this.noteTemplates.patternTwoJp:
-          this.note = NoteConstants.patternTwoJp;
-          break;
-        case this.noteTemplates.patternOneEn:
-          this.note = NoteConstants.patternOneEn;
-          break;
-      }
+    setNoteTemplate(note) {
+      this.note = note.replaceAll("\\n", "\n");
     },
   },
 };

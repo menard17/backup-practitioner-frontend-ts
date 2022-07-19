@@ -3,7 +3,7 @@
     <v-card>
       <v-card-title>
         <v-row no-gutters dense justify="space-between">
-          <v-col align="start"> Start Encounter </v-col>
+          <v-col cols="9" align="start"> Start Appointment Session </v-col>
           <v-col align="end">
             <v-btn @click="dialog = false" icon>
               <v-icon> mdi-close </v-icon>
@@ -11,7 +11,7 @@
           </v-col>
         </v-row>
       </v-card-title>
-      <div class="my-5">Did the patient join the Zoom Call?</div>
+      <div class="my-5 text-center">Did the patient join the Zoom Call?</div>
       <v-card-actions>
         <v-btn @click="noShow" color="red" outlined class="subtitle-2">
           No show

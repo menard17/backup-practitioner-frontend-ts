@@ -100,12 +100,16 @@ export const practitionerRole = (state: AccountState) => {
   return {
     id: practitionerRole.id,
     availableTime: availableTime,
-    zoomId: practitionerRole.extension.find(
-      (item: Extension) => item.url === "zoom-id"
-    ).valueString,
-    zoomPasscode: practitionerRole.extension.find(
-      (item: Extension) => item.url === "zoom-passcode"
-    ).valueString,
+    zoomId: practitionerRole.extension
+      ? practitionerRole.extension.find(
+          (item: Extension) => item.url === "zoom-id"
+        ).valueString
+      : "",
+    zoomPasscode: practitionerRole.extension
+      ? practitionerRole.extension.find(
+          (item: Extension) => item.url === "zoom-passcode"
+        ).valueString
+      : "",
     roleType: practitionerRole.code[0].coding[0].code.toUpperCase(),
     active: practitionerRole.active,
   };

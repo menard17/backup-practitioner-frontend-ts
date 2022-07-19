@@ -6,6 +6,7 @@ import $_patients from "./Patients";
 import $_practitioners from "./Practitioners";
 import $_payments from "./Payments";
 import $_account from "./Account";
+import $_application from "./Application";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -20,5 +21,6 @@ export default new Vuex.Store({
     $_account,
     $_practitioners,
     $_payments,
+    $_application,
   },
 });
