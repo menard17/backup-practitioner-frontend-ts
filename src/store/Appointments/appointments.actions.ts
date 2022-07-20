@@ -249,6 +249,7 @@ export async function createEncounter(context: Context, appointment: any) {
       "setEncounter",
       encounter.data.data.find((item: any) => item.resourceType === "Encounter")
     );
+    context.commit("setAppointmentStatus", "fulfilled");
   } catch (e) {
     console.error(e);
     context.commit("setEncounter", undefined);

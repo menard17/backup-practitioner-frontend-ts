@@ -2,6 +2,10 @@ export function setAppointments(state: any, appointments: any) {
   state.appointments = appointments;
 }
 
+export function setAppointmentStatus(state: any, status: string) {
+  state.appointment["status"] = status;
+}
+
 export function setIsLoading(state: any, { action, value }: any) {
   state.loadingData[action].isLoading = value;
 }

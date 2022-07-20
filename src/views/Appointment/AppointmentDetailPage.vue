@@ -120,8 +120,8 @@
             <v-row class="mb-2" align="center">
               <v-col>
                 <div class="subtitle-2 mb-3">Clinical Notes</div>
-
                 <v-btn
+                  :disabled="this.appointment.status == 'booked'"
                   @click="openCreateNoteDialog('clinicalNote')"
                   color="primary"
                   class="text-none subtitle-2 mr-3"
