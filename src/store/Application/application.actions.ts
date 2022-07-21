@@ -1,7 +1,8 @@
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { firestore } from "@/plugins/firebase";
 import { Context } from "../types";
-import { Template } from "@/store/Application/types";
+import { EmailObject, SheetObject, Template } from "@/store/Application/types";
+import { callLogicApp } from "@/utils/apiHelpers";
 
 export async function getTemplates(context: Context, { type }: Template) {
   const hasTemplateType = context.state.templates.filter(
@@ -42,3 +43,29 @@ export async function getTemplates(context: Context, { type }: Template) {
   context.commit("setTemplates", sortedTemplates);
   context.commit("setIsLoading", { action: "getTemplates", value: false });
 }
+
+export const sendEmail = async (context: Context, payload: EmailObject) => {
+  context.commit("setIsLoading", { action: "callLogicApp", value: true });
+  context.commit("setEmailSent", false);
+  try {
+    await callLogicApp(payload, process.env.VUE_APP_logic_app_url);
+    context.commit("setEmailSent", true);
+    context.commit("setIsLoading", { action: "callLogicApp", value: false });
+  } catch {
+    context.commit("setIsLoading", { action: "callLogicApp", value: false });
+    context.commit("setEmailSent", false);
+  }
+};
+
+export const insertSheet = async (context: Context, payload: SheetObject) => {
+  context.commit("setIsLoading", { action: "callLogicApp", value: true });
+  context.commit("setSheet", false);
+  try {
+    await callLogicApp(payload, process.env.VUE_APP_logic_app_url_sheet);
+    context.commit("setSheet", true);
+    context.commit("setIsLoading", { action: "callLogicApp", value: false });
+  } catch {
+    context.commit("setIsLoading", { action: "callLogicApp", value: false });
+    context.commit("setSheet", false);
+  }
+};

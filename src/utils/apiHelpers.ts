@@ -121,3 +121,10 @@ export const getEmail = async () => {
   }
   return await auth.currentUser.email;
 };
+
+export const callLogicApp = async (payload: any, logicAppEndpoint: string) => {
+  const response = await axios.post(logicAppEndpoint, payload, {
+    withCredentials: false,
+  });
+  return response;
+};

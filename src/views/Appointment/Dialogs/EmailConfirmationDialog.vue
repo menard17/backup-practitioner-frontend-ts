@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import sendEmail from "@/utils/emailServices";
+import { mapActions } from "vuex";
 
 export default {
   name: "EmailConfirmationDialog",
@@ -64,20 +64,14 @@ export default {
       this.email = "";
       this.dialog = false;
     },
+    ...mapActions("$_application", {
+      sendEmail: "sendEmail",
+    }),
     save() {
-      this.isLoading = true;
       const { email, familyName, type } = this;
-      sendEmail({ email, familyName, type })
-        .then(() => {
-          this.isLoading = false;
-          this.$emit("onSent", true);
-          this.cancel();
-        })
-        .catch(() => {
-          this.isLoading = false;
-          this.$emit("onSent", false);
-          this.cancel();
-        });
+      this.sendEmail({ email, familyName, type });
+      this.$emit("onSent", true);
+      this.cancel();
     },
     toggleDialog(type, content, email, familyName) {
       this.dialog = !this.dialog;

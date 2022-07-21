@@ -314,6 +314,7 @@ import StartEncounterDialog from "./StartEncounterDialog.vue";
 import CreateAppointmentDialog from "@/views/Appointment/Dialogs/CreateAppointmentDialog";
 import StatusDialog from "@/components/StatusDialog";
 import { StatusTypes } from "@/utils/constants";
+import { fomartStringDate } from "@/utils/dateHelpers";
 import CreateNoteDialog from "@/views/Appointment/Dialogs/CreateNoteDialog";
 import DocumentReferenceWrapper from "../Patient/DocumentReferenceWrapper.vue";
 import EditPatientDialog from "@/views/Patient/Dialogs/EditPatientDialog";
@@ -357,6 +358,7 @@ export default {
     }),
     ...mapGetters("$_patients", {
       patient: "patient",
+      insuranceCard: "insuranceCard",
     }),
     ...mapGetters("$_practitioners", {
       zoomId: "zoomId",
@@ -415,9 +417,11 @@ export default {
       updateAppointment: "updateAppointment",
       createEncounter: "createEncounter",
       updateEncounter: "updateEncounter",
-      getEncounter: "getEncounter",
       createDiagnosticReport: "createDiagnosticReport",
       createClinicalNoteAction: "createClinicalNote",
+    }),
+    ...mapActions("$_application", {
+      insertSheet: "insertSheet",
     }),
     onAppointmentCreated(appointment) {
       const title = appointment ? "Success!" : "Failed";
@@ -461,9 +465,25 @@ export default {
     },
     endEncounter() {
       this.updateEncounter({
-        appointment: this.appointment,
         encounter: this.encounter,
+        appointment: this.appointment,
         status: "finished",
+      });
+
+      this.insertSheet({
+        email: this.patient.email,
+        phone: this.patient.phone,
+        lastName: this.patient.familyName,
+        firstName: this.patient.firstName,
+        date: this.appointment.date,
+        clinicalNote: this.clinicalNote.note,
+        address: this.patient.address,
+        doctor: this.practitionerNameJp,
+        start: this.appointment.start,
+        worksheet: fomartStringDate(new Date(this.appointment.date)),
+        insuranceFront: this.insuranceCard[0].attachment.url,
+        insuranceBack:
+          this.insuranceCard[this.insuranceCard.length - 1].attachment.url,
       });
     },
 

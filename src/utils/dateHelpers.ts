@@ -16,3 +16,7 @@ export function converTimeToInt(time: string): number {
     return -1;
   }
 }
+
+export function fomartStringDate(date: Date) {
+  return format(date, "yyyy-M");
+}
