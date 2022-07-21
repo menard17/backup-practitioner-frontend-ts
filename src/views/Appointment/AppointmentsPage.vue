@@ -25,7 +25,6 @@
               <v-date-picker
                 v-model="dateRange"
                 color="primary"
-                :max="maxDate"
                 no-title
                 range
                 @input="menuFrom = false"
@@ -58,7 +57,6 @@
                 range
                 @input="menuTo = false"
                 :min="minCurrentMonth"
-                :max="maxDate"
               />
             </v-menu>
           </v-col>
@@ -89,9 +87,10 @@
           this.isLoadingMyAppointments ||
           this.isLoadingSlots
         "
+        :custom-sort="customSort"
         @click:row="rowClicked"
-      >
-      </v-data-table>
+        :custom-filter="customFilter"
+      />
       <v-sheet
         v-show="viewOption === 'calendar'"
         elevation="0"
@@ -230,7 +229,7 @@
 import DataTable from "@/components/DataTable.vue";
 import Vue from "vue";
 import { mapActions, mapState, mapGetters } from "vuex";
-import { formatDateString } from "@/utils/dateHelpers";
+import { formatDateString, converTimeToInt } from "@/utils/dateHelpers";
 import { TimeConstants } from "@/utils/constants";
 
 export default Vue.extend({
@@ -238,7 +237,7 @@ export default Vue.extend({
   name: "AppointmentsPage",
   data() {
     return {
-      search: "",
+      search: formatDateString(new Date(), TimeConstants.monthDayYear),
       focus: "",
       viewOption: "list",
       calendarRangeOption: "week",
@@ -286,6 +285,7 @@ export default Vue.extend({
           dateTo: this.dateTo,
         });
       }
+      this.search = "";
       return newDateRange;
     },
   },
@@ -331,7 +331,7 @@ export default Vue.extend({
     minCurrentMonth() {
       if (this.dateRange.length) {
         let current = new Date(this.dateFrom);
-        current.setDate(current.getDate() + 1);
+        current.setDate(current.getDate());
         return current.toISOString().slice(0, 10);
       } else {
         return new Date().toISOString().slice(0, 10);
@@ -354,6 +354,39 @@ export default Vue.extend({
     }
   },
   methods: {
+    customFilter: (value, search) => {
+      return (
+        value != null &&
+        search != null &&
+        typeof value === "string" &&
+        value.toString() === search
+      );
+    },
+    customSort: function (items, index, isDesc) {
+      items.sort((a, b) => {
+        if (index[0] === "date") {
+          console.log(b[index]);
+          if (!isDesc[0]) {
+            return new Date(b[index]) - new Date(a[index]);
+          } else {
+            return new Date(a[index]) - new Date(b[index]);
+          }
+        } else if (index[0] == "start" || index[0] == "end") {
+          if (!isDesc[0]) {
+            return converTimeToInt(b[index]) - converTimeToInt(a[index]);
+          } else {
+            return converTimeToInt(a[index]) - converTimeToInt(b[index]);
+          }
+        } else {
+          if (!isDesc[0]) {
+            return a[index] > b[index] ? 1 : -1;
+          } else {
+            return b[index] > a[index] ? 1 : -1;
+          }
+        }
+      });
+      return items;
+    },
     ...mapActions("$_appointments", {
       getAppointmentsByPractitionerId: "getAppointmentsByPractitionerId",
       getAppointments: "getAppointments",
