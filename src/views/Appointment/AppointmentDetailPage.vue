@@ -106,7 +106,11 @@
           </v-col>
           <v-col>
             <v-btn
-              v-if="(encounter && encounter.status) === 'in-progress'"
+              v-if="
+                (encounter && encounter.status) === 'in-progress' &&
+                clinicalNote &&
+                clinicalNote.note
+              "
               @click="endEncounter"
               class="text-none subtitle-2 ml-3"
               color="primary"
@@ -464,27 +468,46 @@ export default {
       this.updateAppointmentStatus(this.appointment, "cancelled");
     },
     endEncounter() {
-      this.updateEncounter({
-        encounter: this.encounter,
-        appointment: this.appointment,
-        status: "finished",
-      });
+      if (
+        this.encounter &&
+        this.appointment &&
+        this.patient &&
+        this.patient.email &&
+        this.patient.phone &&
+        this.patient.familyName &&
+        this.patient.firstName &&
+        this.appointment.date &&
+        this.clinicalNote.note &&
+        this.patient.address &&
+        this.practitionerNameJp &&
+        this.appointment.start &&
+        fomartStringDate(new Date(this.appointment.date)) &&
+        this.insuranceCard[0].attachment.url &&
+        this.insuranceCard[this.insuranceCard.length - 1].attachment.url
+      ) {
+        // Finish Encounter
+        this.updateEncounter({
+          encounter: this.encounter,
+          appointment: this.appointment,
+          status: "finished",
+        });
 
-      this.insertSheet({
-        email: this.patient.email,
-        phone: this.patient.phone,
-        lastName: this.patient.familyName,
-        firstName: this.patient.firstName,
-        date: this.appointment.date,
-        clinicalNote: this.clinicalNote.note,
-        address: this.patient.address,
-        doctor: this.practitionerNameJp,
-        start: this.appointment.start,
-        worksheet: fomartStringDate(new Date(this.appointment.date)),
-        insuranceFront: this.insuranceCard[0].attachment.url,
-        insuranceBack:
-          this.insuranceCard[this.insuranceCard.length - 1].attachment.url,
-      });
+        this.insertSheet({
+          email: this.patient.email,
+          phone: this.patient.phone,
+          lastName: this.patient.familyName,
+          firstName: this.patient.firstName,
+          date: this.appointment.date,
+          clinicalNote: this.clinicalNote.note,
+          address: this.patient.address,
+          doctor: this.practitionerNameJp,
+          start: this.appointment.start,
+          worksheet: fomartStringDate(new Date(this.appointment.date)),
+          insuranceFront: this.insuranceCard[0].attachment.url,
+          insuranceBack:
+            this.insuranceCard[this.insuranceCard.length - 1].attachment.url,
+        });
+      }
     },
 
     startEncounter() {

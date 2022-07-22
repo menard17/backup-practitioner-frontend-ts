@@ -11,7 +11,7 @@ export function converTimeToInt(time: string): number {
     const hours = parseInt(splited[0]);
     const minutes = parseInt(splited[1].split(" ")[0]);
     const isPM = splited[1].split(" ")[1] === "PM" ? 1 : 0;
-    return hours * 60 + minutes + isPM * 12 * 60;
+    return (hours % 12) * 60 + minutes + isPM * 12 * 60;
   } catch {
     return -1;
   }
