@@ -256,6 +256,7 @@ export default Vue.extend({
         { text: "Date", value: "date" },
         { text: "Start", value: "start" },
         { text: "End", value: "end" },
+        { text: "Type", value: "type" },
         {
           text: "Status",
           value: "status",
@@ -319,11 +320,17 @@ export default Vue.extend({
     },
     // sort the date, always put the smaller one as the `dateFrom` and larger one as `dateTo`
     dateFrom() {
+      if (!this.dateRange.length) {
+        return formatDateString(new Date(), "yyyy-MM-dd");
+      }
       return this.compareDate(this.dateRange[0], this.dateRange[1])
         ? this.dateRange[1]
         : this.dateRange[0];
     },
     dateTo() {
+      if (!this.dateRange.length) {
+        return formatDateString(new Date(), "yyyy-MM-dd");
+      }
       return this.compareDate(this.dateRange[0], this.dateRange[1])
         ? this.dateRange[0]
         : this.dateRange[1];

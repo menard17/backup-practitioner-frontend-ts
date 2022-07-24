@@ -5,7 +5,6 @@
         <v-row>
           <v-col>
             Appointment Information
-
             <v-chip v-if="appointment">
               {{ appointment.status.toUpperCase() }}</v-chip
             >
@@ -274,7 +273,7 @@
     </v-card>
     <start-encounter-dialog
       @onYesClicked="startEncounter"
-      @onNoShowClicked="updateAppointmentStatus(appointment, 'noshow')"
+      @onNoShowClicked="openNoShowConfirmDialog"
       ref="startEncounterDialogRef"
     />
     <create-appointment-dialog
@@ -296,13 +295,21 @@
       @onSave="createClinicalNote"
       ref="createClinicalNoteDialog"
     />
-    <confirm-cancel-appointment-dialog
-      @save="confirmCancelAppointment"
-      ref="confirmCancelAppointmentDialogRef"
-    />
     <email-confirmation-dialog
       ref="emailConfirmationDialogRef"
       @onSent="onEmailSent"
+    />
+    <confirm-dialog
+      title="Cancel Appointment?"
+      message="Are you sure you want cancel this appointment?"
+      @save="confirmCancelAppointment"
+      ref="confirmCancelAppointmentDialogRef"
+    />
+    <confirm-dialog
+      title="No Show?"
+      message="Are you sure you want to mark this appointment as a no-show?"
+      @save="confirmNoShow"
+      ref="confirmNoShowDialogRef"
     />
     <v-overlay v-model="isCreatingEncounter">
       <v-progress-circular indeterminate />
@@ -322,12 +329,12 @@ import { fomartStringDate } from "@/utils/dateHelpers";
 import CreateNoteDialog from "@/views/Appointment/Dialogs/CreateNoteDialog";
 import DocumentReferenceWrapper from "../Patient/DocumentReferenceWrapper.vue";
 import EditPatientDialog from "@/views/Patient/Dialogs/EditPatientDialog";
-import ConfirmCancelAppointmentDialog from "@/views/Appointment/Dialogs/ConfirmCancelAppointmentDialog";
 import EmailConfirmationDialog from "@/views/Appointment/Dialogs/EmailConfirmationDialog";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 export default {
   components: {
-    ConfirmCancelAppointmentDialog,
+    ConfirmDialog,
     EditPatientDialog,
     CreateNoteDialog,
     StatusDialog,
@@ -412,7 +419,7 @@ export default {
       ];
     },
   },
-  async created() {
+  created() {
     this.populateAppointment(this.$route.params.id);
   },
   methods: {
@@ -466,6 +473,12 @@ export default {
     },
     confirmCancelAppointment() {
       this.updateAppointmentStatus(this.appointment, "cancelled");
+    },
+    openNoShowConfirmDialog() {
+      this.$refs.confirmNoShowDialogRef.toggleDialog();
+    },
+    confirmNoShow() {
+      this.updateAppointmentStatus(this.appointment, "noshow");
     },
     endEncounter() {
       if (

@@ -1,5 +1,5 @@
 <template>
-  <v-dialog width="500" v-model="dialog">
+  <v-dialog :width="width" v-model="dialog">
     <v-card>
       <v-card-title>
         <v-row>
@@ -34,17 +34,24 @@ export default {
       dialog: false,
       documents: [],
       title: "Document Reference",
+      width: 500,
     };
   },
   methods: {
     toggleDialog(documents, title) {
       this.documents = documents;
       this.title = title;
+      if (title == "Medical Record") {
+        this.width = "100%";
+      } else {
+        this.width = 500;
+      }
       this.dialog = !this.dialog;
     },
     closeDialog() {
       this.documents = [];
       this.title = "";
+      this.width = 500;
       this.dialog = false;
     },
   },
