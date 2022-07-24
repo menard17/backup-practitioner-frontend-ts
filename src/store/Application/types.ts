@@ -32,6 +32,8 @@ export type SheetObject = {
   insuranceFront: string;
   insuranceBack: string;
   worksheet: string;
+  dob: string;
+  gender: string;
 };
 
 export interface Template {

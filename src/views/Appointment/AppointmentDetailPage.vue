@@ -481,6 +481,8 @@ export default {
         this.patient.address &&
         this.practitionerNameJp &&
         this.appointment.start &&
+        this.patient.birthDate &&
+        this.patient.sex &&
         fomartStringDate(new Date(this.appointment.date)) &&
         this.insuranceCard[0].attachment.url &&
         this.insuranceCard[this.insuranceCard.length - 1].attachment.url
@@ -506,6 +508,8 @@ export default {
           insuranceFront: this.insuranceCard[0].attachment.url,
           insuranceBack:
             this.insuranceCard[this.insuranceCard.length - 1].attachment.url,
+          dob: this.patient.birthDate,
+          sex: this.patient.sex,
         });
       }
     },
