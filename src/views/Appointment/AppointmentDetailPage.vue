@@ -422,6 +422,14 @@ export default {
   created() {
     this.populateAppointment(this.$route.params.id);
   },
+  beforeRouteLeave(to, from, next) {
+    if (this.encounter && this.encounter.status == "in-progress") {
+      if (this.confirm() === false) {
+        return;
+      }
+    }
+    next();
+  },
   methods: {
     ...mapActions("$_appointments", {
       populateAppointment: "populateAppointment",
@@ -561,6 +569,11 @@ export default {
     openEditPatientDetailsDialog(e) {
       e.preventDefault();
       this.$refs.editPatientDialog.toggleDialog(this.patientObject);
+    },
+    confirm() {
+      return window.confirm(
+        "Are you sure to leave the page before completing encounter"
+      );
     },
   },
 };
