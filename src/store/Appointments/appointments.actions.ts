@@ -4,6 +4,7 @@ import {
   createResource,
   patchResource,
   updateResource,
+  callLogicApp,
 } from "@/utils/apiHelpers";
 import { stringToBase64, base64ToString } from "@/utils/fileProcess";
 import { formatDateString } from "@/utils/dateHelpers";
@@ -294,7 +295,7 @@ export async function getEncounter(context: Context, appointment: any) {
 
 export async function updateEncounter(
   context: Context,
-  { appointment, encounter, status }: any
+  { appointment, encounter, status, payload }: any
 ) {
   context.commit("setIsLoading", {
     action: "updateEncounter",
@@ -307,6 +308,10 @@ export async function updateEncounter(
   try {
     const encounter: any = await patchResource({ url: resource });
     context.commit("setEncounter", encounter.data);
+
+    if (status === "finished") {
+      await callLogicApp(payload, process.env.VUE_APP_logic_app_url_sheet);
+    }
   } catch (e) {
     console.error(e);
     context.commit("setEncounter", undefined);

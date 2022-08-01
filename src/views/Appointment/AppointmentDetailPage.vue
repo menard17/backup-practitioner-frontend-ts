@@ -504,6 +504,10 @@ export default {
         this.appointment.start &&
         this.patient.birthDate &&
         this.patient.sex &&
+        this.insuranceCard &&
+        this.appointment.date &&
+        this.insuranceCard[0] &&
+        this.insuranceCard[0].attachment &&
         fomartStringDate(new Date(this.appointment.date)) &&
         this.insuranceCard[0].attachment.url &&
         this.insuranceCard[this.insuranceCard.length - 1].attachment.url
@@ -513,28 +517,26 @@ export default {
           encounter: this.encounter,
           appointment: this.appointment,
           status: "finished",
-        });
-
-        this.insertSheet({
-          email: this.patient.email,
-          phone: this.patient.phone,
-          lastName: this.patient.familyName,
-          firstName: this.patient.firstName,
-          date: this.appointment.date,
-          clinicalNote: this.clinicalNote.note,
-          address: this.patient.address,
-          doctor: this.practitionerNameJp,
-          start: this.appointment.start,
-          worksheet: fomartStringDate(new Date(this.appointment.date)),
-          insuranceFront: this.insuranceCard[0].attachment.url,
-          insuranceBack:
-            this.insuranceCard[this.insuranceCard.length - 1].attachment.url,
-          dob: this.patient.birthDate,
-          sex: this.patient.sex,
+          payload: {
+            email: this.patient.email,
+            phone: this.patient.phone,
+            lastName: this.patient.familyName,
+            firstName: this.patient.firstName,
+            date: this.appointment.date,
+            clinicalNote: this.clinicalNote.note,
+            address: this.patient.address,
+            doctor: this.practitionerNameJp,
+            start: this.appointment.start,
+            worksheet: fomartStringDate(new Date(this.appointment.date)),
+            insuranceFront: this.insuranceCard[0].attachment.url,
+            insuranceBack:
+              this.insuranceCard[this.insuranceCard.length - 1].attachment.url,
+            dob: this.patient.birthDate,
+            sex: this.patient.sex,
+          },
         });
       }
     },
-
     startEncounter() {
       this.createEncounter(this.appointment);
     },

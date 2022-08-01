@@ -56,12 +56,14 @@ export async function populatePatient(context: Context, patientId: string) {
     return;
   }
 
-  const customerId = context.state.patient.extension.find(
+  const customer = context.state.patient.extension.find(
     (ext: any) => ext.url === "stripe-customer-id"
-  ).valueString;
-
-  await getPaymentMethods(context, customerId);
-  await getPaymentIntents(context, customerId);
+  );
+  if (customer) {
+    const customerId = customer.valueString;
+    await getPaymentMethods(context, customerId);
+    await getPaymentIntents(context, customerId);
+  }
 
   context.commit("setIsLoading", { action: "populatePatient", value: false });
 }
