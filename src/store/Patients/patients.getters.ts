@@ -1,5 +1,6 @@
 import { formatDateString } from "@/utils/dateHelpers";
 import { TimeConstants } from "@/utils/constants";
+import { Telecom } from "@/store/Patients/types";
 
 export function patients(state: any) {
   if (!state.patients.length) {
@@ -12,10 +13,12 @@ export function patients(state: any) {
     sex:
       (patient.resource.gender && patient.resource.gender.toUpperCase()) ||
       "Not Provided",
-    phone: patient.resource.telecom.find((item: any) => item.system === "phone")
-      .value,
-    email: patient.resource.telecom.find((item: any) => item.system === "email")
-      .value,
+    phone: patient.resource.telecom.find(
+      (item: Telecom) => item.system === "phone"
+    ).value,
+    email: patient.resource.telecom.find(
+      (item: Telecom) => item.system === "email" && item.use === "home"
+    ).value,
   }));
 }
 
@@ -49,8 +52,11 @@ export function patient(state: any) {
     familyName: patient && patient.name[0] && patient.name[0].family,
     birthDate: patient.birthDate || "Not Provided",
     sex: (patient.gender && patient.gender.toUpperCase()) || "Not Provided",
-    phone: patient.telecom.find((item: any) => item.system === "phone").value,
-    email: patient.telecom.find((item: any) => item.system === "email").value,
+    phone: patient.telecom.find((item: Telecom) => item.system === "phone")
+      .value,
+    email: patient.telecom.find(
+      (item: Telecom) => item.system === "email" && item.use === "home"
+    ).value,
     address: addressList.toString(),
   };
 }
