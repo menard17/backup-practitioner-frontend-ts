@@ -23,9 +23,9 @@
         />
         <v-textarea
           outlined
-          auto-grow
           placeholder="Type your notes Here"
           v-model="note"
+          rows="18"
         />
       </div>
       <v-card-actions>
