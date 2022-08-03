@@ -6,7 +6,7 @@
           <v-col>
             {{ title }}
           </v-col>
-          <v-col align="end">
+          <v-col align="end" cols="2">
             <v-btn icon @click="cancel">
               <v-icon> mdi-close </v-icon>
             </v-btn>

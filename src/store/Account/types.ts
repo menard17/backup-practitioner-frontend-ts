@@ -7,6 +7,7 @@ export interface AccountState {
   loadingData: {
     getCurrentUser: { isLoading: boolean };
     getCurrentUserRole: { isLoading: boolean };
+    updateMyPractitionerStatus: { isLoading: boolean };
     updateMyPractitionerRole: { isLoading: boolean };
     createMyPractitionerWithPractitionerRole: { isLoading: boolean };
     getAccounts: { isLoading: boolean };

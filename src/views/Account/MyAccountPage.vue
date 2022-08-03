@@ -20,14 +20,14 @@
       </v-row>
       <div v-if="practitioner && practitionerRole && user">
         <practitioner-details-page
-          v-if="!isUpdatingPractitionerRole"
+          v-if="!isLoading"
           :user="user"
           :practitioner="practitioner"
           :practitioner-role="practitionerRole"
           @updatePractitionerRole="updateMyPractitionerRole"
           @updateSchedule="updateMySchedule"
+          @updatePractitionerStatus="updateMyStatus"
         />
-        <v-skeleton-loader v-else type="article"></v-skeleton-loader>
       </div>
     </v-container>
     <practitioner-request-dialog
@@ -68,12 +68,18 @@ export default {
         state.loadingData.getCurrentUser.isLoading,
       isUpdatingPractitionerRole: (state) =>
         state.loadingData.updateMyPractitionerRole.isLoading,
+      isUpdatingPractitionerStatus: (state) =>
+        state.loadingData.updateMyPractitionerStatus.isLoading,
     }),
     ...mapState("$_account", {
       user: "user",
     }),
     isLoading() {
-      return this.isLoadingCurrentUser || this.isUpdatingPractitionerRole;
+      return (
+        this.isLoadingCurrentUser ||
+        this.isUpdatingPractitionerRole ||
+        this.isUpdatingPractitionerStatus
+      );
     },
   },
   created() {
@@ -83,6 +89,7 @@ export default {
     ...mapActions("$_account", {
       getCurrentUser: "getCurrentUser",
       updateMyPractitionerRole: "updateMyPractitionerRole",
+      updateMyPractitionerStatus: "updateMyPractitionerStatus",
     }),
     updateMySchedule(availableTime) {
       const changeFields = {
@@ -90,6 +97,12 @@ export default {
       };
 
       this.updateMyPractitionerRole({ changeFields });
+    },
+    updateMyStatus({ practitionerStatus, practitionerRoleId }) {
+      this.updateMyPractitionerStatus({
+        practitionerStatus,
+        practitionerRoleId,
+      });
     },
     openPractitionerRequestDialog: function (isNewPractitioner) {
       this.title = "Practitioner";

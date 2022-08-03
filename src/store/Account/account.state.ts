@@ -9,6 +9,7 @@ const state: AccountState = {
   loadingData: {
     getCurrentUser: { isLoading: false },
     getCurrentUserRole: { isLoading: false },
+    updateMyPractitionerStatus: { isLoading: false },
     updateMyPractitionerRole: { isLoading: false },
     createMyPractitionerWithPractitionerRole: { isLoading: false },
     getAccounts: { isLoading: false },

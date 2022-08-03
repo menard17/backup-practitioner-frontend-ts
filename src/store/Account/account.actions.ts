@@ -82,6 +82,33 @@ export const getCurrentUserRole = async (context: Context) => {
   return;
 };
 
+export async function updateMyPractitionerStatus(
+  context: Context,
+  { practitionerStatus, practitionerRoleId }: any
+) {
+  context.commit("setIsLoading", {
+    action: "updateMyPractitionerStatus",
+    value: true,
+  });
+
+  try {
+    const _ = await context.dispatch(
+      "$_practitioners/updatePractitionerStatus",
+      { practitionerStatus, practitionerRoleId },
+      { root: true }
+    );
+
+    await getCurrentUser(context);
+  } catch (e) {
+    console.error(e);
+  } finally {
+    context.commit("setIsLoading", {
+      action: "updateMyPractitionerStatus",
+      value: false,
+    });
+  }
+}
+
 export async function updateMyPractitionerRole(
   context: Context,
   { changeFields }: any
