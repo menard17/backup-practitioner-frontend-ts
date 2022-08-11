@@ -1,7 +1,23 @@
-import { ApplicationState, Template } from "@/store/Application/types";
+import {
+  ApplicationState,
+  MedicalTerm,
+  Template,
+} from "@/store/Application/types";
+
+interface setMedicalTermParam {
+  type: string;
+  medicalTerms: MedicalTerm[];
+}
 
 export function setTemplates(state: ApplicationState, templates: Template[]) {
   state.templates = templates;
+}
+
+export function setMedicalTerms(
+  state: ApplicationState,
+  { type, medicalTerms }: setMedicalTermParam
+) {
+  state.medicalTerms[type] = medicalTerms;
 }
 
 export function setIsLoading(state: any, { action, value }: any) {

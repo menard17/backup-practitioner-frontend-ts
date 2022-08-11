@@ -4,6 +4,8 @@ const state = {
   encounter: undefined,
   diagnosticReports: undefined,
   clinicalNote: undefined,
+  test: undefined,
+  medications: undefined,
   slots: [],
   loadingData: {
     createAppointment: { isLoading: false },
@@ -21,6 +23,10 @@ const state = {
     freeSlot: { isLoading: false },
     createClinicalNote: { isLoading: false },
     getClinicalNote: { isLoading: false },
+    createMedications: { isLoading: false },
+    getMedications: { isLoading: false },
+    createTest: { isLoading: false },
+    getTest: { isLoading: false },
   },
 };
 

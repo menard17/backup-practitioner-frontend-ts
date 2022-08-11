@@ -1,7 +1,12 @@
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { firestore } from "@/plugins/firebase";
 import { Context } from "../types";
-import { EmailObject, SheetObject, Template } from "@/store/Application/types";
+import {
+  EmailObject,
+  MedicalTerm,
+  SheetObject,
+  Template,
+} from "@/store/Application/types";
 import { callLogicApp } from "@/utils/apiHelpers";
 
 export async function getTemplates(context: Context, { type }: Template) {
@@ -32,16 +37,39 @@ export async function getTemplates(context: Context, { type }: Template) {
     template.displayOrder = doc.data().displayOrder;
     template.createdOn = doc.data().createdOn;
     template.language = doc.data().language;
-
     templates.push(template);
   });
 
   const sortedTemplates = templates.sort(
     (a: Template, b: Template) => a.displayOrder - b.displayOrder
   );
-
   context.commit("setTemplates", sortedTemplates);
   context.commit("setIsLoading", { action: "getTemplates", value: false });
+}
+
+export async function getMedicalTerms(context: Context, { type }: MedicalTerm) {
+  context.commit("setIsLoading", { action: "getMedicalTerms", value: true });
+
+  const q = query(
+    collection(firestore, "medical_terms"),
+    where("type", "==", type)
+  );
+
+  const querySnapshot = await getDocs(q);
+  const medicalTerms: MedicalTerm[] = [];
+
+  querySnapshot.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+    const medicalTerm = {} as MedicalTerm;
+    medicalTerm.type = doc.data().type;
+    medicalTerm.language = doc.data().language;
+    medicalTerm.array = doc.data().array;
+
+    medicalTerms.push(medicalTerm);
+  });
+
+  context.commit("setMedicalTerms", { type, medicalTerms });
+  context.commit("setIsLoading", { action: "getMedicalTerms", value: false });
 }
 
 export const sendEmail = async (context: Context, payload: EmailObject) => {

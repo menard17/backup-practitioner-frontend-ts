@@ -1,9 +1,13 @@
 export interface ApplicationState {
   templates: Template[];
+  medicalTerms: {
+    [key: string]: MedicalTerm[];
+  };
   emailSent: boolean;
   sheetAdded: boolean;
   loadingData: {
     getTemplates: { isLoading: boolean };
+    getMedicalTerms: { isLoading: boolean };
     callLogicApp: { isLoading: boolean };
   };
 }
@@ -39,8 +43,17 @@ export type SheetObject = {
 export interface Template {
   title: string;
   type: string;
-  text: string | undefined;
+  text: string;
   createdOn: any;
   displayOrder: number;
   language: string;
+}
+
+export interface MedicalTerm {
+  type: string;
+  language: string;
+  array: {
+    value: string;
+    display: string;
+  }[];
 }

@@ -283,6 +283,8 @@ export async function getEncounter(context: Context, appointment: any) {
   );
 
   await getClinicalNote(context, { appointment, encounter });
+  await getMedications(context, { encounter });
+  await getTest(context, { encounter });
 
   context.commit("setEncounter", encounter);
   context.commit("setDiagnosticReports", diagnosticReports);
@@ -547,4 +549,178 @@ export async function freeSlot(context: Context, { slotId }: any) {
     value: false,
   });
   return resp;
+}
+
+export async function createMedications(
+  context: Context,
+  { appointment, encounter, medicationArray }: any
+) {
+  context.commit("setIsLoading", { action: "createMedications", value: true });
+  if (!encounter || !appointment) {
+    context.commit("setIsLoading", {
+      action: "createMedications",
+      value: false,
+    });
+    context.commit("setTest", []);
+    return;
+  }
+
+  const medications = medicationArray.map((item: any) => {
+    return {
+      code: item.value,
+      display: item.display,
+    };
+  });
+  const payload = {
+    patient_id: appointment.patient,
+    requester_id: appointment.practitionerRole,
+    encounter_id: encounter.id,
+    medications,
+    status: "completed",
+    priority: "urgent",
+  };
+  const resource = `medication_requests`;
+  try {
+    await createResource({ resource, payload });
+
+    context.commit("setMedications", medicationArray);
+  } catch (e) {
+    console.error(e);
+    context.commit("setMedications", []);
+  }
+
+  context.commit("setIsLoading", {
+    action: "createMedications",
+    value: false,
+  });
+}
+
+export async function getMedications(context: Context, { encounter }: any) {
+  context.commit("setIsLoading", {
+    action: "getMedications",
+    value: true,
+  });
+  if (!encounter) {
+    context.commit("setIsLoading", {
+      action: "getMedications",
+      value: false,
+    });
+    context.commit("setMedications", []);
+    return;
+  }
+
+  try {
+    const medications: any = await getAll(
+      `medication_requests?encounter_id=${encounter.id}`
+    );
+    let processedMedications = [];
+    if (
+      medications &&
+      medications.data &&
+      medications.data.length &&
+      medications.data[0].medicationCodeableConcept &&
+      medications.data[0].medicationCodeableConcept.coding
+    ) {
+      processedMedications =
+        medications.data[0].medicationCodeableConcept.coding.map(
+          (item: any) => {
+            return {
+              display: item.display,
+              value: item.code,
+            };
+          }
+        );
+    }
+    context.commit("setMedications", processedMedications);
+  } catch (error) {
+    console.error(error);
+    context.commit("setMedications", []);
+  }
+
+  context.commit("setIsLoading", {
+    action: "getMedications",
+    value: false,
+  });
+}
+
+export async function createTest(
+  context: Context,
+  { appointment, encounter, test }: any
+) {
+  context.commit("setIsLoading", { action: "createTest", value: true });
+  if (!encounter || !appointment) {
+    context.commit("setIsLoading", {
+      action: "createTest",
+      value: false,
+    });
+    context.commit("setTest", []);
+    return;
+  }
+  const payload = {
+    patient_id: appointment.patient,
+    requester_id: appointment.practitionerRole,
+    encounter_id: encounter.id,
+    service_request: test.value,
+    request_display: test.display,
+    status: "completed",
+    priority: "urgent",
+  };
+  const resource = `service_requests`;
+  try {
+    await createResource({ resource, payload });
+
+    context.commit("setTest", [test]);
+  } catch (e) {
+    console.error(e);
+    context.commit("setTest", []);
+  }
+  context.commit("setIsLoading", {
+    action: "createTest",
+    value: false,
+  });
+}
+
+export async function getTest(context: Context, { encounter }: any) {
+  context.commit("setIsLoading", {
+    action: "getTest",
+    value: true,
+  });
+
+  if (!encounter) {
+    context.commit("setIsLoading", {
+      action: "getTest",
+      value: false,
+    });
+    context.commit("setTest", []);
+    return;
+  }
+
+  try {
+    const service_request: any = await getAll(
+      `service_requests?encounter_id=${encounter.id}`
+    );
+    let processed_test = [];
+    if (
+      !service_request ||
+      !service_request.data ||
+      !service_request.data.length
+    ) {
+      processed_test = [];
+    }
+    processed_test = service_request.data[0].code.coding.map((item: any) => {
+      return {
+        display: item.display,
+        value: item.code,
+      };
+    });
+    context.commit("setTest", processed_test);
+  } catch (error) {
+    console.error(error);
+    context.commit("setTest", []);
+  }
+
+  context.commit("setIsLoading", {
+    action: "getTest",
+    value: false,
+  });
 }

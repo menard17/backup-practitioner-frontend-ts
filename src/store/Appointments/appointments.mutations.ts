@@ -29,3 +29,11 @@ export function setDiagnosticReports(state: any, diagnosticReports: any) {
 export function setSlots(state: any, slots: any) {
   state.slots = slots;
 }
+
+export function setMedications(state: any, medications: any) {
+  state.medications = medications;
+}
+
+export function setTest(state: any, test: any) {
+  state.test = test;
+}

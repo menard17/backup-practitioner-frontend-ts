@@ -72,6 +72,18 @@ export function slots(state: any) {
   return slots;
 }
 
+export function medications(state: any) {
+  const medications = state.medications;
+
+  if (medications) {
+    const medicationArray = [];
+    for (let i = 0; i < medications.length; i++) {
+      medicationArray.push(medications[i].display);
+    }
+    return medicationArray.join(",");
+  }
+}
+
 export function events(state: any) {
   const slots = state.slots;
 

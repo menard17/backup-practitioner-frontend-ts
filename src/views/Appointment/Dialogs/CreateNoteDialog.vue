@@ -27,6 +27,27 @@
           v-model="note"
           rows="18"
         />
+        <v-select
+          v-model="medications"
+          :items="medicalTerms.medications[0].array"
+          label="Prescriptions"
+          multiple
+          item-value="value"
+          item-text="display"
+          chips
+          return-object
+          v-if="medicalTerms && medicalTerms.medications"
+        />
+        <v-select
+          v-model="test"
+          :items="medicalTerms.tests[0].array"
+          label="Tests"
+          item-value="value"
+          item-text="display"
+          dense
+          return-object
+          v-if="medicalTerms && medicalTerms.tests"
+        />
       </div>
       <v-card-actions>
         <v-spacer />
@@ -65,11 +86,14 @@ export default {
       selectedTemplate: null,
       isLoadingNote: false,
       noteType: "",
+      medications: [],
+      test: {},
     };
   },
   computed: {
     ...mapState("$_application", {
       templates: "templates",
+      medicalTerms: "medicalTerms",
     }),
     noteTypeTitle() {
       switch (this.noteType) {
@@ -85,10 +109,17 @@ export default {
   methods: {
     ...mapActions("$_application", {
       getTemplates: "getTemplates",
+      getMedicalTerms: "getMedicalTerms",
     }),
     save() {
-      this.$emit("onSave", this.note);
-      this.cancel();
+      if (
+        this.note &&
+        this.medications.length > 0 &&
+        JSON.stringify(this.test) !== "{}"
+      ) {
+        this.$emit("onSave", this.note, this.medications, this.test);
+        this.cancel();
+      }
     },
     cancel() {
       this.note = "";
@@ -96,13 +127,18 @@ export default {
       this.noteType = "";
       this.dialog = false;
     },
-    toggleDialog(type, note, isEditing = false) {
+    async toggleDialog(type, note, isEditing = false, test, medications) {
       this.dialog = !this.dialog;
       if (this.dialog) {
         this.noteType = type;
-        this.getTemplates({ type });
+        this.getTemplates({ type: this.noteType });
+        this.getMedicalTerms({ type: "tests" });
+        this.getMedicalTerms({ type: "medications" });
+
         if (isEditing) {
           this.note = note;
+          this.test = test;
+          this.medications = medications;
         }
       }
     },

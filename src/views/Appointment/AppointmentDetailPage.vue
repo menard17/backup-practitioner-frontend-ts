@@ -166,6 +166,22 @@
             </div>
           </v-col>
         </v-row>
+        <v-row dense>
+          <v-col cols="6">
+            <label-text-field
+              label="Tests"
+              v-if="this.encounter && this.test && this.test.length"
+              :text="test[0].display"
+            />
+          </v-col>
+          <v-col cols="6">
+            <label-text-field
+              label="Prescription"
+              v-if="medications"
+              :text="medications"
+            />
+          </v-col>
+        </v-row>
         <v-row class="mt-5" dense no-gutters>
           <v-col>
             <v-row class="mb-2" align="center">
@@ -362,10 +378,12 @@ export default {
         state.loadingData.createDiagnosticReport.isLoading,
       encounter: (state) => state.encounter,
       clinicalNote: (state) => state.clinicalNote,
+      test: (state) => state.test,
     }),
     ...mapGetters("$_appointments", {
       appointment: "appointment",
       diagnosticReports: "diagnosticReports",
+      medications: "medications",
     }),
     ...mapGetters("$_patients", {
       patient: "patient",
@@ -438,6 +456,8 @@ export default {
       updateEncounter: "updateEncounter",
       createDiagnosticReport: "createDiagnosticReport",
       createClinicalNoteAction: "createClinicalNote",
+      createMedicationsAction: "createMedications",
+      createTestAction: "createTest",
     }),
     ...mapActions("$_application", {
       insertSheet: "insertSheet",
@@ -533,6 +553,8 @@ export default {
               this.insuranceCard[this.insuranceCard.length - 1].attachment.url,
             dob: this.patient.birthDate,
             sex: this.patient.sex,
+            prescription: this.medications,
+            test: this.test[0].display,
           },
         });
       }
@@ -547,23 +569,50 @@ export default {
         note,
       });
     },
-    createClinicalNote(note) {
+    createClinicalNote(note, medications, test) {
       this.createClinicalNoteAction({
         appointment: this.appointment,
         encounter: this.encounter,
         note,
       });
+
+      // create medications
+      this.createMedicationsAction({
+        appointment: this.appointment,
+        encounter: this.encounter,
+        medicationArray: medications,
+      });
+      // create test
+      this.createTestAction({
+        appointment: this.appointment,
+        encounter: this.encounter,
+        test,
+      });
     },
-    openCreateNoteDialog(type, note = "", isEditing = false) {
+    openCreateNoteDialog(
+      type,
+      note = "",
+      isEditing = false,
+      test = "",
+      medications = []
+    ) {
       switch (type) {
         case "doctorNote":
-          this.$refs.createDoctorNoteDialog.toggleDialog(type, note, isEditing);
+          this.$refs.createDoctorNoteDialog.toggleDialog(
+            type,
+            note,
+            isEditing,
+            test,
+            medications
+          );
           break;
         case "clinicalNote":
           this.$refs.createClinicalNoteDialog.toggleDialog(
             type,
             note,
-            isEditing
+            isEditing,
+            test,
+            medications
           );
           break;
       }
