@@ -203,6 +203,7 @@ export default {
     }),
     durations() {
       return {
+        tenMins: "10 mins",
         quarterHour: "15 mins",
         halfHour: "30 mins",
         threeQuarterHour: "45 mins",
@@ -235,6 +236,9 @@ export default {
     setEndTimeFromDuration(duration) {
       const startDate = new Date(this.start);
       switch (duration) {
+        case this.durations.tenMins:
+          this.end = add(startDate, { minutes: 10 });
+          break;
         case this.durations.quarterHour:
           this.end = add(startDate, { minutes: 15 });
           break;

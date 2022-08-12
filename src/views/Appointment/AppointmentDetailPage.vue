@@ -444,6 +444,8 @@ export default {
     if (this.encounter && this.encounter.status == "in-progress") {
       if (this.confirm() === false) {
         return;
+      } else {
+        return this.endEncounter();
       }
     }
     next();
@@ -526,6 +528,7 @@ export default {
         this.patient.sex &&
         this.insuranceCard &&
         this.appointment.date &&
+        this.insuranceCard &&
         this.insuranceCard[0] &&
         this.insuranceCard[0].attachment &&
         fomartStringDate(new Date(this.appointment.date)) &&
@@ -623,7 +626,7 @@ export default {
     },
     confirm() {
       return window.confirm(
-        "Are you sure to leave the page before completing encounter"
+        "Do you want to leave the page by ending the session? If clinical note is not written, you cannot proceed"
       );
     },
   },

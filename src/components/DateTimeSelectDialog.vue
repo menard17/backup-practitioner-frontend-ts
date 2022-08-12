@@ -51,7 +51,7 @@ export default {
       dialog: false,
       datePicker: "",
       timePicker: "",
-      allowedStep: (m) => m % 15 === 0,
+      allowedStep: (m) => m % 5 === 0,
     };
   },
   methods: {
