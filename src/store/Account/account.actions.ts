@@ -31,6 +31,7 @@ export const getCurrentUser = async (context: Context) => {
   );
 
   const practitionerRole = practitionerRoles[0];
+
   context.commit("setPractitioner", practitioner);
   context.commit("setPractitionerRole", practitionerRole);
   context.commit("setIsLoading", { action: "getCurrentUser", value: false });
@@ -181,19 +182,17 @@ export async function createMyPractitionerWithPractitionerRole(
 
   try {
     const practitionerRole: any = await createResource({ resource, payload });
-    context.commit(
-      "setPractitionerRole",
-      practitionerRole.data.entry.find(
-        (item: any) => item.resource.resourceType === "PractitionerRole"
-      )
-    );
 
-    context.commit(
-      "setPractitioner",
-      practitionerRole.data.entry.find(
-        (item: any) => item.resource.resourceType === "Practitioner"
-      )
-    );
+    // fetch practitioner data
+    const practitionerId =
+      practitionerRole.data.practitioner.reference.split("/")[1];
+    const practitioner: any = await getById({
+      resource: "practitioners",
+      resourceId: practitionerId,
+    });
+
+    context.commit("setPractitionerRole", practitionerRole.data);
+    context.commit("setPractitioner", practitioner);
   } catch (e) {
     console.error(e);
     context.commit("setIsLoading", {

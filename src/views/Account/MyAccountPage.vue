@@ -109,7 +109,8 @@ export default {
       this.$refs.practitionerRequestDialogRef?.toggleDialog(
         this.practitioner,
         this.practitionerRole,
-        isNewPractitioner
+        isNewPractitioner,
+        true /*isMyPractitioner*/
       );
     },
   },

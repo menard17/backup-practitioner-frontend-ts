@@ -63,8 +63,8 @@ export const practitioner = (state: AccountState) => {
       bio: bioJp,
     },
     photo: {
-      type: practitioner.photo[0].contentType,
-      data: practitioner.photo[0].data,
+      type: practitioner.photo?.[0].contentType,
+      data: practitioner.photo?.[0].data,
     },
     sex:
       (practitioner.gender && practitioner.gender.toUpperCase()) ||
