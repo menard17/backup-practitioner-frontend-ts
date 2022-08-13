@@ -34,7 +34,7 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx"
-, "src/__tests__/CreateAppointmentDialog.spec.JS"  ],
+  ],
   "exclude": [
     "node_modules"
   ]

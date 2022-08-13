@@ -1,4 +1,4 @@
-import { converTimeToInt } from "../dateHelpers";
+import { converTimeToInt } from "@/utils/dateHelpers";
 
 describe("converTimeToInt", () => {
   it("12:00 PM should be larger than 11: 59 AM but less than 01: 00 PM", async () => {

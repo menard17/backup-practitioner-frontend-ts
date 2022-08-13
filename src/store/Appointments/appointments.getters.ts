@@ -80,6 +80,7 @@ export function medications(state: any) {
     for (let i = 0; i < medications.length; i++) {
       medicationArray.push(medications[i].display);
     }
+    medicationArray.sort();
     return medicationArray.join(",");
   }
 }

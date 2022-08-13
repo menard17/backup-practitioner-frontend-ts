@@ -20,9 +20,22 @@ jobs:
       script: |
         yarn install
         yarn audit fix
+      workingDirectory: $(System.DefaultWorkingDirectory)
+    displayName: 'yarn install, and audit'
+  - task: Bash@3
+    inputs:
+      targetType: 'inline'
+      script: |
+        yarn test
+      workingDirectory: $(System.DefaultWorkingDirectory)
+    displayName: 'yarn test'
+  - task: Bash@3
+    inputs:
+      targetType: 'inline'
+      script: |
         yarn run build
       workingDirectory: $(System.DefaultWorkingDirectory)
-    displayName: 'yarn install, audit, and build'
+    displayName: 'yarn build'
     env:
       VUE_APP_apiKey: $(apiKey)
       VUE_APP_authDomain: $(authDomain)

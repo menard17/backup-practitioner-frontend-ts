@@ -1,6 +1,6 @@
 import { shallowMount, createLocalVue } from "@vue/test-utils";
 import Vuex from "vuex";
-import Component from "@/views/Appointment/Dialogs/createAppointmentDialog.vue";
+import Component from "@/views/Appointment/Dialogs/CreateAppointmentDialog.vue";
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
