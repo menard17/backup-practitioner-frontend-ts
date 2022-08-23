@@ -11,6 +11,7 @@ import PatientsPage from "@/views/Patient/PatientsPage.vue";
 import PractitionersPage from "@/views/Practitioner/PractitionersPage.vue";
 import PractitionerRolesPage from "@/views/Practitioner/PractitionerRolesPage.vue";
 import PractitionerDetailsWrapperPage from "@/views/Practitioner/PractitionerDetailsWrapperPage.vue";
+import BulkPaymentsPage from "@/views/Payments/BulkPaymentsPage.vue";
 
 export const routes: Array<RouteConfig> = [
   {
@@ -73,6 +74,15 @@ export const routes: Array<RouteConfig> = [
     path: "/patients",
     name: "patients",
     component: PatientsPage,
+    meta: {
+      authRequired: true,
+    },
+  },
+
+  {
+    path: "/bulk-payments",
+    name: "bulk-payments",
+    component: BulkPaymentsPage,
     meta: {
       authRequired: true,
     },

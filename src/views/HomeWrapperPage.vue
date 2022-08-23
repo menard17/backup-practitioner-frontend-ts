@@ -119,6 +119,11 @@ export default Vue.extend({
             icon: "mdi-cash-multiple",
             to: "/payments",
           },
+          {
+            title: "Bulk Payments",
+            icon: "mdi-cash-multiple",
+            to: "/bulk-payments",
+          },
         ];
       } else if (this.firebaseRole == "Practitioner") {
         return [

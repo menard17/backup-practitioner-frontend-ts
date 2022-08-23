@@ -13,10 +13,10 @@ export function patients(state: any) {
     sex:
       (patient.resource.gender && patient.resource.gender.toUpperCase()) ||
       "Not Provided",
-    phone: patient.resource.telecom.find(
+    phone: patient?.resource?.telecom?.find(
       (item: Telecom) => item.system === "phone"
     ).value,
-    email: patient.resource.telecom.find(
+    email: patient?.resource?.telecom?.find(
       (item: Telecom) => item.system === "email" && item.use === "home"
     ).value,
   }));

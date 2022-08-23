@@ -122,7 +122,13 @@ export const getEmail = async () => {
   return await auth.currentUser.email;
 };
 
-export const callLogicApp = async (payload: any, logicAppEndpoint: string) => {
+export const callLogicApp = async (
+  payload: any,
+  logicAppEndpoint: string | undefined
+) => {
+  if (logicAppEndpoint == null) {
+    return;
+  }
   const response = await axios.post(logicAppEndpoint, payload, {
     withCredentials: false,
   });

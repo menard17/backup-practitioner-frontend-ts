@@ -1,8 +1,10 @@
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { firestore } from "@/plugins/firebase";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { firestore, storage } from "@/plugins/firebase";
 import { Context } from "../types";
 import {
   EmailObject,
+  FileUploadObject,
   MedicalTerm,
   SheetObject,
   Template,
@@ -97,3 +99,62 @@ export const insertSheet = async (context: Context, payload: SheetObject) => {
     context.commit("setSheet", false);
   }
 };
+
+export async function uploadFileToFirebaseStorage(
+  context: Context,
+  payload: FileUploadObject
+) {
+  const firebaseStorageUrl = `https://storage.cloud.google.com/${process.env.VUE_APP_storageBucket}/`;
+  return new Promise((resolve, reject) => {
+    context.commit("setIsLoading", {
+      action: "uploadFileToFirebaseStorage",
+      value: true,
+    });
+
+    const fileName = `${payload.path}/${payload.name}-${Date.now()}`.replaceAll(
+      " ",
+      ""
+    );
+
+    const storageRef = ref(storage, fileName);
+    const metadata = {
+      contentType: payload.contentType,
+    };
+
+    const uploadTask = uploadBytesResumable(storageRef, payload.file, metadata);
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        context.commit("setFileUploadProgress", progress);
+      },
+      (error) => {
+        context.commit(
+          "$_application/showNotification",
+          {
+            text: `There was an error uploading your file ${error.message}`,
+            type: "error",
+          },
+          { root: true }
+        );
+        context.commit("setIsLoading", {
+          action: "uploadFileToFirebaseStorage",
+          value: false,
+        });
+        reject(error.message);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl: string) => {
+          context.commit("setIsLoading", {
+            action: "uploadFileToFirebaseStorage",
+            value: false,
+          });
+          resolve(`${firebaseStorageUrl}${fileName}?authuser=4`);
+          //resolve(downloadUrl);
+        });
+      }
+    );
+  });
+}

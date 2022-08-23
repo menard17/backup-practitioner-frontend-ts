@@ -5,10 +5,18 @@ const state: ApplicationState = {
   medicalTerms: {},
   emailSent: false,
   sheetAdded: false,
+  fileUploadProgress: 0,
+  loadingOverlay: false,
+  snackbar: {
+    text: "",
+    type: "",
+  },
   loadingData: {
     getTemplates: { isLoading: false },
     getMedicalTerms: { isLoading: false },
     callLogicApp: { isLoading: false },
+    uploadFileToFirebaseStorage: { isLoading: false },
+    processBulkPaymentFile: { isLoading: false },
   },
 };
 

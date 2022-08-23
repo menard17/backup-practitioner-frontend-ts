@@ -31,3 +31,16 @@ export function setEmailSent(state: ApplicationState, value: boolean) {
 export function setSheet(state: ApplicationState, value: boolean) {
   state.sheetAdded = value;
 }
+
+export function setFileUploadProgress(state: ApplicationState, value: number) {
+  state.fileUploadProgress = value;
+}
+
+export function showNotification(state: ApplicationState, value: any) {
+  state.snackbar.text = value.text;
+  state.snackbar.type = value.type;
+}
+
+export function toggleLoadingOverlay(state: ApplicationState, value: any) {
+  state.loadingOverlay = value;
+}

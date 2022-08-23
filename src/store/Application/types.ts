@@ -5,10 +5,18 @@ export interface ApplicationState {
   };
   emailSent: boolean;
   sheetAdded: boolean;
+  fileUploadProgress: number;
+  loadingOverlay: boolean;
+  snackbar: {
+    text: string;
+    type: string;
+  };
   loadingData: {
     getTemplates: { isLoading: boolean };
     getMedicalTerms: { isLoading: boolean };
     callLogicApp: { isLoading: boolean };
+    uploadFileToFirebaseStorage: { isLoading: boolean };
+    processBulkPaymentFile: { isLoading: boolean };
   };
 }
 
@@ -56,4 +64,11 @@ export interface MedicalTerm {
     value: string;
     display: string;
   }[];
+}
+
+export interface FileUploadObject {
+  name: string;
+  path: string;
+  contentType: string;
+  file: any;
 }
