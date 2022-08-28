@@ -229,7 +229,11 @@
 import DataTable from "@/components/DataTable.vue";
 import Vue from "vue";
 import { mapActions, mapState, mapGetters } from "vuex";
-import { formatDateString, converTimeToInt } from "@/utils/dateHelpers";
+import {
+  formatDateString,
+  converTimeToInt,
+  compareDate,
+} from "@/utils/dateHelpers";
 import { TimeConstants } from "@/utils/constants";
 
 export default Vue.extend({
@@ -323,7 +327,7 @@ export default Vue.extend({
       if (!this.dateRange.length) {
         return formatDateString(new Date(), "yyyy-MM-dd");
       }
-      return this.compareDate(this.dateRange[0], this.dateRange[1])
+      return compareDate(this.dateRange[0], this.dateRange[1])
         ? this.dateRange[1]
         : this.dateRange[0];
     },
@@ -331,7 +335,7 @@ export default Vue.extend({
       if (!this.dateRange.length) {
         return formatDateString(new Date(), "yyyy-MM-dd");
       }
-      return this.compareDate(this.dateRange[0], this.dateRange[1])
+      return compareDate(this.dateRange[0], this.dateRange[1])
         ? this.dateRange[0]
         : this.dateRange[1];
     },
@@ -571,17 +575,6 @@ export default Vue.extend({
           this.updateSelectedRange(this.selectedRange);
         });
       }
-    },
-    compareDate(date1, date2) {
-      if (date1 === undefined || date2 === undefined) return false;
-
-      const [year1, month1, day1] = date1.split("-");
-      const [year2, month2, day2] = date2.split("-");
-
-      if (year1 > year2) return true;
-      if (month1 > month2) return true;
-      if (day1 > day2) return true;
-      return false;
     },
   },
 });

@@ -20,3 +20,16 @@ export function converTimeToInt(time: string): number {
 export function fomartStringDate(date: Date) {
   return format(date, "yyyy-M");
 }
+
+// date should be formatted date string (e.g., 2022-08-01)
+export function compareDate(date1: string, date2: string) {
+  if (date1 === undefined || date2 === undefined) return false;
+
+  const [year1, month1, day1] = date1.split("-");
+  const [year2, month2, day2] = date2.split("-");
+
+  if (year1 > year2) return true;
+  if (month1 > month2) return true;
+  if (day1 > day2) return true;
+  return false;
+}

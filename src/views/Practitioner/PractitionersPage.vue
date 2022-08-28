@@ -28,7 +28,6 @@
 <script>
 import DataTable from "@/components/DataTable";
 import { mapActions, mapGetters, mapState } from "vuex";
-import { getPractitionerRoles } from "@/store/Practitioners/practitioners.actions";
 
 export default {
   name: "PractitionersPage",

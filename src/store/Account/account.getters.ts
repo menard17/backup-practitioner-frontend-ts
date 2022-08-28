@@ -112,5 +112,9 @@ export const practitionerRole = (state: AccountState) => {
       : "",
     roleType: practitionerRole.code[0].coding[0].code.toUpperCase(),
     active: practitionerRole.active,
+    period: {
+      start: practitionerRole.period.start,
+      end: practitionerRole.period.end,
+    },
   };
 };

@@ -60,6 +60,23 @@
         />
       </v-col>
     </v-row>
+    <v-row class="mt-5" dense>
+      <v-col cols="12">
+        <div class="subtitle-1 text-left">Serving Date Rage</div>
+      </v-col>
+      <v-col>
+        <label-card
+          class="text-left"
+          label="Start"
+          :text="practitionerRole.period.start"
+        />
+        <label-card
+          class="text-left"
+          label="End"
+          :text="practitionerRole.period.end"
+        />
+      </v-col>
+    </v-row>
 
     <v-btn
       @click="$emit('edit')"

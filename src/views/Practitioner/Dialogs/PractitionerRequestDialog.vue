@@ -73,9 +73,76 @@
           </v-col>
         </v-row>
 
+        <v-row dense>
+          <v-col>
+            <div class="title mb-2">Serving Date Range</div>
+            <v-row dense>
+              <v-col cols="4">
+                <v-menu
+                  ref="menuFrom"
+                  v-model="menuFrom"
+                  :close-on-content-click="false"
+                  transition="scale-transition"
+                  offset-y
+                  max-width="290px"
+                  min-width="290px"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      outlined
+                      v-model="dateFrom"
+                      label="From"
+                      append-icon="mdi-calendar"
+                      v-bind="attrs"
+                      v-on="on"
+                    />
+                  </template>
+                  <v-date-picker
+                    v-model="dateRange"
+                    color="primary"
+                    no-title
+                    range
+                    @input="menuFrom = false"
+                  />
+                </v-menu>
+              </v-col>
+              <v-col cols="4">
+                <v-menu
+                  ref="menuTo"
+                  v-model="menuTo"
+                  :close-on-content-click="false"
+                  transition="scale-transition"
+                  offset-y
+                  max-width="290px"
+                  min-width="290px"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      outlined
+                      v-model="dateTo"
+                      label="To"
+                      append-icon="mdi-calendar"
+                      v-bind="attrs"
+                      v-on="on"
+                    />
+                  </template>
+                  <v-date-picker
+                    v-model="dateRange"
+                    color="primary"
+                    no-title
+                    range
+                    @input="menuTo = false"
+                    :min="minCurrentMonth"
+                  />
+                </v-menu>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+
         <v-row dense class="mt-2">
           <v-col v-if="this.selectedRoleType != 'STAFF'">
-            <div class="subtitle-2 mb-2">Upload a Photo</div>
+            <div class="title mb-2">Upload a Photo</div>
             <v-file-input
               dense
               outlined
@@ -111,6 +178,7 @@ import LabelTextArea from "@/components/LabelTextArea";
 import LabelCard from "@/components/LabelCard";
 import { toBase64, resizeImage } from "@/utils/fileProcess";
 import { mapActions } from "vuex";
+import { formatDateString, compareDate } from "@/utils/dateHelpers";
 
 export default {
   name: "PractitionerRequestDialog",
@@ -150,6 +218,9 @@ export default {
       ],
       isMyPractitioner: false,
       practitionerRoleId: "",
+      dateRange: [],
+      menuFrom: false,
+      menuTo: false,
     };
   },
   computed: {
@@ -157,8 +228,8 @@ export default {
       return {
         family_name_en: this.familyNameEn,
         given_name_en: this.firstNameEn,
-        start: "2021-01-01",
-        end: "2099-03-31",
+        start: this.dateRange[0],
+        end: this.dateRange[1],
         role_type: this.selectedRoleType.toLowerCase(),
         gender: this.selectedGender.toLowerCase(),
         family_name_ja: this.familyNameJp,
@@ -170,6 +241,40 @@ export default {
         bio_en: this.bioEn,
         bio_ja: this.bioJp,
       };
+    },
+    // sort the date, always put the smaller one as the `dateFrom` and larger one as `dateTo`
+    dateFrom() {
+      if (this.isNewPractitioner) {
+        return formatDateString(new Date(), "yyyy-MM-dd");
+      }
+      if (!this.dateRange.length) {
+        return this.start;
+      }
+
+      return compareDate(this.dateRange[0], this.dateRange[1])
+        ? this.dateRange[1]
+        : this.dateRange[0];
+    },
+    dateTo() {
+      if (this.isNewPractitioner) {
+        return formatDateString(new Date(), "yyyy-MM-dd");
+      }
+      if (!this.dateRange.length) {
+        return this.end;
+      }
+
+      return compareDate(this.dateRange[0], this.dateRange[1])
+        ? this.dateRange[0]
+        : this.dateRange[1];
+    },
+    minCurrentMonth() {
+      if (this.dateRange.length) {
+        let current = new Date(this.dateFrom);
+        current.setDate(current.getDate());
+        return current.toISOString().slice(0, 10);
+      } else {
+        return new Date().toISOString().slice(0, 10);
+      }
     },
   },
   methods: {
@@ -214,6 +319,8 @@ export default {
         this.photo = practitioner.photo;
         this.selectedGender = practitioner.sex.toUpperCase();
         this.image = null;
+        this.start = practitionerRole.period.start;
+        this.end = practitionerRole.period.end;
       }
     },
     save() {
@@ -253,6 +360,8 @@ export default {
       this.image = null;
       this.dialog = false;
       this.isMyPractitioner = false;
+      this.start = formatDateString(new Date(), "yyyy-MM-dd");
+      this.end = formatDateString(new Date(), "yyyy-MM-dd");
     },
   },
 };
