@@ -74,7 +74,7 @@
         </v-row>
 
         <v-row dense>
-          <v-col>
+          <v-col v-if="this.selectedRoleType != 'STAFF'">
             <div class="title mb-2">Serving Date Range</div>
             <v-row dense>
               <v-col cols="4">
@@ -225,7 +225,7 @@ export default {
   },
   computed: {
     changeFields() {
-      return {
+      const output = {
         family_name_en: this.familyNameEn,
         given_name_en: this.firstNameEn,
         start: this.dateRange[0],
@@ -234,13 +234,22 @@ export default {
         gender: this.selectedGender.toLowerCase(),
         family_name_ja: this.familyNameJp,
         given_name_ja: this.firstNameJp,
-        photo:
-          this.isNewPractitioner || this.isNewPhoto
-            ? this.photo
-            : `data:${this.photo.type};base64,${this.photo.data}`,
         bio_en: this.bioEn,
         bio_ja: this.bioJp,
       };
+
+      if (this.photo) {
+        output["photo"] =
+          this.isNewPractitioner || this.isNewPhoto
+            ? this.photo
+            : `data:${this.photo.type};base64,${this.photo.data}`;
+      }
+
+      if (this.dateRange) {
+        output["start"] = this.dateRange[0];
+        output["end"] = this.dateRange[1];
+      }
+      return output;
     },
     // sort the date, always put the smaller one as the `dateFrom` and larger one as `dateTo`
     dateFrom() {
@@ -319,8 +328,10 @@ export default {
         this.photo = practitioner.photo;
         this.selectedGender = practitioner.sex.toUpperCase();
         this.image = null;
-        this.start = practitionerRole.period.start;
-        this.end = practitionerRole.period.end;
+        if (practitionerRole.period) {
+          this.start = practitionerRole.period.start;
+          this.end = practitionerRole.period.end;
+        }
       }
     },
     save() {

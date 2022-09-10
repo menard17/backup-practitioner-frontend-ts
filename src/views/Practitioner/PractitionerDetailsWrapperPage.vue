@@ -7,6 +7,7 @@
       :practitioner-role="practitionerRole"
       @updatePractitionerRole="updatePractitionerRole"
       @updateSchedule="updateSchedule"
+      @updatePractitionerStatus="updatePractitionerStatus"
     />
     <v-skeleton-loader v-else type="article"></v-skeleton-loader>
   </div>
@@ -30,7 +31,6 @@ export default {
     }),
   },
   created() {
-    console.log(this.$route.params.id);
     this.getPractitionerById(this.$route.params.id);
     this.getPractitionerRoleByPractitionerId(this.$route.params.id);
   },
@@ -40,6 +40,7 @@ export default {
         "getPractitionerRoleByPractitionerId",
       getPractitionerById: "getPractitionerById",
       updatePractitionerRole: "updatePractitioner",
+      updatePractitionerStatus: "updatePractitionerStatus",
     }),
     updateSchedule(availableTime) {
       const changeFields = {

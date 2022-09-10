@@ -93,7 +93,6 @@ export default {
       getPractitionerRoles: "getPractitionerRoles",
     }),
     rowClicked(item) {
-      console.log(item);
       this.$router.push(`/practitioners/${item.id}`);
     },
     onTypeChange() {

@@ -119,7 +119,6 @@ export async function updateMyPractitionerRole(
     value: true,
   });
   const practitionerRoleId = context.state.practitionerRole.id;
-  // const url = `practitioner_roles/${practitionerRoleId}`;
   const payload = {
     ...changeFields,
   };

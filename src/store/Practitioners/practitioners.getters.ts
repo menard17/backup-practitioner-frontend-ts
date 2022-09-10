@@ -1,5 +1,6 @@
 import { formatDateString } from "@/utils/dateHelpers";
 import { TimeConstants } from "@/utils/constants";
+import { PractitionerRoles, PractitionerState } from "./types";
 
 export function practitioners(state: any) {
   if (!state.practitioners.length) {
@@ -183,14 +184,14 @@ export function practitionerRole(state: any) {
   };
 }
 
-export function practitionerRoles(state: any) {
+export function practitionerRoles(state: PractitionerState) {
   const practitionerRoles = state.practitionerRoles;
 
   if (!practitionerRoles.length) {
     return;
   }
 
-  return practitionerRoles.map((practitionerRole: any) => {
+  return practitionerRoles.map((practitionerRole) => {
     const practitioner = practitionerRole.practitionerObj;
 
     const formattedPractitioner = formatPractitioner(

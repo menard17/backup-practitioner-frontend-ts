@@ -1,3 +1,5 @@
+import { PractitionerState } from "./types";
+
 export function setPractitioners(state: any, practitioners: any) {
   state.practitioners = practitioners;
 }
@@ -20,4 +22,26 @@ export function setPractitionerRoles(state: any, practitionerRoles: any) {
 
 export function setAppointments(state: any, appointments: any) {
   state.appointments = appointments;
+}
+
+type setPractitionerRoleStatusParam = {
+  roleId: string;
+  status: boolean;
+};
+
+export function setPractitionerRoleStatus(
+  state: PractitionerState,
+  { roleId, status }: setPractitionerRoleStatusParam
+) {
+  state.practitionerRole!.active = status;
+  state.practitioner.active = status;
+  const objIndex = state.practitionerRoles.findIndex((obj) => obj.id == roleId);
+  const obj = state.practitionerRoles[objIndex];
+  obj.active = status;
+  obj.practitionerObj.active = status;
+  state.practitionerRoles = [
+    ...state.practitionerRoles.slice(0, objIndex),
+    obj,
+    ...state.practitionerRoles.slice(objIndex + 1),
+  ];
 }

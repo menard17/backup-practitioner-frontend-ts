@@ -152,8 +152,9 @@ export async function updatePractitioner(
 
   const url = `practitioner_roles/${practitionerRoleId}`;
 
+  let practitionerRole: any;
   try {
-    const practitionerRole: any = await updateResource({ url, payload });
+    practitionerRole = await updateResource({ url, payload });
 
     const practitionerRoleData = practitionerRole.data.entry.find(
       (item: any) => item.resource.resourceType === "PractitionerRole"
@@ -170,8 +171,6 @@ export async function updatePractitioner(
     if (practitionerData) {
       context.commit("setPractitioner", practitionerData.resource);
     }
-
-    return practitionerRole;
   } catch (e) {
     console.error(e);
   }
@@ -182,9 +181,14 @@ export async function updatePractitioner(
   });
 }
 
+type updatePractitionerStatusType = {
+  practitionerStatus: string;
+  practitionerRoleId: string;
+};
+
 export async function updatePractitionerStatus(
-  context: any,
-  { practitionerStatus, practitionerRoleId }: any
+  context: Context,
+  { practitionerStatus, practitionerRoleId }: updatePractitionerStatusType
 ) {
   context.commit("setIsLoading", {
     action: "updatePractitionerStatus",
@@ -197,6 +201,10 @@ export async function updatePractitionerStatus(
     patchResource({ url, payload: null })
       .then(() => {
         resolve(practitionerRoleId);
+        context.commit("setPractitionerRoleStatus", {
+          roleId: practitionerRoleId,
+          status: practitionerStatus,
+        });
       })
       .catch((e) => {
         console.error(e);

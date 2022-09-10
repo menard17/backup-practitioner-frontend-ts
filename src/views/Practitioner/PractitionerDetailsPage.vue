@@ -238,9 +238,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions("$_practitioners", {
-      updatePractitionerStatus: "updatePractitionerStatus",
-    }),
     openTogglePractitionerStatusDialog() {
       this.$refs.togglePractitionerStatusDialogRef.toggleDialog();
     },
