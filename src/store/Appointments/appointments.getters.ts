@@ -15,6 +15,7 @@ export function appointments(state: any) {
       firstName: appointment.patient.name[0].given[0],
       familyName: appointment.patient.name[0].family,
     },
+    practitioner: appointment.practitioner.name[0].text,
     date: formatDateString(appointment.start, TimeConstants.monthDayYear),
     start: formatDateString(appointment.start, TimeConstants.time),
     end: formatDateString(appointment.end, TimeConstants.time),

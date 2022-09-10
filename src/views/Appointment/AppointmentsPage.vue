@@ -250,6 +250,10 @@ export default Vue.extend({
       items: ["My Appointments", "All"],
       headers: [
         {
+          text: "Doctor Name",
+          value: "practitioner",
+        },
+        {
           text: "Patient Family Name",
           value: "patient.familyName",
         },

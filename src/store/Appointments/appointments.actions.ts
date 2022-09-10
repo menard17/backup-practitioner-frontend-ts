@@ -41,18 +41,28 @@ export async function getAppointmentsByPractitionerId(
   });
 }
 
+type GetAppointmentsParam = {
+  actorId: string;
+  dateFrom?: string;
+  dateTo?: string;
+};
+
 export const getAppointments = async (
   context: Context,
-  { actorId, dateFrom, dateTo }: any
+  { actorId, dateFrom, dateTo }: GetAppointmentsParam
 ) => {
   context.commit("setIsLoading", { action: "getAppointments", value: true });
 
   const searchParams = [
     "include_patient=true",
     "include_practitioner=true",
-    `actor_id=${actorId}`,
     "count=900", // Hardcode one, assuming it should be enough
   ];
+
+  const roleType = context.rootState.$_account.firebaseRole;
+  if (actorId !== "" && actorId !== undefined && roleType != "Staff") {
+    searchParams.push(`actor_id=${actorId}`);
+  }
 
   if (dateFrom !== undefined) {
     searchParams.push(`start_date=${dateFrom}`);
@@ -148,9 +158,11 @@ export async function populateAppointment(
     .find((item: any) => item.actor.reference.includes("PractitionerRole"))
     .actor.reference.split("/")[1];
 
-  await context.dispatch("$_patients/populatePatient", patientId, {
-    root: true,
-  });
+  await context
+    .dispatch("$_patients/populatePatient", patientId, {
+      root: true,
+    })
+    .catch((error) => console.error(error));
 
   await context.dispatch(
     "$_practitioners/getPractitionerRoleById",
