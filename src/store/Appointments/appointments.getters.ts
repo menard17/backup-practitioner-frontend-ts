@@ -19,7 +19,6 @@ export function appointments(state: any) {
     date: formatDateString(appointment.start, TimeConstants.monthDayYear),
     start: formatDateString(appointment.start, TimeConstants.time),
     end: formatDateString(appointment.end, TimeConstants.time),
-    dateTime: appointment.start,
     status: appointment.status,
     type: appointment.serviceType[0].coding[0].display,
   }));

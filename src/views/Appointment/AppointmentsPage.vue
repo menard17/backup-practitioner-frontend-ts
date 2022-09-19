@@ -1,41 +1,84 @@
 <template>
   <div>
     <data-table title="My Appointments">
-      <v-row class="px-4 pb-4">
-        <v-col>
-          <filter-button-menu
-            :filterMenuOptions="dateFilterOptions"
-            :selectedFilterItem="selectedDateFilter"
-            default-filter-title="Date"
-            @filter-items="filterAppointments"
-          />
-          <filter-button-menu
-            v-if="appointments.length"
-            :filterMenuOptions="statusFilterOptions"
-            :selectedFilterItem="selectedStatusFilter"
-            default-filter-title="Status"
-            @filter-items="filterAppointmentsByStatus"
-          />
-        </v-col>
-        <v-col align="end">
-          <v-btn-toggle v-model="viewOption" borderless>
-            <v-btn small value="list">
-              <v-icon left> mdi-format-list-bulleted </v-icon>
-              <span class="hidden-sm-and-down">List</span>
-            </v-btn>
+      <template v-slot:headerButton>
+        <v-row>
+          <v-col cols="4">
+            <v-menu
+              ref="menuFrom"
+              v-model="menuFrom"
+              :close-on-content-click="false"
+              transition="scale-transition"
+              offset-y
+              max-width="290px"
+              min-width="290px"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field
+                  v-model="dateFrom"
+                  label="From"
+                  append-icon="mdi-calendar"
+                  v-bind="attrs"
+                  v-on="on"
+                />
+              </template>
+              <v-date-picker
+                v-model="dateRange"
+                color="primary"
+                no-title
+                range
+                @input="menuFrom = false"
+              />
+            </v-menu>
+          </v-col>
+          <v-col cols="4">
+            <v-menu
+              ref="menuTo"
+              v-model="menuTo"
+              :close-on-content-click="false"
+              transition="scale-transition"
+              offset-y
+              max-width="290px"
+              min-width="290px"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field
+                  v-model="dateTo"
+                  label="To"
+                  append-icon="mdi-calendar"
+                  v-bind="attrs"
+                  v-on="on"
+                />
+              </template>
+              <v-date-picker
+                v-model="dateRange"
+                color="primary"
+                no-title
+                range
+                @input="menuTo = false"
+                :min="minCurrentMonth"
+              />
+            </v-menu>
+          </v-col>
+          <v-col cols="4">
+            <v-btn-toggle v-model="viewOption" borderless>
+              <v-btn value="list">
+                <v-icon left> mdi-format-list-bulleted </v-icon>
+                <span class="hidden-sm-and-down">List</span>
+              </v-btn>
 
-            <v-btn small value="calendar">
-              <v-icon left> mdi-calendar </v-icon>
-              <span class="hidden-sm-and-down">Calendar</span>
-            </v-btn>
-          </v-btn-toggle>
-        </v-col>
-      </v-row>
-
+              <v-btn value="calendar">
+                <v-icon left> mdi-calendar </v-icon>
+                <span class="hidden-sm-and-down">Calendar</span>
+              </v-btn>
+            </v-btn-toggle>
+          </v-col>
+        </v-row>
+      </template>
       <v-data-table
         v-if="viewOption === 'list'"
         :headers="headers"
-        :items="filteredAppointments"
+        :items="appointments"
         :items-per-page="30"
         class="elevation-0"
         :search="search"
@@ -192,11 +235,9 @@ import {
   compareDate,
 } from "@/utils/dateHelpers";
 import { TimeConstants } from "@/utils/constants";
-import { addDays, format } from "date-fns";
-import FilterButtonMenu from "@/components/FilterButtonMenu";
 
 export default Vue.extend({
-  components: { FilterButtonMenu, DataTable },
+  components: { DataTable },
   name: "AppointmentsPage",
   data() {
     return {
@@ -206,9 +247,6 @@ export default Vue.extend({
       calendarRangeOption: "week",
       selectedMonth: new Date(),
       ready: false,
-      selectedDateFilter: null,
-      selectedStatusFilter: null,
-      filteredAppointments: [],
       items: ["My Appointments", "All"],
       headers: [
         {
@@ -259,20 +297,6 @@ export default Vue.extend({
       this.search = "";
       return newDateRange;
     },
-    appointments(newAppointments) {
-      if (newAppointments.length) {
-        this.filteredAppointments = newAppointments;
-        const appointmentStatusFilter = localStorage.getItem(
-          "appointmentStatusFilter"
-        );
-        if (appointmentStatusFilter) {
-          this.filterAppointmentsByStatus(
-            JSON.parse(appointmentStatusFilter),
-            false
-          );
-        }
-      }
-    },
   },
   computed: {
     ...mapGetters("$_appointments", {
@@ -291,28 +315,6 @@ export default Vue.extend({
       isLoadingSlots: (state) =>
         state.loadingData.getSlotsByPractitionerRoleId.isLoading,
     }),
-    statusFilterOptions() {
-      return {
-        booked: { title: "Booked", status: "booked" },
-        cancelled: { title: "Cancelled", status: "cancelled" },
-        fulfilled: { title: "Fulfilled", status: "fulfilled" },
-        noShow: { title: "No Show", status: "noshow" },
-      };
-    },
-    dateFilterOptions() {
-      return {
-        today: { title: "Today", addDays: 0 },
-        tomorrow: { title: "Tomorrow", addDays: 1 },
-        next7Days: { title: "Next 7 Days", addDays: 7 },
-        next14Days: { title: "Next 14 Days", addDays: 14 },
-        next30Days: { title: "Next 30 Days", addDays: 30 },
-        divider: { divider: true },
-        yesterday: { title: "Yesterday", addDays: -1 },
-        last7Days: { title: "Last 7 Days", addDays: -7 },
-        last14Days: { title: "Last 14 Days", addDays: -14 },
-        last30Days: { title: "Last 30 Days", addDays: -30 },
-      };
-    },
     cal() {
       return this.ready && this.isShowingCalendar
         ? this.$refs.calendarRef
@@ -358,67 +360,15 @@ export default Vue.extend({
     this.ready = true;
     this.scrollToTime();
     this.updateTime();
-    const appointmentDateFilter = localStorage.getItem("appointmentDateFilter");
-    if (!appointmentDateFilter) {
-      this.filterAppointments(this.dateFilterOptions.today);
-      return;
+  },
+  created() {
+    if (!this.appointments.length) {
+      this.getAppointmentsByPractitionerId({
+        practitionerId: "",
+      });
     }
-    this.filterAppointments(JSON.parse(appointmentDateFilter));
   },
   methods: {
-    filterAppointmentsByStatus(selected, isForceUpdate = true) {
-      localStorage.setItem("appointmentStatusFilter", JSON.stringify(selected));
-      if (!selected) {
-        return;
-      }
-      if (this.selectedStatusFilter) {
-        if (
-          selected.title === this.selectedStatusFilter.title &&
-          isForceUpdate
-        ) {
-          this.selectedStatusFilter = null;
-          localStorage.setItem("appointmentStatusFilter", null);
-          this.filteredAppointments = this.appointments;
-          return;
-        }
-      }
-      this.selectedStatusFilter = selected;
-      this.filteredAppointments = this.appointments.filter(
-        (item) => item.status === selected.status
-      );
-    },
-    filterAppointments(selected) {
-      localStorage.setItem("appointmentDateFilter", JSON.stringify(selected));
-      this.filteredAppointments = [];
-      if (!selected) {
-        return;
-      }
-      if (this.selectedDateFilter) {
-        if (selected.title === this.selectedDateFilter.title) {
-          this.selectedDateFilter = null;
-          localStorage.setItem(
-            "appointmentDateFilter",
-            JSON.stringify(this.dateFilterOptions.today)
-          );
-          return;
-        }
-      }
-
-      const today = Date.now();
-      const rangeDate = addDays(Date.now(), selected.addDays);
-      this.selectedDateFilter = selected;
-      if (rangeDate > today) {
-        this.dateRange = [
-          format(today, TimeConstants.yearMonthDay),
-          format(rangeDate, TimeConstants.yearMonthDay),
-        ];
-      } else {
-        this.dateRange = [
-          format(rangeDate, TimeConstants.yearMonthDay),
-          format(today, TimeConstants.yearMonthDay),
-        ];
-      }
-    },
     customFilter: (value, search) => {
       return (
         value != null &&
@@ -427,8 +377,30 @@ export default Vue.extend({
         value.toString() === search
       );
     },
-    customSort: function (items) {
-      return items.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
+    customSort: function (items, index, isDesc) {
+      items.sort((a, b) => {
+        if (index[0] === "date") {
+          console.log(b[index]);
+          if (!isDesc[0]) {
+            return new Date(b[index]) - new Date(a[index]);
+          } else {
+            return new Date(a[index]) - new Date(b[index]);
+          }
+        } else if (index[0] == "start" || index[0] == "end") {
+          if (!isDesc[0]) {
+            return converTimeToInt(b[index]) - converTimeToInt(a[index]);
+          } else {
+            return converTimeToInt(a[index]) - converTimeToInt(b[index]);
+          }
+        } else {
+          if (!isDesc[0]) {
+            return a[index] > b[index] ? 1 : -1;
+          } else {
+            return b[index] > a[index] ? 1 : -1;
+          }
+        }
+      });
+      return items;
     },
     ...mapActions("$_appointments", {
       getAppointmentsByPractitionerId: "getAppointmentsByPractitionerId",
