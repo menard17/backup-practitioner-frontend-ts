@@ -116,6 +116,15 @@
             >
               End Session
             </v-btn>
+            <v-btn
+              v-if="(encounter && encounter.status) === 'in-progress'"
+              @click="openCancelEncounterDialog"
+              class="text-none subtitle-2"
+              outlined
+              color="error"
+            >
+              Cancel Encounter
+            </v-btn>
           </v-col>
         </v-row>
         <v-row class="mt-5" dense no-gutters>
@@ -322,6 +331,12 @@
       ref="confirmCancelAppointmentDialogRef"
     />
     <confirm-dialog
+      title="Cancel Encounter?"
+      message="Are you sure you want cancel this Encounter?"
+      @save="cancelEncounter"
+      ref="confirmCancelEncounterDialogRef"
+    />
+    <confirm-dialog
       title="No Show?"
       message="Are you sure you want to mark this appointment as a no-show?"
       @save="confirmNoShow"
@@ -493,6 +508,9 @@ export default {
     openCancelAppointmentDialog() {
       this.$refs.confirmCancelAppointmentDialogRef.toggleDialog();
     },
+    openCancelEncounterDialog() {
+      this.$refs.confirmCancelEncounterDialogRef.toggleDialog();
+    },
     openEmailConfirmationDialog(type, content) {
       this.$refs.emailConfirmationDialogRef.toggleDialog(
         type,
@@ -564,6 +582,13 @@ export default {
     },
     startEncounter() {
       this.createEncounter(this.appointment);
+    },
+    cancelEncounter() {
+      this.updateEncounter({
+        appointment: this.appointment,
+        encounter: this.encounter,
+        status: "cancelled",
+      });
     },
     createDoctorNote(note) {
       this.createDiagnosticReport({
