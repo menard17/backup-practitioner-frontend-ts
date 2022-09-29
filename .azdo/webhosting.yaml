@@ -4,7 +4,7 @@ trigger:
     - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: ubuntu-20.04
 
 stages:
 - stage: CI
@@ -17,7 +17,7 @@ stages:
         targetType: 'inline'
         script: |
           git config --global url."https://".insteadOf git://
-          brew install pre-commit
+          pip install pre-commit
     - task: Bash@3
       displayName: 'Run pre-commit'
       inputs:

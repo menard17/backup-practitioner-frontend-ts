@@ -99,6 +99,32 @@ export async function getAppointments(context: Context, patientId: string) {
   context.commit("setIsLoading", { action: "getAppointments", value: false });
 }
 
+export async function getEncounterByAppointmentId(
+  context: Context,
+  { appointmentId, patientId }: any
+) {
+  context.commit("setIsLoading", {
+    action: "getEncounterByAppointmentId",
+    value: true,
+  });
+  context.commit("setEncounter", []);
+
+  const encounterList: any = await getAll(
+    `patients/${patientId}/encounters?appointment_id=${appointmentId}`
+  );
+
+  const encounter = encounterList.data.filter(
+    (item: any) => item.resourceType === "Encounter"
+  )[0];
+
+  context.commit("setEncounter", encounter);
+  context.commit("setIsLoading", {
+    action: "getEncounterByAppointmentId",
+    value: false,
+  });
+  return encounter;
+}
+
 export async function getPaymentMethods(context: Context, customerId: string) {
   context.commit("setIsLoading", { action: "getPaymentMethods", value: true });
   context.commit("setPaymentMethods", []);

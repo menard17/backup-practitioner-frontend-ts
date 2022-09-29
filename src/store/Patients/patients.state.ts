@@ -5,6 +5,7 @@ const state = {
   documentReferences: [],
   paymentIntents: [],
   patient: undefined,
+  encounter: undefined,
   loadingData: {
     populatePatient: { isLoading: false },
     getPatients: { isLoading: false },
@@ -14,6 +15,7 @@ const state = {
     getPaymentMethods: { isLoading: false },
     getPaymentIntents: { isLoading: false },
     getDocumentReferences: { isLoading: false },
+    getEncounterByAppointmentId: { isLoading: false },
   },
   pagination: {
     pageSize: 15,

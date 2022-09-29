@@ -29,3 +29,7 @@ export function setDocumentReferences(state: any, documentReferences: any) {
 export function setPagination(state: any, pagination: any) {
   state.pagination = pagination;
 }
+
+export function setEncounter(state: any, encounter: any) {
+  state.encounter = encounter;
+}

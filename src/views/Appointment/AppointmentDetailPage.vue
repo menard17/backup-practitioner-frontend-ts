@@ -30,11 +30,16 @@
         </v-row>
         <v-row dense class="mt-5 px-1">
           <v-card outlined width="100%">
-            <v-expansion-panels :value="0" flat>
+            <v-expansion-panels
+              v-model="patientDetailsExpansionPanel"
+              :value="0"
+              flat
+              multiple
+            >
               <v-expansion-panel>
                 <v-expansion-panel-header
-                  class="white--text font-weight-medium"
-                  color="grey"
+                  class="font-weight-medium"
+                  color="grey lighten-2"
                 >
                   Patient Details
                 </v-expansion-panel-header>
@@ -62,6 +67,82 @@
                     </v-col>
                   </v-row>
                   <document-reference-wrapper class="pa-3" />
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+              <v-divider />
+              <v-expansion-panel>
+                <v-expansion-panel-header
+                  class="font-weight-medium"
+                  color="grey lighten-2"
+                >
+                  Appointment History
+                </v-expansion-panel-header>
+                <v-expansion-panel-content>
+                  <v-expansion-panels
+                    v-if="appointmentHistory.length"
+                    v-model="appointmentHistoryExpansionPanel"
+                    multiple
+                    flat
+                  >
+                    <v-expansion-panel
+                      v-for="appt in appointmentHistory"
+                      :key="appt.id"
+                    >
+                      <v-expansion-panel-header class="subtitle-2">
+                        {{ appt.date }}
+                      </v-expansion-panel-header>
+                      <v-expansion-panel-content>
+                        <v-divider class="mb-2 mx-4" />
+                        <div class="px-4 pb-4">
+                          <div class="title my-2">Clinical Note</div>
+                          <div style="white-space: pre-line">
+                            {{ appt.clinicalNote.note }}
+                          </div>
+                          <div class="title my-4">Medications</div>
+                          <v-card outlined>
+                            <v-card-text v-if="!appt.medications.length">
+                              No Medications
+                            </v-card-text>
+                            <v-list dense v-else>
+                              <template
+                                v-for="(medication, i) in appt.medications"
+                              >
+                                <div :key="medication.id">
+                                  <v-list-item dense>
+                                    <v-list-item-content>
+                                      {{ medication.display }}
+                                    </v-list-item-content>
+                                  </v-list-item>
+                                  <v-divider
+                                    v-if="i < appt.medications.length - 1"
+                                  />
+                                </div>
+                              </template>
+                            </v-list>
+                          </v-card>
+                          <div class="title my-4">Tests</div>
+                          <v-card outlined>
+                            <v-card-text v-if="!appt.tests.length">
+                              No Tests
+                            </v-card-text>
+                            <v-list dense v-else>
+                              <template v-for="(test, i) in appt.tests">
+                                <div :key="test.id">
+                                  <v-list-item dense>
+                                    <v-list-item-content>
+                                      {{ test.display }}
+                                    </v-list-item-content>
+                                  </v-list-item>
+                                  <v-divider v-if="i < appt.tests.length - 1" />
+                                </div>
+                              </template>
+                            </v-list>
+                          </v-card>
+                        </div>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                  </v-expansion-panels>
+                  <div v-else>No Appointment History</div>
                 </v-expansion-panel-content>
               </v-expansion-panel>
             </v-expansion-panels>
@@ -362,6 +443,7 @@ import DocumentReferenceWrapper from "../Patient/DocumentReferenceWrapper.vue";
 import EditPatientDialog from "@/views/Patient/Dialogs/EditPatientDialog";
 import EmailConfirmationDialog from "@/views/Appointment/Dialogs/EmailConfirmationDialog";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { getTestsByPatientId } from "@/store/AppointmentHistory/appointmentHistory.actions";
 
 export default {
   components: {
@@ -380,7 +462,20 @@ export default {
   data() {
     return {
       notes: "",
+      patientDetailsExpansionPanel: [],
+      appointmentHistoryExpansionPanel: [],
     };
+  },
+  watch: {
+    patient() {
+      if (!this.patient) {
+        return;
+      }
+      this.getAppointmentsByPatientId({ patientId: this.patient.id });
+      this.getEncountersByPatientId({ patientId: this.patient.id });
+      this.getMedicationsByPatientId({ patientId: this.patient.id });
+      this.getTestsByPatientId({ patientId: this.patient.id });
+    },
   },
   computed: {
     ...mapState("$_appointments", {
@@ -400,6 +495,7 @@ export default {
       diagnosticReports: "diagnosticReports",
       medications: "medications",
     }),
+
     ...mapGetters("$_patients", {
       patient: "patient",
       insuranceCard: "insuranceCard",
@@ -412,10 +508,14 @@ export default {
     }),
     ...mapState("$_patients", {
       patientObject: "patient",
+      documentReferences: "documentReferences",
     }),
     ...mapState("$_practitioners", {
       practitionerRole: "practitionerRole",
       practitioner: "practitioner",
+    }),
+    ...mapGetters("$_appointmentHistory", {
+      appointmentHistory: "appointments",
     }),
     patientDetails() {
       return [
@@ -478,6 +578,12 @@ export default {
     }),
     ...mapActions("$_application", {
       insertSheet: "insertSheet",
+    }),
+    ...mapActions("$_appointmentHistory", {
+      getAppointmentsByPatientId: "getAppointmentsByPatientId",
+      getEncountersByPatientId: "getEncountersByPatientId",
+      getMedicationsByPatientId: "getMedicationsByPatientId",
+      getTestsByPatientId: "getTestsByPatientId",
     }),
     onAppointmentCreated(appointment) {
       const title = appointment ? "Success!" : "Failed";
@@ -658,4 +764,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.v-expansion-panel-content >>> .v-expansion-panel-content__wrap {
+  padding: 0 !important;
+}
+</style>
