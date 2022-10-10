@@ -26,9 +26,19 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        yarn test
+        yarn test:unit
       workingDirectory: $(System.DefaultWorkingDirectory)
-    displayName: 'yarn test'
+    displayName: 'yarn test:unit'
+    env:
+      VUE_APP_apiKey: $(apiKey)
+      VUE_APP_authDomain: $(authDomain)
+      VUE_APP_projectId: $(projectId)
+      VUE_APP_storageBucket: $(storageBucket)
+      VUE_APP_messagingSenderId: $(messagingSenderId)
+      VUE_APP_appId: $(appId)
+      VUE_APP_baseUrl: $(baseUrl)
+      VUE_APP_logic_app_url: $(logicAppUrl)
+      VUE_APP_logic_app_url_sheet: $(logicAppUrlSheet)
   - task: Bash@3
     inputs:
       targetType: 'inline'

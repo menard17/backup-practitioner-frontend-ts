@@ -10,10 +10,11 @@ import { stringToBase64, base64ToString } from "@/utils/fileProcess";
 import { formatDateString } from "@/utils/dateHelpers";
 import { TimeConstants } from "@/utils/constants";
 import { Context } from "../types";
+import { addDays, isAfter, isBefore, subMinutes } from "date-fns";
 
 export async function getAppointmentsByPractitionerId(
   context: Context,
-  { practitionerId, dateFrom, dateTo }: any
+  { practitionerId, dateFrom, dateTo, dateFilter }: any
 ) {
   context.commit("setIsLoading", {
     action: "getAppointmentsByPractitionerId",
@@ -33,12 +34,64 @@ export async function getAppointmentsByPractitionerId(
     dateFrom,
     dateTo,
   });
-  context.commit("setAppointments", appointments);
+
+  const filteredAppointments = filterAppointmentsByDateFilters({
+    appointments,
+    dateFilter,
+  });
+  context.commit("setAppointments", filteredAppointments);
 
   context.commit("setIsLoading", {
     action: "getAppointmentsByPractitionerId",
     value: false,
   });
+}
+
+export function filterAppointmentsByDateFilters({
+  appointments,
+  dateFilter,
+  today = new Date(),
+}: any) {
+  const appointmentDateFilterJson = localStorage.getItem(
+    "appointmentDateFilter"
+  );
+
+  function isBetween(
+    apptStartDate: string,
+    isBeforeDate: Date,
+    isAfterDate: Date
+  ) {
+    return (
+      isBefore(new Date(apptStartDate), new Date(isBeforeDate)) &&
+      isAfter(new Date(apptStartDate), subMinutes(new Date(isAfterDate), 1))
+    );
+  }
+
+  const appointmentDateFilter = appointmentDateFilterJson
+    ? JSON.parse(appointmentDateFilterJson)
+    : dateFilter;
+
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = addDays(today, 1);
+  const yesterday = addDays(today, -1);
+
+  // Add one day to bring in all appointments for today and tomorrow so
+  // that we dont miss any from time zone issues.
+  const rangeDate = addDays(today, appointmentDateFilter.addDays + 1);
+  const filteredAppointments = appointments.filter((appt: any) => {
+    switch (appointmentDateFilter.title.toLowerCase()) {
+      case "tomorrow":
+        return isBetween(appt.start, rangeDate, tomorrow);
+      case "yesterday":
+        return isBetween(appt.start, rangeDate, yesterday);
+      default:
+        return appointmentDateFilter.addDays >= 0
+          ? isBetween(appt.start, rangeDate, today)
+          : isBetween(appt.start, today, rangeDate);
+    }
+  });
+
+  return filteredAppointments;
 }
 
 type GetAppointmentsParam = {

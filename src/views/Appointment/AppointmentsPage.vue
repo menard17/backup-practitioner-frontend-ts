@@ -2,8 +2,8 @@
   <div>
     <data-table title="My Appointments">
       <template v-slot:headerButton>
-        <v-row>
-          <v-col cols="4">
+        <v-row justify="end" dense>
+          <v-col cols="4" align="end">
             <v-menu
               ref="menuFrom"
               v-model="menuFrom"
@@ -15,6 +15,10 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
+                  :disabled="true"
+                  dense
+                  hide-details
+                  outlined
                   v-model="dateFrom"
                   label="From"
                   append-icon="mdi-calendar"
@@ -43,6 +47,10 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
+                  :disabled="true"
+                  dense
+                  hide-details
+                  outlined
                   v-model="dateTo"
                   label="To"
                   append-icon="mdi-calendar"
@@ -60,25 +68,43 @@
               />
             </v-menu>
           </v-col>
-          <v-col cols="4">
-            <v-btn-toggle v-model="viewOption" borderless>
-              <v-btn value="list">
-                <v-icon left> mdi-format-list-bulleted </v-icon>
-                <span class="hidden-sm-and-down">List</span>
-              </v-btn>
-
-              <v-btn value="calendar">
-                <v-icon left> mdi-calendar </v-icon>
-                <span class="hidden-sm-and-down">Calendar</span>
-              </v-btn>
-            </v-btn-toggle>
-          </v-col>
         </v-row>
       </template>
+      <v-row class="px-4 pb-4">
+        <v-col>
+          <filter-button-menu
+            :filterMenuOptions="dateFilterOptions"
+            :selectedFilterItem="selectedDateFilter"
+            default-filter-title="Date"
+            @filter-items="filterAppointments"
+          />
+          <filter-button-menu
+            v-if="appointments.length"
+            :filterMenuOptions="statusFilterOptions"
+            :selectedFilterItem="selectedStatusFilter"
+            default-filter-title="Status"
+            @filter-items="filterAppointmentsByStatus"
+          />
+        </v-col>
+        <v-col align="end">
+          <v-btn-toggle v-model="viewOption" borderless>
+            <v-btn small value="list">
+              <v-icon left> mdi-format-list-bulleted </v-icon>
+              <span class="hidden-sm-and-down">List</span>
+            </v-btn>
+
+            <v-btn small value="calendar">
+              <v-icon left> mdi-calendar </v-icon>
+              <span class="hidden-sm-and-down">Calendar</span>
+            </v-btn>
+          </v-btn-toggle>
+        </v-col>
+      </v-row>
+
       <v-data-table
         v-if="viewOption === 'list'"
         :headers="headers"
-        :items="appointments"
+        :items="filteredAppointments"
         :items-per-page="30"
         class="elevation-0"
         :search="search"
@@ -235,9 +261,12 @@ import {
   compareDate,
 } from "@/utils/dateHelpers";
 import { TimeConstants } from "@/utils/constants";
+import { statusFilterOptions, dateFilterOptions } from "@/utils/filterOptions";
+import { addDays, format, isBefore, isAfter } from "date-fns";
+import FilterButtonMenu from "@/components/FilterButtonMenu";
 
 export default Vue.extend({
-  components: { DataTable },
+  components: { FilterButtonMenu, DataTable },
   name: "AppointmentsPage",
   data() {
     return {
@@ -247,6 +276,9 @@ export default Vue.extend({
       calendarRangeOption: "week",
       selectedMonth: new Date(),
       ready: false,
+      selectedDateFilter: null,
+      selectedStatusFilter: null,
+      filteredAppointments: [],
       items: ["My Appointments", "All"],
       headers: [
         {
@@ -290,12 +322,28 @@ export default Vue.extend({
       if (newDateRange.length == 2) {
         this.getAppointmentsByPractitionerId({
           practitionerId: "",
-          dateFrom: this.dateFrom,
-          dateTo: this.dateTo,
+          dateFrom: this.addDaysForDateRange(this.dateFrom, -1),
+          dateTo: this.addDaysForDateRange(this.dateTo, 2),
+          dateFilter: this.selectedDateFilter,
         });
       }
       this.search = "";
       return newDateRange;
+    },
+    appointments(newAppointments) {
+      if (newAppointments.length) {
+        this.filteredAppointments = newAppointments;
+
+        const appointmentStatusFilter = localStorage.getItem(
+          "appointmentStatusFilter"
+        );
+        if (appointmentStatusFilter) {
+          this.filterAppointmentsByStatus(
+            JSON.parse(appointmentStatusFilter),
+            false
+          );
+        }
+      }
     },
   },
   computed: {
@@ -315,6 +363,12 @@ export default Vue.extend({
       isLoadingSlots: (state) =>
         state.loadingData.getSlotsByPractitionerRoleId.isLoading,
     }),
+    statusFilterOptions() {
+      return statusFilterOptions;
+    },
+    dateFilterOptions() {
+      return dateFilterOptions;
+    },
     cal() {
       return this.ready && this.isShowingCalendar
         ? this.$refs.calendarRef
@@ -331,17 +385,17 @@ export default Vue.extend({
       if (!this.dateRange.length) {
         return formatDateString(new Date(), "yyyy-MM-dd");
       }
-      return compareDate(this.dateRange[0], this.dateRange[1])
-        ? this.dateRange[1]
-        : this.dateRange[0];
+      return isBefore(new Date(this.dateRange[0]), new Date(this.dateRange[1]))
+        ? this.dateRange[0]
+        : this.dateRange[1];
     },
     dateTo() {
       if (!this.dateRange.length) {
         return formatDateString(new Date(), "yyyy-MM-dd");
       }
-      return compareDate(this.dateRange[0], this.dateRange[1])
-        ? this.dateRange[0]
-        : this.dateRange[1];
+      return isBefore(new Date(this.dateRange[0]), new Date(this.dateRange[1]))
+        ? this.dateRange[1]
+        : this.dateRange[0];
     },
     minCurrentMonth() {
       if (this.dateRange.length) {
@@ -352,23 +406,86 @@ export default Vue.extend({
         return new Date().toISOString().slice(0, 10);
       }
     },
-    maxDate() {
-      return new Date().toISOString().slice(0, 10);
-    },
   },
   mounted() {
     this.ready = true;
     this.scrollToTime();
     this.updateTime();
-  },
-  created() {
-    if (!this.appointments.length) {
-      this.getAppointmentsByPractitionerId({
-        practitionerId: "",
-      });
+    const appointmentDateFilter = localStorage.getItem("appointmentDateFilter");
+    if (!appointmentDateFilter) {
+      this.filterAppointments(this.dateFilterOptions.today);
+      return;
     }
+    this.filterAppointments(JSON.parse(appointmentDateFilter));
   },
   methods: {
+    addDaysForDateRange(date, add) {
+      return format(addDays(new Date(date), add), "yyyy-MM-dd");
+    },
+    filterAppointmentsByStatus(selected, isForceUpdate = true) {
+      localStorage.setItem("appointmentStatusFilter", JSON.stringify(selected));
+      if (!selected) {
+        return;
+      }
+      if (this.selectedStatusFilter) {
+        if (
+          selected.title === this.selectedStatusFilter.title &&
+          isForceUpdate
+        ) {
+          this.selectedStatusFilter = null;
+          localStorage.setItem("appointmentStatusFilter", null);
+          this.filteredAppointments = this.appointments;
+          return;
+        }
+      }
+      this.selectedStatusFilter = selected;
+      this.filteredAppointments = this.appointments.filter(
+        (item) => item.status === selected.status
+      );
+    },
+
+    filterAppointments(selected) {
+      localStorage.setItem("appointmentDateFilter", JSON.stringify(selected));
+      this.filteredAppointments = [];
+      if (!selected) {
+        return;
+      }
+      if (this.selectedDateFilter) {
+        if (selected.title === this.selectedDateFilter.title) {
+          this.selectedDateFilter = null;
+          localStorage.setItem(
+            "appointmentDateFilter",
+            JSON.stringify(this.dateFilterOptions.today)
+          );
+          return;
+        }
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = addDays(today, 1);
+      const yesterday = addDays(today, -1);
+      const rangeDate = addDays(today, selected.addDays);
+      this.selectedDateFilter = selected;
+
+      function getRangeDate(positionOne, positionTwo) {
+        return [
+          format(positionOne, TimeConstants.yearMonthDay),
+          format(positionTwo, TimeConstants.yearMonthDay),
+        ];
+      }
+
+      switch (this.selectedDateFilter.title) {
+        case this.dateFilterOptions.tomorrow.title:
+          return (this.dateRange = getRangeDate(tomorrow, rangeDate));
+        case this.dateFilterOptions.yesterday.title:
+          return (this.dateRange = getRangeDate(rangeDate, yesterday));
+        default:
+          return isAfter(rangeDate, today)
+            ? (this.dateRange = getRangeDate(today, rangeDate))
+            : (this.dateRange = getRangeDate(rangeDate, today).reverse());
+      }
+    },
     customFilter: (value, search) => {
       return (
         value != null &&
@@ -377,30 +494,8 @@ export default Vue.extend({
         value.toString() === search
       );
     },
-    customSort: function (items, index, isDesc) {
-      items.sort((a, b) => {
-        if (index[0] === "date") {
-          console.log(b[index]);
-          if (!isDesc[0]) {
-            return new Date(b[index]) - new Date(a[index]);
-          } else {
-            return new Date(a[index]) - new Date(b[index]);
-          }
-        } else if (index[0] == "start" || index[0] == "end") {
-          if (!isDesc[0]) {
-            return converTimeToInt(b[index]) - converTimeToInt(a[index]);
-          } else {
-            return converTimeToInt(a[index]) - converTimeToInt(b[index]);
-          }
-        } else {
-          if (!isDesc[0]) {
-            return a[index] > b[index] ? 1 : -1;
-          } else {
-            return b[index] > a[index] ? 1 : -1;
-          }
-        }
-      });
-      return items;
+    customSort: function (items) {
+      return items.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
     },
     ...mapActions("$_appointments", {
       getAppointmentsByPractitionerId: "getAppointmentsByPractitionerId",
