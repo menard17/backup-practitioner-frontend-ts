@@ -95,7 +95,10 @@
                         <v-divider class="mb-2 mx-4" />
                         <div class="px-4 pb-4">
                           <div class="title my-2">Clinical Note</div>
-                          <div style="white-space: pre-line">
+                          <div
+                            style="white-space: pre-line"
+                            v-if="appt.clinicalNote"
+                          >
                             {{ appt.clinicalNote.note }}
                           </div>
                           <div class="title my-4">Medications</div>
@@ -300,7 +303,7 @@
                 v-for="report in diagnosticReports"
                 :key="report.id"
               >
-                <v-row>
+                <v-row v-if="report">
                   <v-col>
                     <div class="subtitle-2 mb-2">
                       {{ report.createdOn }}
@@ -317,7 +320,9 @@
                     </v-btn>
                   </v-col>
                 </v-row>
-                {{ report.note }}
+                <div v-if="report">
+                  {{ report.note }}
+                </div>
               </v-card>
             </div>
             <v-skeleton-loader
