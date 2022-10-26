@@ -296,7 +296,7 @@
                 </v-btn>
               </v-col>
             </v-row>
-            <div v-if="diagnosticReports.length">
+            <div v-if="diagnosticReports && diagnosticReports.length">
               <v-card
                 class="pa-4 mb-4"
                 style="white-space: pre-line"
