@@ -94,7 +94,6 @@ export default {
         .then(async () => {
           await auth.onAuthStateChanged((user) => {
             if (user) {
-              // user.sendEmailVerification();
               this.$router.push({ path: "/" });
             }
           });

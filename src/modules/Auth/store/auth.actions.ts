@@ -6,6 +6,8 @@ import {
   UserCredential,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendEmailVerification,
+  updateProfile,
 } from "firebase/auth";
 
 export async function signOut(context: Context) {
@@ -43,6 +45,17 @@ export async function userRegister(
   return new Promise<void>((resolve, reject) =>
     createUserWithEmailAndPassword(auth, email, password)
       .then(async (firebaseUser: UserCredential) => {
+        await sendEmailVerification(firebaseUser.user)
+          .then(() => {
+            console.log("Email sent");
+          })
+          .catch((error) => {
+            console.log("Email could not be sent");
+            console.log(error);
+          });
+        await updateProfile(firebaseUser.user, {
+          displayName: `${firstName} ${lastName}`,
+        });
         context.commit("setFirebaseUser", firebaseUser);
         resolve();
       })

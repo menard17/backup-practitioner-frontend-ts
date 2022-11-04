@@ -46,9 +46,18 @@
             <v-row dense>
               <v-col>
                 <label-text-field label="Family Name" v-model="familyNameJp" />
+                <span
+                  :class="getClass(familyNameJp.trim())"
+                  class="error-style"
+                >
+                  Family Name Required
+                </span>
               </v-col>
               <v-col>
                 <label-text-field label="First Name" v-model="firstNameJp" />
+                <span :class="getClass(firstNameJp.trim())" class="error-style">
+                  First Name Required
+                </span>
               </v-col>
               <v-col cols="12" v-if="this.selectedRoleType != 'STAFF'">
                 <label-text-area label="Biography" v-model="bioJp" />
@@ -96,6 +105,9 @@
                       v-bind="attrs"
                       v-on="on"
                     />
+                    <span :class="getClass(dateRange[0])" class="date-error">
+                      From Date Required
+                    </span>
                   </template>
                   <v-date-picker
                     v-model="dateRange"
@@ -125,6 +137,9 @@
                       v-bind="attrs"
                       v-on="on"
                     />
+                    <span :class="getClass(dateRange[1])" class="date-error">
+                      To Date Required
+                    </span>
                   </template>
                   <v-date-picker
                     v-model="dateRange"
@@ -142,7 +157,7 @@
 
         <v-row dense class="mt-2">
           <v-col v-if="this.selectedRoleType != 'STAFF'">
-            <div class="title mb-2">Upload a Photo</div>
+            <div class="title">Upload a Photo</div>
             <v-file-input
               dense
               outlined
@@ -151,6 +166,14 @@
               accept="image/png"
               :rules="rules"
             />
+            <span :class="getClass(image)" class="image-error">
+              Photo is required
+            </span>
+            <div class="mb-3 email-error">
+              <span :class="getClass('emailField')">
+                Please verify your email first
+              </span>
+            </div>
           </v-col>
         </v-row>
       </v-form>
@@ -164,7 +187,7 @@
         >
           Cancel
         </v-btn>
-        <v-btn @click="save" color="primary" class="text-none subtitle-2">
+        <v-btn @click="validate()" color="primary" class="text-none subtitle-2">
           Save
         </v-btn>
       </v-card-actions>
@@ -179,6 +202,7 @@ import LabelCard from "@/components/LabelCard";
 import { toBase64, resizeImage } from "@/utils/fileProcess";
 import { mapActions } from "vuex";
 import { formatDateString, compareDate } from "@/utils/dateHelpers";
+import { auth } from "@/plugins/firebase";
 
 export default {
   name: "PractitionerRequestDialog",
@@ -195,6 +219,7 @@ export default {
   },
   data() {
     return {
+      isSaveButtonClicked: false,
       dialog: false,
       familyNameJp: "",
       firstNameJp: "",
@@ -287,6 +312,32 @@ export default {
     },
   },
   methods: {
+    getClass(input) {
+      if (input === "emailField" && this.isSaveButtonClicked) {
+        if (auth.currentUser.emailVerified) {
+          return "hide-error";
+        }
+        return "show-error";
+      } else if (!input && this.isSaveButtonClicked) {
+        return "show-error";
+      }
+      return "hide-error";
+    },
+    async validate() {
+      await auth.currentUser.reload();
+      this.isSaveButtonClicked = true;
+      if (
+        auth.currentUser.emailVerified &&
+        this.familyNameJp.trim() &&
+        this.firstNameJp.trim() &&
+        this.dateRange.length > 1 &&
+        this.image
+      ) {
+        this.save();
+      } else {
+        return;
+      }
+    },
     ...mapActions("$_practitioners", {
       updatePractitioner: "updatePractitioner",
     }),
@@ -378,4 +429,35 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.date-error {
+  position: relative;
+  top: -37px;
+  color: #bb2124;
+  font-size: 10px;
+}
+.error-style {
+  color: #bb2124;
+  font-size: 10px;
+  position: relative;
+  top: -7px;
+}
+.email-error {
+  color: #bb2124;
+  text-align: center;
+  font-size: 12px;
+}
+.image-error {
+  margin-left: 30px;
+  position: relative;
+  top: -32px;
+  color: #bb2124;
+  font-size: 12px;
+}
+.show-error {
+  visibility: visible;
+}
+.hide-error {
+  visibility: hidden;
+}
+</style>
