@@ -5,6 +5,7 @@ import {
   signInWithPopup,
   UserCredential,
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
 } from "firebase/auth";
 
 export async function signOut(context: Context) {
@@ -26,6 +27,22 @@ export async function userLogin(context: Context, { email, password }: any) {
   return new Promise<void>((resolve, reject) =>
     signInWithEmailAndPassword(auth, email, password)
       .then((firebaseUser: UserCredential) => {
+        context.commit("setFirebaseUser", firebaseUser);
+        resolve();
+      })
+      .catch((err) => {
+        reject(err);
+      })
+  );
+}
+
+export async function userRegister(
+  context: Context,
+  { email, password, firstName, lastName }: any
+) {
+  return new Promise<void>((resolve, reject) =>
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(async (firebaseUser: UserCredential) => {
         context.commit("setFirebaseUser", firebaseUser);
         resolve();
       })

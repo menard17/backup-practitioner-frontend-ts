@@ -52,7 +52,6 @@
 </template>
 
 <script>
-import bus from "@/eventbus";
 import { auth } from "@/plugins/firebase";
 
 export default {
@@ -76,9 +75,6 @@ export default {
     };
   },
   methods: {
-    showSnackbar() {
-      bus.$emit("show-snackbar", "Registration Success");
-    },
     closeDialog() {
       this.$emit("close-dialog");
     },
@@ -98,7 +94,7 @@ export default {
         .then(async () => {
           await auth.onAuthStateChanged((user) => {
             if (user) {
-              user.sendEmailVerification();
+              // user.sendEmailVerification();
               this.$router.push({ path: "/" });
             }
           });
