@@ -71,13 +71,17 @@ export function appointments(state: any, getters: any, rootState: any) {
         medicationHistory = medications
           .filter(
             (medication: any) =>
-              medication.encounter.reference.split("/")[1] === encounter.id
+              medication?.encounter?.reference.split("/")[1] === encounter.id
           )
           .map((medication: any) => {
-            return {
-              display: medication.medicationCodeableConcept.coding[0].display,
-              value: medication.medicationCodeableConcept.coding[0].code,
-            };
+            return medication?.medicationCodeableConcept?.coding.map(
+              (code: any) => {
+                return {
+                  display: code?.display,
+                  value: code?.code,
+                };
+              }
+            );
           });
       }
 
@@ -86,12 +90,12 @@ export function appointments(state: any, getters: any, rootState: any) {
         testsHistory = tests
           .filter(
             (test: any) =>
-              test.encounter.reference.split("/")[1] === encounter.id
+              test?.encounter?.reference.split("/")[1] === encounter.id
           )
           .map((test: any) => {
             return {
-              display: test.code.coding[0].display,
-              value: test.code.coding[0].code,
+              display: test?.code?.coding[0].display,
+              value: test?.code?.coding[0].code,
             };
           });
       }
@@ -111,8 +115,8 @@ export function appointments(state: any, getters: any, rootState: any) {
         type: appointment.serviceType[0].coding[0].display,
         encounter: encounter,
         clinicalNote: clinicalNote,
-        medications: medicationHistory,
-        tests: testsHistory,
+        medications: medicationHistory ? medicationHistory.flat() : [],
+        tests: testsHistory ?? [],
       };
     })
 

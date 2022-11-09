@@ -102,6 +102,7 @@
                             {{ appt.clinicalNote.note }}
                           </div>
                           <div class="title my-4">Medications</div>
+
                           <v-card outlined>
                             <v-card-text v-if="!appt.medications.length">
                               No Medications
