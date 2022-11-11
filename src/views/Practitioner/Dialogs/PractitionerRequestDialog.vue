@@ -86,7 +86,7 @@
           <v-col v-if="this.selectedRoleType != 'STAFF'">
             <div class="title mb-2">Serving Date Range</div>
             <v-row dense>
-              <v-col cols="4">
+              <v-col cols="12">
                 <v-menu
                   ref="menuFrom"
                   v-model="menuFrom"
@@ -99,14 +99,17 @@
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
                       outlined
-                      v-model="dateFrom"
-                      label="From"
+                      v-model="date"
+                      label="Select Range"
                       append-icon="mdi-calendar"
                       v-bind="attrs"
                       v-on="on"
                     />
-                    <span :class="getClass(dateRange[0])" class="date-error">
-                      From Date Required
+                    <span
+                      :class="getClass('dateRangeField')"
+                      class="date-error"
+                    >
+                      Please Select From and To Date
                     </span>
                   </template>
                   <v-date-picker
@@ -115,38 +118,6 @@
                     no-title
                     range
                     @input="menuFrom = false"
-                  />
-                </v-menu>
-              </v-col>
-              <v-col cols="4">
-                <v-menu
-                  ref="menuTo"
-                  v-model="menuTo"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  max-width="290px"
-                  min-width="290px"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      outlined
-                      v-model="dateTo"
-                      label="To"
-                      append-icon="mdi-calendar"
-                      v-bind="attrs"
-                      v-on="on"
-                    />
-                    <span :class="getClass(dateRange[1])" class="date-error">
-                      To Date Required
-                    </span>
-                  </template>
-                  <v-date-picker
-                    v-model="dateRange"
-                    color="primary"
-                    no-title
-                    range
-                    @input="menuTo = false"
                     :min="minCurrentMonth"
                   />
                 </v-menu>
@@ -276,34 +247,21 @@ export default {
       }
       return output;
     },
-    // sort the date, always put the smaller one as the `dateFrom` and larger one as `dateTo`
-    dateFrom() {
-      if (this.isNewPractitioner) {
-        return formatDateString(new Date(), "yyyy-MM-dd");
+    date() {
+      if (this.dateRange.length > 1) {
+        return `${this.dateRange[0]}  -  ${this.dateRange[1]}`;
+      }
+      if (this.dateRange.length) {
+        return `${this.dateRange[0]}  -  Select`;
       }
       if (!this.dateRange.length) {
-        return this.start;
+        return "Select  -  Select";
       }
-
-      return compareDate(this.dateRange[0], this.dateRange[1])
-        ? this.dateRange[1]
-        : this.dateRange[0];
-    },
-    dateTo() {
-      if (this.isNewPractitioner) {
-        return formatDateString(new Date(), "yyyy-MM-dd");
-      }
-      if (!this.dateRange.length) {
-        return this.end;
-      }
-
-      return compareDate(this.dateRange[0], this.dateRange[1])
-        ? this.dateRange[0]
-        : this.dateRange[1];
+      return `${this.start} - ${this.end}`;
     },
     minCurrentMonth() {
-      if (this.dateRange.length) {
-        let current = new Date(this.dateFrom);
+      if (this.dateRange.length == 1) {
+        let current = new Date(this.dateRange[0]);
         current.setDate(current.getDate());
         return current.toISOString().slice(0, 10);
       } else {
@@ -313,6 +271,12 @@ export default {
   },
   methods: {
     getClass(input) {
+      if (input === "dateRangeField") {
+        if (this.dateRange.length < 2 && this.isSaveButtonClicked) {
+          return "show-error";
+        }
+        return "hide-error";
+      }
       if (input === "emailField" && this.isSaveButtonClicked) {
         if (auth.currentUser.emailVerified) {
           return "hide-error";
@@ -382,6 +346,7 @@ export default {
         if (practitionerRole.period) {
           this.start = practitionerRole.period.start;
           this.end = practitionerRole.period.end;
+          this.dateRange = [this.start, this.end];
         }
       }
     },
