@@ -129,6 +129,19 @@
         <v-row dense class="mt-2">
           <v-col v-if="this.selectedRoleType != 'STAFF'">
             <div class="title">Upload a Photo</div>
+            <div
+              v-if="image"
+              class="d-flex align-content-center justify-center mb-2"
+            >
+              <v-avatar
+                color="blue"
+                min-height="150"
+                min-width="150"
+                size="150"
+              >
+                <v-img :src="photo" cover />
+              </v-avatar>
+            </div>
             <v-file-input
               dense
               outlined
@@ -200,7 +213,7 @@ export default {
       bioEn: "",
       zoomId: "",
       zoomPasscode: "",
-      photo: "",
+      photo: null,
       image: null,
       selectedGender: "",
       selectedRoleType: "",
