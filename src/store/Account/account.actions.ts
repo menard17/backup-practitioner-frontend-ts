@@ -167,6 +167,7 @@ export async function createMyPractitionerWithPractitionerRole(
   const resource = `practitioner_roles`;
   let payload;
   if (changeFields.role_type === "doctor") {
+    context.commit("setFirebaseRole", "Practitioner");
     payload = {
       ...changeFields,
       available_time: [{}],
@@ -174,6 +175,7 @@ export async function createMyPractitionerWithPractitionerRole(
       zoom_password: "zoom passcode placeholder",
     };
   } else {
+    context.commit("setFirebaseRole", "Staff");
     payload = {
       ...changeFields,
     };

@@ -50,7 +50,11 @@
         <label-card
           class="text-left"
           label="Name"
-          :text="`${practitioner.en.familyName}, ${practitioner.en.firstName}`"
+          :text="
+            practitioner.en.familyName && practitioner.en.firstName
+              ? '`${practitioner.en.familyName}, ${practitioner.en.firstName}`'
+              : ''
+          "
         />
         <label-card
           v-if="practitionerRole.roleType != 'STAFF'"

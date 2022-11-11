@@ -42,19 +42,19 @@ export const practitioner = (state: AccountState) => {
     };
   }
 
-  const bioEn = practitioner.extension.find(
+  const bioEn = practitioner.extension?.find(
     (item: BioExtension) => item.extension[0].valueString === "en"
   ).valueString;
 
-  const bioJp = practitioner.extension.find(
+  const bioJp = practitioner.extension?.find(
     (item: BioExtension) => item.extension[0].valueString === "ja"
   ).valueString;
 
   return {
     id: `${practitioner.id}`,
     en: {
-      firstName: nameEn.given[0],
-      familyName: nameEn.family,
+      firstName: nameEn?.given[0],
+      familyName: nameEn?.family,
       bio: bioEn,
     },
     jp: {
