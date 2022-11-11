@@ -44,11 +44,11 @@ export const practitioner = (state: AccountState) => {
 
   const bioEn = practitioner.extension?.find(
     (item: BioExtension) => item.extension[0].valueString === "en"
-  ).valueString;
+  )?.valueString;
 
   const bioJp = practitioner.extension?.find(
     (item: BioExtension) => item.extension[0].valueString === "ja"
-  ).valueString;
+  )?.valueString;
 
   return {
     id: `${practitioner.id}`,
