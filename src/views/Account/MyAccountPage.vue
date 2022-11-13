@@ -19,6 +19,12 @@
         </v-col>
       </v-row>
       <div v-if="practitioner && practitionerRole && user">
+        <v-overlay :value="isUpdateLoading">
+          <v-progress-circular
+            :indeterminate="true"
+            size="64"
+          ></v-progress-circular>
+        </v-overlay>
         <practitioner-details-page
           v-if="!isLoading"
           :user="user"
@@ -64,6 +70,7 @@ export default {
       practitionerRole: "practitionerRole",
     }),
     ...mapState("$_account", {
+      user: "user",
       isLoadingCurrentUser: (state) =>
         state.loadingData.getCurrentUser.isLoading,
       isUpdatingPractitionerRole: (state) =>
@@ -71,8 +78,9 @@ export default {
       isUpdatingPractitionerStatus: (state) =>
         state.loadingData.updateMyPractitionerStatus.isLoading,
     }),
-    ...mapState("$_account", {
-      user: "user",
+    ...mapState("$_practitioners", {
+      isUpdateLoading: (state) =>
+        state.loadingData.updatePractitioner.isLoading,
     }),
     isLoading() {
       return (

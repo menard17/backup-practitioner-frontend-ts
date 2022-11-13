@@ -402,6 +402,7 @@ export default {
       this.isMyPractitioner = false;
       this.start = formatDateString(new Date(), "yyyy-MM-dd");
       this.end = formatDateString(new Date(), "yyyy-MM-dd");
+      this.isSaveButtonClicked = false;
     },
   },
 };

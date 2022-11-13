@@ -169,7 +169,9 @@ export async function updatePractitioner(
     );
 
     if (practitionerData) {
-      context.commit("setPractitioner", practitionerData.resource);
+      context.commit("$_account/setPractitioner", practitionerData.resource, {
+        root: true,
+      });
     }
   } catch (e) {
     console.error(e);
