@@ -124,27 +124,11 @@ export async function updateMyPractitionerRole(
   };
 
   try {
-    const practitionerRole: any = await context.dispatch(
+    await context.dispatch(
       "$_practitioners/updatePractitioner",
       { payload, practitionerRoleId },
       { root: true }
     );
-
-    const myPractitionerRoleData = practitionerRole.data.entry.find(
-      (item: any) => item.resource.resourceType === "PractitionerRole"
-    );
-
-    if (myPractitionerRoleData) {
-      context.commit("setPractitionerRole", myPractitionerRoleData.resource);
-    }
-
-    const myPractitionerData = practitionerRole.data.entry.find(
-      (item: any) => item.resource.resourceType === "Practitioner"
-    );
-
-    if (myPractitionerData) {
-      context.commit("setPractitioner", myPractitionerData.resource);
-    }
   } catch (e) {
     console.error(e);
   }

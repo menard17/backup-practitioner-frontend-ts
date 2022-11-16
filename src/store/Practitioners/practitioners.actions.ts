@@ -161,7 +161,13 @@ export async function updatePractitioner(
     );
 
     if (practitionerRoleData) {
-      context.commit("setPractitionerRole", practitionerRoleData.resource);
+      context.commit(
+        "$_account/setPractitionerRole",
+        practitionerRoleData.resource,
+        {
+          root: true,
+        }
+      );
     }
 
     const practitionerData = practitionerRole.data.entry.find(
