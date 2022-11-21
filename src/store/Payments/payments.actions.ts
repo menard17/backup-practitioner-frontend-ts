@@ -16,8 +16,6 @@ import {
   BulkPaymentObject,
   ProcessBulkPaymentObject,
 } from "@/store/Payments/types";
-import firebase from "firebase/compat";
-import Timestamp = firebase.firestore.Timestamp;
 import { formatDateString } from "@/utils/dateHelpers";
 import { TimeConstants } from "@/utils/constants";
 import { createResource } from "@/utils/apiHelpers";

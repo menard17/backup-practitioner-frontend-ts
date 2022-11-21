@@ -19,7 +19,6 @@ export const routes: Array<RouteConfig> = [
     name: "sign-in",
     component: AuthPage,
   },
-
   {
     path: "/",
     name: "dashboard",
@@ -60,7 +59,6 @@ export const routes: Array<RouteConfig> = [
       authRequired: true,
     },
   },
-
   {
     path: "/appointments/:id",
     name: "appointment-detail",
@@ -69,7 +67,6 @@ export const routes: Array<RouteConfig> = [
       authRequired: true,
     },
   },
-
   {
     path: "/patients",
     name: "patients",
@@ -78,7 +75,6 @@ export const routes: Array<RouteConfig> = [
       authRequired: true,
     },
   },
-
   {
     path: "/bulk-payments",
     name: "bulk-payments",
@@ -87,7 +83,6 @@ export const routes: Array<RouteConfig> = [
       authRequired: true,
     },
   },
-
   {
     path: "/patients/:id",
     name: "patient-detail",
@@ -114,17 +109,20 @@ export const routes: Array<RouteConfig> = [
       authRequired: true,
     },
   },
-
   {
     path: "/about",
     name: "about",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
+    component: () => import("../views/AboutView.vue"),
     meta: {
       authRequired: true,
+    },
+  },
+  {
+    path: "/porters",
+    name: "porters",
+    component: () => import("../views/Porters/PortersPage.vue"),
+    meta: {
+      authRequired: false,
     },
   },
 ];

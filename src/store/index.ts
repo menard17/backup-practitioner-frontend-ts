@@ -1,13 +1,15 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import $_auth from "@/modules/Auth/store";
-import $_appointments from "./Appointments";
-import $_patients from "./Patients";
-import $_practitioners from "./Practitioners";
-import $_payments from "./Payments";
 import $_account from "./Account";
 import $_application from "./Application";
 import $_appointmentHistory from "./AppointmentHistory";
+import $_appointments from "./Appointments";
+import $_auth from "@/modules/Auth/store";
+import $_patients from "./Patients";
+import $_payments from "./Payments";
+import $_porters from "./Porters";
+import $_practitioners from "./Practitioners";
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -16,13 +18,14 @@ export default new Vuex.Store({
   mutations: {},
   actions: {},
   modules: {
-    $_auth,
-    $_appointments,
-    $_patients,
     $_account,
-    $_practitioners,
-    $_payments,
     $_application,
     $_appointmentHistory,
+    $_appointments,
+    $_auth,
+    $_patients,
+    $_payments,
+    $_porters,
+    $_practitioners,
   },
 });

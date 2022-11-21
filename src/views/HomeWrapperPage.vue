@@ -124,6 +124,11 @@ export default Vue.extend({
             icon: "mdi-cash-multiple",
             to: "/bulk-payments",
           },
+          {
+            title: "Porters",
+            icon: "mdi-truck",
+            to: "/porters",
+          },
         ];
       } else if (this.firebaseRole == "Practitioner") {
         return [
