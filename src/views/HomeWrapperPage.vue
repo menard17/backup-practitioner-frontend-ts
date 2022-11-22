@@ -129,6 +129,11 @@ export default Vue.extend({
             icon: "mdi-truck",
             to: "/porters",
           },
+          {
+            title: "Orders",
+            icon: "mdi-truck",
+            to: "/orders",
+          },
         ];
       } else if (this.firebaseRole == "Practitioner") {
         return [

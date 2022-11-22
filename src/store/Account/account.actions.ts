@@ -1,10 +1,5 @@
 import { auth } from "@/plugins/firebase";
-import {
-  createResource,
-  getAll,
-  getById,
-  updateResource,
-} from "@/utils/apiHelpers";
+import { createResource, getAll, getById } from "@/utils/apiHelpers";
 import { getIdTokenResult, User } from "firebase/auth";
 import { Context } from "../types";
 

@@ -125,4 +125,12 @@ export const routes: Array<RouteConfig> = [
       authRequired: false,
     },
   },
+  {
+    path: "/orders",
+    name: "orders",
+    component: () => import("../views/Orders/OrdersPage.vue"),
+    meta: {
+      authRequired: false,
+    },
+  },
 ];

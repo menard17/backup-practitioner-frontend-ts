@@ -5,6 +5,7 @@ import $_application from "./Application";
 import $_appointmentHistory from "./AppointmentHistory";
 import $_appointments from "./Appointments";
 import $_auth from "@/modules/Auth/store";
+import $_orders from "./Orders";
 import $_patients from "./Patients";
 import $_payments from "./Payments";
 import $_porters from "./Porters";
@@ -23,6 +24,7 @@ export default new Vuex.Store({
     $_appointmentHistory,
     $_appointments,
     $_auth,
+    $_orders,
     $_patients,
     $_payments,
     $_porters,
