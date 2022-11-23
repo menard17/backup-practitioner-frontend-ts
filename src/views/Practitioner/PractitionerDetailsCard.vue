@@ -52,7 +52,7 @@
           label="Name"
           :text="
             practitioner.en.familyName && practitioner.en.firstName
-              ? '`${practitioner.en.familyName}, ${practitioner.en.firstName}`'
+              ? `${practitioner.en.familyName}, ${practitioner.en.firstName}`
               : ''
           "
         />

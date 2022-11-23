@@ -28,6 +28,9 @@
               dense
               :items="['DOCTOR', 'NURSE', 'STAFF']"
             />
+            <span :class="getClass(selectedRoleType)" class="error-style">
+              Please Select Role Type
+            </span>
           </v-col>
           <v-col align="start">
             <div class="subtitle-2 mb-2">Gender</div>
@@ -38,6 +41,9 @@
               dense
               :items="['MALE', 'FEMALE']"
             />
+            <span :class="getClass(selectedGender)" class="error-style">
+              Please Select Gender
+            </span>
           </v-col>
         </v-row>
         <v-row dense>
@@ -71,9 +77,15 @@
             <v-row dense>
               <v-col>
                 <label-text-field label="Family Name" v-model="familyNameEn" />
+                <span :class="getClass(familyNameEn)" class="error-style">
+                  English Family Name Required
+                </span>
               </v-col>
               <v-col>
                 <label-text-field label="First Name" v-model="firstNameEn" />
+                <span :class="getClass(firstNameEn)" class="error-style">
+                  English First Name Required
+                </span>
               </v-col>
               <v-col cols="12" v-if="this.selectedRoleType != 'STAFF'">
                 <label-text-area label="Biography" v-model="bioEn" />
@@ -153,6 +165,11 @@
             <span :class="getClass(image)" class="image-error">
               Photo is required
             </span>
+          </v-col>
+        </v-row>
+
+        <v-row dense class="mt-2">
+          <v-col>
             <div class="mb-3 email-error">
               <span :class="getClass('emailField')">
                 Please verify your email first
@@ -185,7 +202,7 @@ import LabelTextArea from "@/components/LabelTextArea";
 import LabelCard from "@/components/LabelCard";
 import { toBase64, resizeImage } from "@/utils/fileProcess";
 import { mapActions } from "vuex";
-import { formatDateString, compareDate } from "@/utils/dateHelpers";
+import { formatDateString } from "@/utils/dateHelpers";
 import { auth } from "@/plugins/firebase";
 
 export default {
@@ -248,12 +265,8 @@ export default {
       };
 
       if (this.photo) {
-        output["photo"] =
-          this.isNewPractitioner || this.isNewPhoto
-            ? this.photo
-            : `data:${this.photo.type};base64,${this.photo.data}`;
+        output["photo"] = this.photo;
       }
-
       if (this.dateRange) {
         output["start"] = this.dateRange[0];
         output["end"] = this.dateRange[1];
@@ -295,6 +308,12 @@ export default {
           return "hide-error";
         }
         return "show-error";
+      }
+      if (input && this.isSaveButtonClicked) {
+        if (typeof input === "string" && input.trim() === "") {
+          return "show-error";
+        }
+        return "hide-error";
       } else if (!input && this.isSaveButtonClicked) {
         return "show-error";
       }
@@ -304,11 +323,33 @@ export default {
       await auth.currentUser.reload();
       this.isSaveButtonClicked = true;
       if (
-        auth.currentUser.emailVerified &&
-        this.familyNameJp.trim() &&
-        this.firstNameJp.trim() &&
-        this.dateRange.length > 1 &&
-        this.image
+        (auth.currentUser.emailVerified &&
+          this.familyNameJp.trim() &&
+          this.firstNameJp.trim() &&
+          this.selectedGender &&
+          this.dateRange.length > 1 &&
+          this.image &&
+          this.familyNameEn.trim() &&
+          this.firstNameEn.trim() &&
+          this.selectedRoleType === "DOCTOR") ||
+        (auth.currentUser.emailVerified &&
+          this.familyNameJp.trim() &&
+          this.firstNameJp.trim() &&
+          this.selectedGender &&
+          this.dateRange.length > 1 &&
+          this.image &&
+          this.familyNameEn.trim() &&
+          this.firstNameEn.trim() &&
+          this.selectedRoleType === "NURSE") ||
+        (auth.currentUser.emailVerified &&
+          this.familyNameJp.trim() &&
+          this.firstNameJp.trim() &&
+          this.selectedGender &&
+          this.familyNameEn &&
+          this.familyNameEn.trim() &&
+          this.firstNameEn &&
+          this.firstNameEn.trim() &&
+          this.selectedRoleType === "STAFF")
       ) {
         this.save();
       } else {
@@ -353,9 +394,18 @@ export default {
         this.zoomPasscode = practitionerRole.zoomPasscode;
         this.selectedRoleType = practitionerRole.roleType.toUpperCase();
         this.practitionerRoleId = practitionerRole.id;
-        this.photo = practitioner.photo;
+        this.photo = practitioner.photo
+          ? `data:${practitioner.photo.type};base64,${practitioner.photo.data}`
+          : null;
         this.selectedGender = practitioner.sex.toUpperCase();
-        this.image = null;
+        this.image = practitioner.photo
+          ? {
+              name: `${practitioner.photo.data.substring(0, 11)}.${
+                practitioner.photo.type.split("/")[1]
+              }`,
+              size: 1,
+            }
+          : null;
         if (practitionerRole.period) {
           this.start = practitionerRole.period.start;
           this.end = practitionerRole.period.end;

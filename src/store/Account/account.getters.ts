@@ -26,8 +26,8 @@ export const practitioner = (state: AccountState) => {
     return {
       id: `${practitioner.id}`,
       en: {
-        firstName: nameEn.given[0],
-        familyName: nameEn.family,
+        firstName: nameEn?.given[0],
+        familyName: nameEn?.family,
       },
       jp: {
         firstName: nameJp.given[0],
