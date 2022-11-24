@@ -27,13 +27,15 @@
           v-model="note"
           rows="18"
         />
-        <v-select
+        <v-autocomplete
           v-model="medications"
           :items="medicalTerms.medications[0].array"
           label="Prescriptions"
           multiple
           item-value="value"
           item-text="display"
+          :search-input.sync="searchInput"
+          @change="searchInput = ''"
           chips
           return-object
           v-if="medicalTerms && medicalTerms.medications"
@@ -88,6 +90,7 @@ export default {
       noteType: "",
       medications: [],
       test: {},
+      searchInput: "",
     };
   },
   computed: {

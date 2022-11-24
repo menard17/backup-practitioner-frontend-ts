@@ -108,20 +108,19 @@
                               No Medications
                             </v-card-text>
                             <v-list dense v-else>
-                              <template
+                              <div
                                 v-for="(medication, i) in appt.medications"
+                                :key="medication.id"
                               >
-                                <div :key="medication.id">
-                                  <v-list-item dense>
-                                    <v-list-item-content>
-                                      {{ medication.display }}
-                                    </v-list-item-content>
-                                  </v-list-item>
-                                  <v-divider
-                                    v-if="i < appt.medications.length - 1"
-                                  />
-                                </div>
-                              </template>
+                                <v-list-item dense>
+                                  <v-list-item-content>
+                                    {{ medication.display }}
+                                  </v-list-item-content>
+                                </v-list-item>
+                                <v-divider
+                                  v-if="i < appt.medications.length - 1"
+                                />
+                              </div>
                             </v-list>
                           </v-card>
                           <div class="title my-4">Tests</div>
@@ -130,16 +129,17 @@
                               No Tests
                             </v-card-text>
                             <v-list dense v-else>
-                              <template v-for="(test, i) in appt.tests">
-                                <div :key="test.id">
-                                  <v-list-item dense>
-                                    <v-list-item-content>
-                                      {{ test.display }}
-                                    </v-list-item-content>
-                                  </v-list-item>
-                                  <v-divider v-if="i < appt.tests.length - 1" />
-                                </div>
-                              </template>
+                              <div
+                                v-for="(test, i) in appt.tests"
+                                :key="test.id"
+                              >
+                                <v-list-item dense>
+                                  <v-list-item-content>
+                                    {{ test.display }}
+                                  </v-list-item-content>
+                                </v-list-item>
+                                <v-divider v-if="i < appt.tests.length - 1" />
+                              </div>
                             </v-list>
                           </v-card>
                         </div>
