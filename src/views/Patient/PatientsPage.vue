@@ -44,6 +44,10 @@ export default Vue.extend({
           value: "name",
         },
         {
+          text: "Kana Name",
+          value: "kanaName",
+        },
+        {
           text: "Email",
           value: "email",
         },

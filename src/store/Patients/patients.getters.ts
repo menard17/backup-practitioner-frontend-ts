@@ -1,25 +1,34 @@
 import { formatDateString } from "@/utils/dateHelpers";
 import { TimeConstants } from "@/utils/constants";
-import { Telecom } from "@/store/Patients/types";
+import { Telecom, Name } from "@/store/Patients/types";
 
 export function patients(state: any) {
-  if (!state.patients.length) {
-    return [];
-  }
-  return state.patients.map((patient: any) => ({
-    id: `${patient.resource.id}`,
-    name: `${patient.resource.name[0].family}, ${patient.resource.name[0].given[0]}`,
-    birthDate: patient.resource.birthDate || "Not Provided",
-    sex:
-      (patient.resource.gender && patient.resource.gender.toUpperCase()) ||
-      "Not Provided",
-    phone: patient?.resource?.telecom?.find(
-      (item: Telecom) => item.system === "phone"
-    ).value,
-    email: patient?.resource?.telecom?.find(
-      (item: Telecom) => item.system === "email" && item.use === "home"
-    ).value,
-  }));
+  if (!state.patients.length) return [];
+
+  return state.patients.map((patient: any) => {
+    const officialName = patient.resource.name?.find(
+      (n: Name) => n.use === "official"
+    );
+    const kanaName = patient.resource.name?.find(
+      (n: Name) => n.use !== "official"
+    );
+
+    return {
+      id: `${patient.resource.id}`,
+      name: `${officialName.family}, ${officialName.given[0]}`,
+      kanaName: kanaName && `${kanaName.family} , ${kanaName.given[0]}`,
+      birthDate: patient.resource.birthDate || "Not Provided",
+      sex:
+        (patient.resource.gender && patient.resource.gender.toUpperCase()) ||
+        "Not Provided",
+      phone: patient?.resource?.telecom?.find(
+        (item: Telecom) => item.system === "phone"
+      ).value,
+      email: patient?.resource?.telecom?.find(
+        (item: Telecom) => item.system === "email" && item.use === "home"
+      ).value,
+    };
+  });
 }
 
 export function patient(state: any) {
@@ -45,11 +54,15 @@ export function patient(state: any) {
   if (patient.address[0].country != "") {
     addressList.push(patient.address[0].country);
   }
+  const officialName = patient.name?.find((n: Name) => n.use === "official");
+  const kanaName = patient.name?.find((n: Name) => n.use !== "official");
 
   return {
     id: `${patient.id}`,
-    firstName: patient && patient.name[0] && patient.name[0].given[0],
-    familyName: patient && patient.name[0] && patient.name[0].family,
+    firstName: officialName?.given[0],
+    familyName: officialName?.family,
+    kanaFamilyName: kanaName?.given[0],
+    kanaFirstName: kanaName?.family,
     birthDate: patient.birthDate || "Not Provided",
     sex: (patient.gender && patient.gender.toUpperCase()) || "Not Provided",
     phone: patient.telecom.find((item: Telecom) => item.system === "phone")

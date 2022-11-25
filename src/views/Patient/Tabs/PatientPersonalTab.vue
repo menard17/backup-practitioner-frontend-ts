@@ -36,27 +36,42 @@ export default {
 
       const firstName = {
         title: "First Name",
-        subtitle: this.patient && this.patient.firstName,
+        subtitle: this.patient?.firstName,
       };
 
       const familyName = {
         title: "Family Name",
-        subtitle: this.patient && this.patient.familyName,
+        subtitle: this.patient?.familyName,
+      };
+
+      const kanaGivenName = {
+        title: "Kana Given Name",
+        subtitle: this.patient?.kanaFirstName,
+      };
+
+      const kanaFamilyName = {
+        title: "Kana family Name",
+        subtitle: this.patient?.kanaFamilyName,
       };
 
       const sex = {
         title: "Sex",
-        subtitle:
-          (this.patient.sex && this.patient.sex.toUpperCase()) ||
-          "Not Provided",
+        subtitle: this.patient?.sex.toUpperCase() || "Not Provided",
       };
 
       const birthDate = {
         title: "Birth Date",
-        subtitle: this.patient.birthDate || "Not Provided",
+        subtitle: this.patient?.birthDate || "Not Provided",
       };
 
-      return [familyName, firstName, sex, birthDate];
+      return [
+        familyName,
+        firstName,
+        kanaFamilyName,
+        kanaGivenName,
+        sex,
+        birthDate,
+      ];
     },
     contact() {
       if (!this.patient) {
