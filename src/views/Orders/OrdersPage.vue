@@ -32,6 +32,10 @@
           <v-text-field v-model="item.porter" readonly></v-text-field>
         </div>
       </template>
+      <template v-slot:[`item.required`]="{ item }">
+        <div v-if="item.required">✅</div>
+        <div v-if="!item.required">❌</div>
+      </template>
     </v-data-table>
   </div>
 </template>
@@ -47,6 +51,7 @@ export default Vue.extend({
   data() {
     return {
       headers: [
+        { text: "Required", value: "required" },
         { text: "Patient", value: "name" },
         { text: "Address", value: "address" },
         { text: "Phone", value: "phone" },
