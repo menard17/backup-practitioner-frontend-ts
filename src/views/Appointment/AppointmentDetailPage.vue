@@ -279,16 +279,7 @@
         <v-row class="mt-5" dense no-gutters>
           <v-col>
             <v-row class="mb-2" align="center">
-              <v-col>
-                <div class="subtitle-2 mb-3">Doctors Notes</div>
-
-                <v-btn
-                  @click="openCreateNoteDialog('doctorNote')"
-                  color="primary"
-                  class="text-none subtitle-2 mr-3"
-                >
-                  Create a Note
-                </v-btn>
+              <v-col v-if="isSuperUser()">
                 <v-btn
                   color="primary"
                   @click="openCreateAppointmentDialog"
@@ -349,19 +340,6 @@
                 >
                   Cov-19 Deliver email
                 </v-btn>
-                <v-btn
-                  @click="
-                    openEmailConfirmationDialog(
-                      'doctornote',
-                      'Doctor note updates',
-                      patient.email,
-                      patient.familyName
-                    )
-                  "
-                  color="primary"
-                  class="text-none subtitle-2 mr-3"
-                  >Doctor Note email
-                </v-btn>
               </v-col>
             </v-row>
           </v-col>
@@ -399,10 +377,6 @@
     </status-dialog>
     <status-dialog ref="emailStatusDialogRef" />
     <edit-patient-dialog ref="editPatientDialog" />
-    <create-note-dialog
-      @onSave="createDoctorNote"
-      ref="createDoctorNoteDialog"
-    />
     <create-note-dialog
       @onSave="createClinicalNote"
       ref="createClinicalNoteDialog"
@@ -449,7 +423,6 @@ import DocumentReferenceWrapper from "../Patient/DocumentReferenceWrapper.vue";
 import EditPatientDialog from "@/views/Patient/Dialogs/EditPatientDialog";
 import EmailConfirmationDialog from "@/views/Appointment/Dialogs/EmailConfirmationDialog";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import { getTestsByPatientId } from "@/store/AppointmentHistory/appointmentHistory.actions";
 
 export default {
   components: {
@@ -702,13 +675,6 @@ export default {
         status: "cancelled",
       });
     },
-    createDoctorNote(note) {
-      this.createDiagnosticReport({
-        appointment: this.appointment,
-        encounter: this.encounter,
-        note,
-      });
-    },
     createClinicalNote(note, medications, test) {
       this.createClinicalNoteAction({
         appointment: this.appointment,
@@ -737,15 +703,6 @@ export default {
       medications = []
     ) {
       switch (type) {
-        case "doctorNote":
-          this.$refs.createDoctorNoteDialog.toggleDialog(
-            type,
-            note,
-            isEditing,
-            test,
-            medications
-          );
-          break;
         case "clinicalNote":
           this.$refs.createClinicalNoteDialog.toggleDialog(
             type,
@@ -765,6 +722,10 @@ export default {
       return window.confirm(
         "Do you want to leave the page by ending the session? If clinical note is not written, you cannot proceed"
       );
+    },
+    isSuperUser() {
+      const superUser = "super";
+      return this.$route.query.user == superUser;
     },
   },
 };
