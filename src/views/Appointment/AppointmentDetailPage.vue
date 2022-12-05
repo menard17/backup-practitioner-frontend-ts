@@ -323,28 +323,6 @@
             ></v-skeleton-loader>
           </v-col>
         </v-row>
-        <v-row class="mt-5" dense no-gutters>
-          <v-col>
-            <v-row class="mb-2" align="center">
-              <v-col>
-                <div class="subtitle-2 mb-3">Send Emails</div>
-                <v-btn
-                  @click="
-                    openEmailConfirmationDialog(
-                      'covid',
-                      'Cov-19 Test Kit Delivery'
-                    )
-                  "
-                  color="primary"
-                  class="text-none subtitle-2 mr-3"
-                >
-                  Cov-19 Deliver email
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
-
         <v-row dense>
           <v-col cols="6">
             <label-text-field
@@ -375,15 +353,10 @@
     <status-dialog ref="statusDialogRef">
       <v-btn class="text-none subtitle-2"> Go to Appointment </v-btn>
     </status-dialog>
-    <status-dialog ref="emailStatusDialogRef" />
     <edit-patient-dialog ref="editPatientDialog" />
     <create-note-dialog
       @onSave="createClinicalNote"
       ref="createClinicalNoteDialog"
-    />
-    <email-confirmation-dialog
-      ref="emailConfirmationDialogRef"
-      @onSent="onEmailSent"
     />
     <confirm-dialog
       title="Cancel Appointment?"
@@ -421,7 +394,6 @@ import { fomartStringDate } from "@/utils/dateHelpers";
 import CreateNoteDialog from "@/views/Appointment/Dialogs/CreateNoteDialog";
 import DocumentReferenceWrapper from "../Patient/DocumentReferenceWrapper.vue";
 import EditPatientDialog from "@/views/Patient/Dialogs/EditPatientDialog";
-import EmailConfirmationDialog from "@/views/Appointment/Dialogs/EmailConfirmationDialog";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
 export default {
@@ -431,7 +403,6 @@ export default {
     CreateNoteDialog,
     StatusDialog,
     CreateAppointmentDialog,
-    EmailConfirmationDialog,
     LabelTextField,
     TitleSubtitle,
     StartEncounterDialog,
@@ -539,6 +510,7 @@ export default {
       if (this.confirm() === false) {
         return;
       } else {
+        this.sendCovidEmail();
         return this.endEncounter();
       }
     }
@@ -557,6 +529,7 @@ export default {
     }),
     ...mapActions("$_application", {
       insertSheet: "insertSheet",
+      sendEmail: "sendEmail",
     }),
     ...mapActions("$_appointmentHistory", {
       getAppointmentsByPatientId: "getAppointmentsByPatientId",
@@ -572,11 +545,16 @@ export default {
       const status = appointment ? StatusTypes.success : StatusTypes.error;
       this.$refs.statusDialogRef.toggleDialog({ title, body, status });
     },
-    onEmailSent(sent) {
-      const title = sent ? "Email is sent" : "Failed to send";
-      const body = "";
-      const status = "";
-      this.$refs.emailStatusDialogRef.toggleDialog({ title, body, status });
+    sendCovidEmail() {
+      const covid = "covid";
+      const pcr = "Allplex SARS-CoV-2 Assay";
+      if (this.test && this.test[0].value === pcr) {
+        this.sendEmail({
+          email: this.patient.email,
+          familyName: this.patient.familyName,
+          type: covid,
+        });
+      }
     },
     updateAppointmentStatus(appointment, status) {
       this.updateAppointment({
@@ -595,14 +573,6 @@ export default {
     },
     openCancelEncounterDialog() {
       this.$refs.confirmCancelEncounterDialogRef.toggleDialog();
-    },
-    openEmailConfirmationDialog(type, content) {
-      this.$refs.emailConfirmationDialogRef.toggleDialog(
-        type,
-        content,
-        this.patient.email,
-        this.patient.familyName
-      );
     },
     confirmCancelAppointment() {
       this.updateAppointmentStatus(this.appointment, "cancelled");
