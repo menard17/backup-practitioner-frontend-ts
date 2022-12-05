@@ -4,7 +4,7 @@
       <v-card-title>
         <v-row>
           <v-col>
-            Appointment Information
+            {{ this.$t("Appointment Information") }}
             <v-chip v-if="appointment">
               {{ appointment.status.toUpperCase() }}</v-chip
             >
@@ -17,13 +17,13 @@
         <v-row dense>
           <v-col>
             <label-text-field
-              label="Start Time"
+              :label="this.$t('Start Time')"
               :text="`${appointment.date} ${appointment.start}`"
             />
           </v-col>
           <v-col>
             <label-text-field
-              label="End Time"
+              :label="this.$t('End Time')"
               :text="`${appointment.date} ${appointment.end}`"
             />
           </v-col>
@@ -41,7 +41,7 @@
                   class="font-weight-medium"
                   color="grey lighten-2"
                 >
-                  Patient Details
+                  {{ this.$t("Patient Details") }}
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <div class="mt-5">
@@ -51,7 +51,7 @@
                       class="subtitle-2 text-none"
                       @click="openEditPatientDetailsDialog"
                     >
-                      Edit Patient
+                      {{ this.$t("Edit Patient") }}
                     </v-btn>
                   </div>
                   <v-row class="mt-3">
@@ -75,7 +75,7 @@
                   class="font-weight-medium"
                   color="grey lighten-2"
                 >
-                  Appointment History
+                  {{ this.$t("Appointment History") }}
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-expansion-panels
@@ -94,18 +94,22 @@
                       <v-expansion-panel-content>
                         <v-divider class="mb-2 mx-4" />
                         <div class="px-4 pb-4">
-                          <div class="title my-2">Clinical Note</div>
+                          <div class="title my-2">
+                            {{ "Clinical Note" }}
+                          </div>
                           <div
                             style="white-space: pre-line"
                             v-if="appt.clinicalNote"
                           >
                             {{ appt.clinicalNote.note }}
                           </div>
-                          <div class="title my-4">Medications</div>
+                          <div class="title my-4">
+                            {{ "Medications" }}
+                          </div>
 
                           <v-card outlined>
                             <v-card-text v-if="!appt.medications.length">
-                              No Medications
+                              {{ "No Medications" }}
                             </v-card-text>
                             <v-list dense v-else>
                               <div
@@ -123,10 +127,10 @@
                               </div>
                             </v-list>
                           </v-card>
-                          <div class="title my-4">Tests</div>
+                          <div class="title my-4">{{ "Tests" }}</div>
                           <v-card outlined>
                             <v-card-text v-if="!appt.tests.length">
-                              No Tests
+                              {{ "No Tests" }}
                             </v-card-text>
                             <v-list dense v-else>
                               <div
@@ -146,7 +150,7 @@
                       </v-expansion-panel-content>
                     </v-expansion-panel>
                   </v-expansion-panels>
-                  <div v-else>No Appointment History</div>
+                  <div v-else>{{ "No Appointment History" }}</div>
                 </v-expansion-panel-content>
               </v-expansion-panel>
             </v-expansion-panels>
@@ -167,7 +171,7 @@
               class="text-none subtitle-2"
               color="primary"
             >
-              Start Session
+              {{ this.$t("Start Session") }}
             </v-btn>
           </v-col>
           <v-col v-if="appointment.status !== 'cancelled'">
@@ -177,13 +181,13 @@
               outlined
               color="error"
             >
-              Cancel Appointment
+              {{ this.$t("Cancel Appointment") }}
             </v-btn>
           </v-col>
         </v-row>
         <v-row v-if="encounter">
           <v-col>
-            <div class="subtitle-2">Encounter Status</div>
+            <div class="subtitle-2">{{ this.$t("Status") }}</div>
             <v-chip>
               {{ encounter.status.toUpperCase() }}
             </v-chip>
@@ -199,7 +203,7 @@
               class="text-none subtitle-2 ml-3"
               color="primary"
             >
-              End Session
+              {{ this.$t("End Session") }}
             </v-btn>
             <v-btn
               v-if="(encounter && encounter.status) === 'in-progress'"
@@ -208,7 +212,7 @@
               outlined
               color="error"
             >
-              Cancel Encounter
+              {{ this.$t("Cancel Encounter") }}
             </v-btn>
           </v-col>
         </v-row>
@@ -216,14 +220,16 @@
           <v-col>
             <v-row class="mb-2" align="center">
               <v-col>
-                <div class="subtitle-2 mb-3">Clinical Notes</div>
+                <div class="subtitle-2 mb-3">
+                  {{ this.$t("Clinical Note") }}
+                </div>
                 <v-btn
                   :disabled="this.appointment.status == 'booked'"
                   @click="openCreateNoteDialog('clinicalNote')"
                   color="primary"
                   class="text-none subtitle-2 mr-3"
                 >
-                  Create a Note
+                  {{ this.$t("Create a Note") }}
                 </v-btn>
               </v-col>
             </v-row>
@@ -263,14 +269,14 @@
         <v-row dense>
           <v-col cols="6">
             <label-text-field
-              label="Tests"
+              :label="this.$t('Tests')"
               v-if="this.encounter && this.test && this.test.length"
               :text="test[0].display"
             />
           </v-col>
           <v-col cols="6">
             <label-text-field
-              label="Prescription"
+              :label="this.$t('Medications')"
               v-if="medications"
               :text="medications"
             />
@@ -359,14 +365,14 @@
       ref="createClinicalNoteDialog"
     />
     <confirm-dialog
-      title="Cancel Appointment?"
-      message="Are you sure you want cancel this appointment?"
+      :title="this.$t('Cancel Appointment')"
+      :message="this.$t('Cancel Description')"
       @save="confirmCancelAppointment"
       ref="confirmCancelAppointmentDialogRef"
     />
     <confirm-dialog
-      title="Cancel Encounter?"
-      message="Are you sure you want cancel this Encounter?"
+      :title="this.$t('Cancel Encounter')"
+      :message="this.$t('Cancel Description')"
       @save="cancelEncounter"
       ref="confirmCancelEncounterDialogRef"
     />
@@ -470,33 +476,33 @@ export default {
     patientDetails() {
       return [
         {
-          title: "Family Name",
+          title: this.$t("Patient Family Name"),
           subtitle: this.patient.familyName,
         },
         {
-          title: "First Name",
+          title: this.$t("Patient First Name"),
           subtitle: this.patient.firstName,
         },
 
         {
-          title: "Email",
+          title: this.$t("Email"),
           subtitle: this.patient.email,
         },
         {
-          title: "Phone",
+          title: this.$t("Phone"),
           subtitle: this.patient.phone,
         },
         {
-          title: "Address",
+          title: this.$t("Address"),
           subtitle: this.patient.address,
           cols: 12,
         },
         {
-          title: "Sex",
+          title: this.$t("Sex"),
           subtitle: this.patient.sex,
         },
         {
-          title: "Birth Date",
+          title: this.$t("Birth Date"),
           subtitle: this.patient.birthDate,
         },
       ];
@@ -510,7 +516,6 @@ export default {
       if (this.confirm() === false) {
         return;
       } else {
-        this.sendCovidEmail();
         return this.endEncounter();
       }
     }
@@ -633,6 +638,7 @@ export default {
             test: this.test[0].display,
           },
         });
+        this.sendCovidEmail();
       }
     },
     startEncounter() {
@@ -689,9 +695,7 @@ export default {
       this.$refs.editPatientDialog.toggleDialog(this.patientObject);
     },
     confirm() {
-      return window.confirm(
-        "Do you want to leave the page by ending the session? If clinical note is not written, you cannot proceed"
-      );
+      return window.confirm(this.$t("Leave page without clinical note"));
     },
     isSuperUser() {
       const superUser = "super";

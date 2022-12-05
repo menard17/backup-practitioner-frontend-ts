@@ -1,6 +1,12 @@
 import { filterAppointmentsByDateFilters } from "../appointments.actions";
 import { dateFilterOptions } from "@/utils/filterOptions";
 
+jest.mock("@/plugins/firebase", () => {
+  return {
+    auth: jest.fn(),
+  };
+});
+
 describe("filter appointments", () => {
   const appointments: any[] = [
     {

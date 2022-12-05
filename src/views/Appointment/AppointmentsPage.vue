@@ -82,7 +82,7 @@
             v-if="appointments.length"
             :filterMenuOptions="statusFilterOptions"
             :selectedFilterItem="selectedStatusFilter"
-            default-filter-title="Status"
+            :default-filter-title="this.$t('Status')"
             @filter-items="filterAppointmentsByStatus"
           />
         </v-col>
@@ -202,15 +202,15 @@
             </v-toolbar>
             <v-card-text v-if="selectedEvent.status == null">
               Click 'Save' button to create a new block schedule from
-              <b>
+              <strong>
                 {{ new Date(selectedEvent.start).getHours() }}:
                 {{ new Date(selectedEvent.start).getMinutes() }}
-              </b>
+              </strong>
               to
-              <b>
+              <strong>
                 {{ new Date(selectedEvent.end).getHours() }}:
                 {{ new Date(selectedEvent.end).getMinutes() }}
-              </b>
+              </strong>
             </v-card-text>
             <v-card-text v-if="selectedEvent.status">
               <span v-html="selectedEvent.start"></span>
@@ -282,23 +282,23 @@ export default Vue.extend({
       items: ["My Appointments", "All"],
       headers: [
         {
-          text: "Doctor Name",
+          text: this.$t("doctor name"),
           value: "practitioner",
         },
         {
-          text: "Patient Family Name",
+          text: this.$t("Patient Family Name"),
           value: "patient.familyName",
         },
         {
-          text: "Patient First Name",
+          text: this.$t("Patient First Name"),
           value: "patient.firstName",
         },
-        { text: "Date", value: "date" },
-        { text: "Start", value: "start" },
-        { text: "End", value: "end" },
-        { text: "Type", value: "type" },
+        { text: this.$t("Date"), value: "date" },
+        { text: this.$t("Start Time"), value: "start" },
+        { text: this.$t("End Time"), value: "end" },
+        { text: this.$t("Type"), value: "type" },
         {
-          text: "Status",
+          text: this.$t("Status"),
           value: "status",
         },
       ],

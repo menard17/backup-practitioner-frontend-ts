@@ -5,14 +5,14 @@
       @click="openDocumentReferenceDialog('insurance')"
       class="mr-2 subtitle-2 text-none"
     >
-      Insurance Card
+      {{ this.$t("Insurance Card") }}
     </v-btn>
     <v-btn
       v-if="medicalRecord"
       @click="openDocumentReferenceDialog('medicalRecord')"
       class="subtitle-2 text-none"
     >
-      Medical Record
+      {{ this.$t("Medical Record") }}
     </v-btn>
     <document-reference-dialog ref="documentReferenceDialogRef" />
   </v-row>
@@ -40,13 +40,13 @@ export default {
         case "insurance":
           this.$refs.documentReferenceDialogRef.toggleDialog(
             this.insuranceCard,
-            "Insurance Card"
+            this.$t("Insurance Card")
           );
           break;
         case "medicalRecord":
           this.$refs.documentReferenceDialogRef.toggleDialog(
             this.medicalRecord,
-            "Medical Record"
+            this.$t("Medical Record")
           );
           break;
       }

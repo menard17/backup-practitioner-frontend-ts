@@ -3,7 +3,7 @@
     <v-card>
       <v-card-title>
         <v-row>
-          <v-col align="start"> Add a {{ noteTypeTitle }} Note </v-col>
+          <v-col align="start"> {{ noteTypeTitle }} </v-col>
           <v-col align="end">
             <v-btn @click="cancel" icon>
               <v-icon> mdi-close </v-icon>
@@ -13,7 +13,7 @@
       </v-card-title>
       <div class="pa-4">
         <v-select
-          label="Note Templates"
+          :label="this.$t('Note Templates')"
           class="align-start"
           :items="templates"
           v-model="selectedTemplate"
@@ -23,14 +23,14 @@
         />
         <v-textarea
           outlined
-          placeholder="Type your notes Here"
+          :placeholder="this.$t('Place Holder for Notes')"
           v-model="note"
           rows="18"
         />
         <v-autocomplete
           v-model="medications"
           :items="medicalTerms.medications[0].array"
-          label="Prescriptions"
+          :label="this.$t('Medications')"
           multiple
           item-value="value"
           item-text="display"
@@ -43,7 +43,7 @@
         <v-select
           v-model="test"
           :items="medicalTerms.tests[0].array"
-          label="Tests"
+          :label="this.$t('Tests')"
           item-value="value"
           item-text="display"
           dense
@@ -60,7 +60,7 @@
           class="text-none subtitle-2"
           outlined
         >
-          Cancel</v-btn
+          {{ this.$t("Cancel") }}</v-btn
         >
         <v-btn
           :loading="isLoadingNote"
@@ -69,7 +69,7 @@
           class="text-none subtitle-2"
           @click="save"
         >
-          Save
+          {{ this.$t("Save") }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -101,7 +101,7 @@ export default {
     noteTypeTitle() {
       switch (this.noteType) {
         case "clinicalNote":
-          return "Clinical";
+          return this.$t("Clinical Note");
         case "doctorNote":
           return "Doctors";
         default:

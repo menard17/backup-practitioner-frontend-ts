@@ -22,10 +22,10 @@
           class="text-none subtitle-2"
           outlined
         >
-          No</v-btn
-        >
+          {{ this.$t("No") }}
+        </v-btn>
         <v-btn color="primary" class="text-none subtitle-2" @click="save">
-          Yes
+          {{ this.$t("Yes") }}
         </v-btn>
       </v-card-actions>
     </v-card>
