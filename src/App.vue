@@ -1,7 +1,7 @@
 <script src="shims-vue.d.ts"></script>
 <template>
   <v-app>
-    <home-wrapper-page />
+    <component v-bind:is="layout"></component>
     <v-snackbar v-model="show" :color="color" :timeout="timeout" bottom right>
       {{ text }}
     </v-snackbar>
@@ -14,10 +14,12 @@
 <script lang="ts">
 import Vue from "vue";
 import HomeWrapperPage from "@/views/HomeWrapperPage.vue";
+import NoLayout from "@/layouts/NoLayout.vue";
+import { mapState } from "vuex";
 
 export default Vue.extend({
   name: "App",
-  components: { HomeWrapperPage },
+  components: { HomeWrapperPage, NoLayout },
   data() {
     return {
       showLoadingOverlay: false,
@@ -26,6 +28,11 @@ export default Vue.extend({
       text: "",
       timeout: -1,
     };
+  },
+  computed: {
+    ...mapState("$_commons", {
+      layout: "layout",
+    }),
   },
   created() {
     this.$store.subscribe((mutation, state) => {
@@ -42,5 +49,3 @@ export default Vue.extend({
   },
 });
 </script>
-
-<style></style>

@@ -166,7 +166,6 @@ export default Vue.extend({
         this.drawer = false;
       }
     });
-
     this.getCurrentUserRole();
   },
 

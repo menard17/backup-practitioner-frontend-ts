@@ -10,6 +10,7 @@ import $_patients from "./Patients";
 import $_payments from "./Payments";
 import $_porters from "./Porters";
 import $_practitioners from "./Practitioners";
+import $_commons from "./Commons";
 
 Vue.use(Vuex);
 
@@ -29,5 +30,6 @@ export default new Vuex.Store({
     $_payments,
     $_porters,
     $_practitioners,
+    $_commons,
   },
 });

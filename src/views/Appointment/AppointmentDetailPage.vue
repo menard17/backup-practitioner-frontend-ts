@@ -168,12 +168,13 @@
           <v-col>
             <v-btn
               @click="confirmPatientJoined"
-              class="text-none subtitle-2"
+              class="text-none subtitle-2 me-2"
               color="primary"
             >
               {{ this.$t("Start Session") }}
             </v-btn>
           </v-col>
+
           <v-col v-if="appointment.status !== 'cancelled'">
             <v-btn
               @click="openCancelAppointmentDialog"
@@ -182,6 +183,17 @@
               color="error"
             >
               {{ this.$t("Cancel Appointment") }}
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-btn
+              @click="goToVideo"
+              class="text-none subtitle-2"
+              color="primary"
+            >
+              {{ this.$t("join room") }}
             </v-btn>
           </v-col>
         </v-row>
@@ -700,6 +712,14 @@ export default {
     isSuperUser() {
       const superUser = "super";
       return this.$route.query.user == superUser;
+    },
+    goToVideo() {
+      const appointment_id = this.$route.params.id;
+      window.open(
+        `${appointment_id}/video?identity_id=${this.practitionerRole.id}`,
+        "newwindow",
+        "width=1200,height=800"
+      );
     },
   },
 };

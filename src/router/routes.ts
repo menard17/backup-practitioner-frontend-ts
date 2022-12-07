@@ -13,6 +13,8 @@ import PractitionerRolesPage from "@/views/Practitioner/PractitionerRolesPage.vu
 import PractitionerDetailsWrapperPage from "@/views/Practitioner/PractitionerDetailsWrapperPage.vue";
 import BulkPaymentsPage from "@/views/Payments/BulkPaymentsPage.vue";
 
+const VideoPage = () => import("../modules/Video/views/VideoPage.vue");
+
 export const routes: Array<RouteConfig> = [
   {
     path: "/sign-in",
@@ -63,6 +65,14 @@ export const routes: Array<RouteConfig> = [
     path: "/appointments/:id",
     name: "appointment-detail",
     component: AppointmentDetailPage,
+    meta: {
+      authRequired: true,
+    },
+  },
+  {
+    path: "/appointments/:id/video",
+    name: "appointment-video",
+    component: VideoPage,
     meta: {
       authRequired: true,
     },
@@ -131,6 +141,14 @@ export const routes: Array<RouteConfig> = [
     component: () => import("../views/Orders/OrdersPage.vue"),
     meta: {
       authRequired: false,
+    },
+  },
+  {
+    path: "/video",
+    name: "video-room",
+    component: VideoPage,
+    meta: {
+      authRequired: true,
     },
   },
 ];

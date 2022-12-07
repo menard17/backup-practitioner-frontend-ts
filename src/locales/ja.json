@@ -54,5 +54,6 @@
   "Cancel": "キャンセル",
   "Leave page without clinical note": "処方薬・検査・カルテが正しく記入されていません。",
   "Cancel Encounter": "診療をキャンセル",
-  "End Session": "診療終了"
+  "End Session": "診療終了",
+  "join room" : "診察室を開く"
 }
