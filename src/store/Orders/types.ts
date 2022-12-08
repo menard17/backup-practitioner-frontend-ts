@@ -21,6 +21,12 @@ export type Order = {
   tests: Test[];
   ref: DocumentReference<DocumentData> | null;
   documentId: string;
+  comment?: string;
+};
+
+export type OrderGetter = Order & {
+  required: boolean;
+  hasTest: boolean;
 };
 
 export type Medicine = {

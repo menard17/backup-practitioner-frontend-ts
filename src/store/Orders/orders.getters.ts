@@ -31,7 +31,11 @@ export const orders = (state: OrdersState) => {
       porter: order.porter,
       address: order.address,
       required: hasMedicine || hasTest,
+      hasTest: hasTest && order.status !== "unassigned",
       ref: order.ref,
+      comment: order.comment ?? "",
+      medicines: order.medicines,
+      tests: order.tests,
     };
   });
 };
