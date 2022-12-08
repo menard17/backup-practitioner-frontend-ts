@@ -2,13 +2,13 @@
   <div id="controls">
     <v-btn color="primary" fab large dark @click="toggleVideo">
       <v-icon color="white">{{
-        isVideoMutedProp ? "mdi-camera" : "mdi-camera-off"
+        isVideoMutedProp ? "mdi-camera-off" : "mdi-camera"
       }}</v-icon>
     </v-btn>
 
     <v-btn color="primary" fab large dark @click="toggleAudio">
       <v-icon color="white">{{
-        isAudioMutedProp ? "mdi-microphone" : "mdi-microphone-off"
+        isAudioMutedProp ? "mdi-microphone-off" : "mdi-microphone"
       }}</v-icon>
     </v-btn>
     <v-btn color="error" fab large dark @click="leave">
