@@ -180,7 +180,7 @@ export async function updatePractitioner(
       });
     }
   } catch (e) {
-    console.error(e);
+    console.error("Failed to set Practitioner");
   }
 
   context.commit("setIsLoading", {

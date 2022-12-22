@@ -96,7 +96,7 @@ export default Vue.extend({
         this.room = await connect(data.token, {
           name: `room_no_${appointment_id}`,
           audio: { noiseSuppression: true, echoCancellation: true },
-          video: { height: 780, frameRate: 24, width: 1280 },
+          video: { height: 1920, frameRate: 24, width: 1080 },
           bandwidthProfile: {
             video: {
               mode: "collaboration",
@@ -211,7 +211,7 @@ export default Vue.extend({
 </script>
 <style>
 video {
-  max-width: 100%;
+  max-height: 100%;
 }
 #videos {
   display: grid;
@@ -236,8 +236,8 @@ video {
   position: fixed;
   top: 20px;
   left: 20px;
-  height: 170px;
-  width: 300px;
+  height: 300px;
+  width: 170px;
   border-radius: 5px;
   border: 2px solid #b366f9;
   -webkit-box-shadow: 3px 3px 15px -1px rgba(0, 0, 0, 0.77);

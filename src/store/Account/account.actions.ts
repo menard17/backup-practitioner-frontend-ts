@@ -125,7 +125,7 @@ export async function updateMyPractitionerRole(
       { root: true }
     );
   } catch (e) {
-    console.error(e);
+    console.error("failed to updatePractitioner");
   }
 
   context.commit("setIsLoading", {
