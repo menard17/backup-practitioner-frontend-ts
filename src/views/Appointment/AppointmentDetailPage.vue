@@ -564,8 +564,8 @@ export default {
     },
     sendCovidEmail() {
       const covid = "covid";
-      const pcr = "Allplex SARS-CoV-2 Assay";
-      if (this.test && this.test[0].value === pcr) {
+      const pcr = "PCR";
+      if (this.test && this.test[0].value.includes(pcr)) {
         this.sendEmail({
           email: this.patient.email,
           familyName: this.patient.familyName,

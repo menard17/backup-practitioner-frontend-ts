@@ -96,13 +96,13 @@ export default Vue.extend({
         this.room = await connect(data.token, {
           name: `room_no_${appointment_id}`,
           audio: { noiseSuppression: true, echoCancellation: true },
-          video: { height: 1920, frameRate: 24, width: 1080 },
+          video: { height: 1280, frameRate: 24, width: 720 },
           bandwidthProfile: {
             video: {
               mode: "collaboration",
             },
           },
-          preferredVideoCodecs: [{ codec: "VP8", simulcast: true }],
+          preferredVideoCodecs: [{ codec: "VP8", simulcast: false }],
           networkQuality: { local: 1, remote: 1 },
         });
 
@@ -264,10 +264,10 @@ video {
   cursor: pointer;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 60px) {
   .smallFrame {
     height: 120px;
-    width: 80px;
+    width: 60px;
   }
 
   .control-container img {
