@@ -41,7 +41,7 @@ import {
 } from "twilio-video";
 import axios from "axios";
 import Vue from "vue";
-import { Nullable, IMuteUnmuteOptions } from "../types";
+import { Nullable } from "../types";
 import AlertDialog from "@/components/AlertDialog.vue";
 import ControlsButton from "../components/ControlsButton.vue";
 import { AxiosError } from "axios";
@@ -266,8 +266,8 @@ video {
 
 @media screen and (max-width: 600px) {
   .smallFrame {
-    height: 80px;
-    width: 120px;
+    height: 120px;
+    width: 80px;
   }
 
   .control-container img {
