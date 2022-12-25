@@ -139,25 +139,6 @@ export function practitionerNameJp(state: any) {
   return fullName;
 }
 
-export function zoomId(state: any) {
-  const practitionerRole = state.practitionerRole;
-  if (!practitionerRole) {
-    return "";
-  }
-  return practitionerRole.extension.find((item: any) => item.url === "zoom-id")
-    .valueString;
-}
-
-export function zoomPasscode(state: any) {
-  const practitionerRole = state.practitionerRole;
-  if (!practitionerRole) {
-    return "";
-  }
-  return practitionerRole.extension.find(
-    (item: any) => item.url === "zoom-passcode"
-  ).valueString;
-}
-
 export function practitionerRole(state: any) {
   const practitionerRole = state.practitionerRole;
 
@@ -174,12 +155,6 @@ export function practitionerRole(state: any) {
   return {
     id: practitionerRole.id,
     availableTime: availableTime,
-    zoomId: practitionerRole.extension.find(
-      (item: any) => item.url === "zoom-id"
-    ).valueString,
-    zoomPasscode: practitionerRole.extension.find(
-      (item: any) => item.url === "zoom-passcode"
-    ).valueString,
     roleType: practitionerRole.code[0].coding[0].code.toUpperCase(),
   };
 }

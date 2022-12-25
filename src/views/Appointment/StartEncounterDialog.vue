@@ -13,7 +13,6 @@
           </v-col>
         </v-row>
       </v-card-title>
-      <div class="my-5 text-center">{{ this.$t("Joined Zoom") }}</div>
       <v-card-actions>
         <v-btn @click="noShow" color="red" outlined class="subtitle-2">
           {{ this.$t("No show") }}

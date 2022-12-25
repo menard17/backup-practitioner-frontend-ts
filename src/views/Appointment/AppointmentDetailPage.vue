@@ -156,13 +156,6 @@
             </v-expansion-panels>
           </v-card>
         </v-row>
-        <v-row justify="start" class="mx-4 pt-4" v-if="!encounter">
-          <div class="mr-3">
-            <title-subtitle title="zoom ID" :subtitle="zoomId" />
-          </div>
-
-          <title-subtitle title="zoom Passcode" :subtitle="zoomPasscode" />
-        </v-row>
 
         <v-row v-if="!encounter" justify="start">
           <v-col>
@@ -469,8 +462,6 @@ export default {
       insuranceCard: "insuranceCard",
     }),
     ...mapGetters("$_practitioners", {
-      zoomId: "zoomId",
-      zoomPasscode: "zoomPasscode",
       practitionerNameEn: "practitionerNameEn",
       practitionerNameJp: "practitionerNameJp",
     }),

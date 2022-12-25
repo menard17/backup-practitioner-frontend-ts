@@ -64,34 +64,6 @@
           />
         </v-tab-item>
         <v-tab-item>
-          <v-card class="text-center pa-4">
-            <v-row dense>
-              <v-col>
-                <label-card
-                  class="text-left mt-2"
-                  label="Zoom ID"
-                  :text="practitionerRole.zoomId"
-                />
-                <label-card
-                  class="text-left mt-2"
-                  label="Zoom Passcode"
-                  :text="practitionerRole.zoomPasscode"
-                />
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-btn
-                @click="openZoomDetailsDialog"
-                class="text-none subtitle-2"
-                color="primary"
-                block
-              >
-                Edit
-              </v-btn>
-            </v-row>
-          </v-card>
-        </v-tab-item>
-        <v-tab-item>
           <v-card>
             <v-simple-table>
               <template v-slot:default>
@@ -148,11 +120,6 @@
       :user="user"
       ref="practitionerRequestDialogRef"
     />
-    <zoom-detail-dialog
-      v-if="practitionerRole"
-      ref="zoomDetailsDialog"
-      @save="updateZoomDetails"
-    />
     <confirm-dialog
       :title="`${
         practitioner.active ? 'Deactivate' : 'Activate'
@@ -186,20 +153,16 @@
 
 <script>
 import PractitionerDetailsCard from "@/views/Practitioner/PractitionerDetailsCard";
-import { mapActions, mapState } from "vuex";
-import LabelCard from "@/components/LabelCard";
+import { mapState } from "vuex";
 import ScheduleDialog from "@/views/Practitioner/Dialogs/ScheduleDialog";
 import PractitionerRequestDialog from "@/views/Practitioner/Dialogs/PractitionerRequestDialog";
-import ZoomDetailDialog from "@/views/Practitioner/Dialogs/ZoomDetailDialog";
 import ConfirmDialog from "@/components/ConfirmDialog";
 export default {
   name: "PractitionerDetailsPage",
   components: {
     ConfirmDialog,
-    ZoomDetailDialog,
     PractitionerRequestDialog,
     ScheduleDialog,
-    LabelCard,
     PractitionerDetailsCard,
   },
   props: {
@@ -219,7 +182,7 @@ export default {
   data() {
     return {
       tab: null,
-      items: ["Personal", "Zoom", "Schedule"],
+      items: ["Personal", "Schedule"],
       title: "",
       isNewPractitioner: false,
       deleteDialog: false,
@@ -280,16 +243,6 @@ export default {
     deleteScheduleItem(index) {
       this.scheduleItemIndexToDelete = index;
       this.deleteDialog = true;
-    },
-    openZoomDetailsDialog() {
-      this.$refs.zoomDetailsDialog.toggleDialog(this.practitionerRole);
-    },
-    updateZoomDetails(zoomDetails) {
-      const changeFields = {
-        zoom_id: zoomDetails.zoomId,
-        zoom_password: zoomDetails.zoomPasscode,
-      };
-      this.$emit("updatePractitionerRole", { changeFields });
     },
   },
 };

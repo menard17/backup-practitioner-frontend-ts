@@ -150,8 +150,6 @@ export async function createMyPractitionerWithPractitionerRole(
     payload = {
       ...changeFields,
       available_time: [{}],
-      zoom_id: "zoom id placeholder",
-      zoom_password: "zoom passcode placeholder",
     };
   } else {
     context.commit("setFirebaseRole", "Staff");

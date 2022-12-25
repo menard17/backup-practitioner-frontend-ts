@@ -228,8 +228,6 @@ export default {
       familyNameEn: "",
       firstNameEn: "",
       bioEn: "",
-      zoomId: "",
-      zoomPasscode: "",
       photo: null,
       image: null,
       selectedGender: "",
@@ -390,8 +388,6 @@ export default {
         this.familyNameEn = practitioner.en.familyName;
         this.firstNameEn = practitioner.en.firstName;
         this.bioEn = practitioner.en.bio;
-        this.zoomId = practitionerRole.zoomId;
-        this.zoomPasscode = practitionerRole.zoomPasscode;
         this.selectedRoleType = practitionerRole.roleType.toUpperCase();
         this.practitionerRoleId = practitionerRole.id;
         this.photo = practitioner.photo
@@ -441,8 +437,6 @@ export default {
       this.familyNameEn = "";
       this.firstNameEn = "";
       this.bioEn = "";
-      this.zoomId = "";
-      this.zoomPasscode = "";
       this.selectedRoleType = "";
       this.photo = "";
       this.selectedGender = "";
