@@ -188,7 +188,7 @@
         >
           Cancel
         </v-btn>
-        <v-btn @click="validate()" color="primary" class="text-none subtitle-2">
+        <v-btn @click="validate" color="primary" class="text-none subtitle-2">
           Save
         </v-btn>
       </v-card-actions>
@@ -294,6 +294,12 @@ export default {
     },
   },
   methods: {
+    async refreshAuthState() {
+      await auth.currentUser.reload();
+      const idToken = await auth.currentUser?.getIdTokenResult(true);
+
+      this.setToken(idToken.token);
+    },
     getClass(input) {
       if (input === "dateRangeField") {
         if (this.dateRange.length < 2 && this.isSaveButtonClicked) {
@@ -318,7 +324,12 @@ export default {
       return "hide-error";
     },
     async validate() {
+      if (!auth.currentUser) return;
+
       await auth.currentUser.reload();
+      const idToken = await auth.currentUser?.getIdTokenResult(true);
+
+      this.setToken(idToken.token);
       this.isSaveButtonClicked = true;
       if (
         (auth.currentUser.emailVerified &&
@@ -361,6 +372,9 @@ export default {
       updateMyPractitionerRole: "updateMyPractitionerRole",
       createMyPractitionerWithPractitionerRole:
         "createMyPractitionerWithPractitionerRole",
+    }),
+    ...mapActions("$_auth", {
+      setToken: "setToken",
     }),
     async previewImage() {
       // file size in pixel

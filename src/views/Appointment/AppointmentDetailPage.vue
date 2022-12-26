@@ -398,14 +398,16 @@ import LabelTextField from "@/components/LabelCard.vue";
 import { mapActions, mapGetters, mapState } from "vuex";
 import TitleSubtitle from "@/components/TitleSubtitle.vue";
 import StartEncounterDialog from "./StartEncounterDialog.vue";
-import CreateAppointmentDialog from "@/views/Appointment/Dialogs/CreateAppointmentDialog";
 import StatusDialog from "@/components/StatusDialog";
 import { StatusTypes } from "@/utils/constants";
 import { fomartStringDate } from "@/utils/dateHelpers";
 import CreateNoteDialog from "@/views/Appointment/Dialogs/CreateNoteDialog";
-import DocumentReferenceWrapper from "../Patient/DocumentReferenceWrapper.vue";
 import EditPatientDialog from "@/views/Patient/Dialogs/EditPatientDialog";
+import DocumentReferenceWrapper from "../Patient/DocumentReferenceWrapper.vue";
+
 import ConfirmDialog from "@/components/ConfirmDialog";
+const CreateAppointmentDialog = () =>
+  import("@/views/Appointment/Dialogs/CreateAppointmentDialog");
 
 export default {
   components: {
@@ -572,6 +574,7 @@ export default {
     },
     openCreateAppointmentDialog() {
       this.$refs.createAppointmentDialogRef.toggleDialog();
+      this.isOpenAppointmentDialog = !this.isOpenAppointmentDialog;
     },
     confirmPatientJoined() {
       this.$refs.startEncounterDialogRef.toggleDialog();

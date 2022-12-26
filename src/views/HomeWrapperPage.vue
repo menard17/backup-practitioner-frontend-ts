@@ -159,9 +159,11 @@ export default Vue.extend({
     },
   },
   created() {
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
         this.drawer = true;
+        const idToken = await user.getIdTokenResult(true);
+        this.setToken(idToken.token);
       } else {
         this.drawer = false;
       }
@@ -172,6 +174,9 @@ export default Vue.extend({
   methods: {
     ...mapActions("$_account", {
       getCurrentUserRole: "getCurrentUserRole",
+    }),
+    ...mapActions("$_auth", {
+      setToken: "setToken",
     }),
     signOut() {
       this.$store

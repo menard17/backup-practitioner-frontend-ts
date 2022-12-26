@@ -11,6 +11,8 @@ import {
 } from "firebase/auth";
 
 export async function signOut(context: Context) {
+  localStorage.removeItem("token");
+  context.commit("setToken", null);
   return new Promise<void>((resolve, reject) => {
     auth
       .signOut()
@@ -24,6 +26,23 @@ export async function signOut(context: Context) {
       });
   });
 }
+
+export const login = async (context: Context, { email, password }: any) => {
+  try {
+    const firebaseUser = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    context.commit("setFirebaseUser", firebaseUser);
+
+    const idToken = await auth.currentUser?.getIdTokenResult(true);
+
+    context.commit("setToken", idToken?.token);
+  } catch (err: any) {
+    console.log(err.message);
+  }
+};
 
 export async function userLogin(context: Context, { email, password }: any) {
   return new Promise<void>((resolve, reject) =>
@@ -88,4 +107,9 @@ export async function socialLogin(context: Context, website: string) {
     }
     return;
   });
+}
+
+export function setToken(context: Context, token: string) {
+  localStorage.setItem("token", token);
+  context.commit("setToken", token);
 }

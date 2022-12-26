@@ -99,7 +99,7 @@ export default {
     },
     validate() {
       if (this.$refs.form.validate()) {
-        this.userLogin();
+        this.login();
       }
     },
     loginWithSocial(platform) {
@@ -107,23 +107,22 @@ export default {
         this.$router.push("/");
       });
     },
-    userLogin() {
-      this.$store
-        .dispatch("$_auth/userLogin", {
+    async login() {
+      try {
+        await this.$store.dispatch("$_auth/login", {
           email: this.email,
           password: this.password,
-        })
-        .then(async () => {
-          await auth.onAuthStateChanged((user) => {
-            if (user) {
-              this.$router.push({ path: "/" });
-            }
-          });
-        })
-        .catch((err) => {
-          console.error(err);
-          this.err = "Could not login";
         });
+
+        await auth.onAuthStateChanged((user) => {
+          if (user) {
+            this.$router.push({ path: "/" });
+          }
+        });
+      } catch (err) {
+        console.error(err);
+        this.err = "Could not login";
+      }
     },
   },
 };
