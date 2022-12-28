@@ -55,5 +55,6 @@
   "Leave page without clinical note": "\"Do you want to leave the page by ending the session? If clinical note is not written, you cannot proceed\"",
   "Cancel Encounter": "Cancel Encounter",
   "End Session": "End Session",
-  "join room" : "Join Room"
+  "join room" : "Join Room",
+  "Continue on encounter": "Continue on encounter"
 }

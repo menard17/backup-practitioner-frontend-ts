@@ -167,7 +167,6 @@
               {{ this.$t("Start Session") }}
             </v-btn>
           </v-col>
-
           <v-col v-if="appointment.status !== 'cancelled'">
             <v-btn
               @click="openCancelAppointmentDialog"
@@ -218,6 +217,15 @@
               color="error"
             >
               {{ this.$t("Cancel Encounter") }}
+            </v-btn>
+            <v-btn
+              v-if="(encounter && encounter.status) === 'cancelled'"
+              @click="inProgressEncounter"
+              class="text-none subtitle-2"
+              outlined
+              color="primary"
+            >
+              {{ this.$t("Continue on encounter") }}
             </v-btn>
           </v-col>
         </v-row>
@@ -655,6 +663,13 @@ export default {
         appointment: this.appointment,
         encounter: this.encounter,
         status: "cancelled",
+      });
+    },
+    inProgressEncounter() {
+      this.updateEncounter({
+        appointment: this.appointment,
+        encounter: this.encounter,
+        status: "in-progress",
       });
     },
     createClinicalNote(note, medications, test) {
