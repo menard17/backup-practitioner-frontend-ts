@@ -178,7 +178,9 @@
           @click:event="showEvent"
         >
           <template v-slot:event="{ event, timed, eventSummary }">
-            <div class="v-event-draggable" v-html="eventSummary()"></div>
+            <div class="v-event-draggable">
+              <component :is="{ render: eventSummary }"></component>
+            </div>
             <div
               v-if="timed && event.status == null"
               class="v-event-drag-bottom"
