@@ -120,7 +120,10 @@ export function appointments(state: any, getters: any, rootState: any) {
       };
     })
 
-    .filter((appt: any) => appt?.status === "fulfilled");
+    .filter(
+      (appt: any) =>
+        appt?.status === "fulfilled" && appt?.encounter?.status === "finished"
+    );
 }
 
 export function appointment(state: any) {

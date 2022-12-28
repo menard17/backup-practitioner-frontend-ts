@@ -150,7 +150,9 @@
                       </v-expansion-panel-content>
                     </v-expansion-panel>
                   </v-expansion-panels>
-                  <div v-else>{{ "No Appointment History" }}</div>
+                  <div class="pa-4 text-center grey--text" v-else>
+                    No Appointment History
+                  </div>
                 </v-expansion-panel-content>
               </v-expansion-panel>
             </v-expansion-panels>

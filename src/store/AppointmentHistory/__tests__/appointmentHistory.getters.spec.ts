@@ -387,7 +387,7 @@ describe("get appointments history", () => {
             },
           },
         ],
-        status: "in-progress",
+        status: "finished",
         subject: {
           reference: "Patient/d2d38e2b-bc1a-49df-b561-fded028cf918",
         },
@@ -771,9 +771,9 @@ describe("get appointments history", () => {
     },
   };
 
-  it("Should return 2 appointments in the list of appointments history", () => {
+  it("Should return 1 appointments in the list of appointments history when only 1 encounter is in the list", () => {
     const appointmentHistory = appointments(state, getters, rootState);
-    expect(appointmentHistory.length).toBe(2);
+    expect(appointmentHistory.length).toBe(1);
   });
 
   it("Should return the correct number medications or return empty array", () => {
