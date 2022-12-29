@@ -11,6 +11,11 @@
     "test": "yarn jest"
   },
   "dependencies": {
+    "@mediapipe/selfie_segmentation": "^0.1.1671057942",
+    "@tensorflow-models/body-segmentation": "^1.0.1",
+    "@tensorflow/tfjs-backend-wasm": "3.1.0",
+    "@tensorflow/tfjs-converter": "^3.13",
+    "@tensorflow/tfjs-core": "^3.13.0",
     "@types/lodash": "^4.14.191",
     "axios": "^0.26.1",
     "core-js": "^3.8.3",
@@ -33,7 +38,6 @@
   "devDependencies": {
     "@intlify/vue-i18n-loader": "^3.2.0",
     "@types/jest": "^27.0.1",
-    "@types/twilio": "^3.19.3",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",
@@ -60,5 +64,8 @@
   },
   "gitHooks": {
     "pre-commit": "lint-staged"
+  },
+  "resolutions": {
+    "json5": "2.2.2"
   }
 }

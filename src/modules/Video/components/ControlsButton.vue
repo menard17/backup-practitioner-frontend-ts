@@ -14,6 +14,10 @@
     <v-btn color="error" fab large dark @click="leave">
       <v-icon color="white">mdi-exit-to-app</v-icon>
     </v-btn>
+
+    <v-btn color="primary" fab large dark @click="openSettings">
+      <v-icon color="white">mdi-dots-vertical</v-icon>
+    </v-btn>
   </div>
 </template>
 
@@ -42,6 +46,35 @@ export default Vue.extend({
     toggleAudio() {
       this.$emit("toggleAudio");
     },
+    openSettings() {
+      this.$emit("openSelection");
+    },
   },
 });
 </script>
+<style scoped>
+#controls {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1em;
+}
+
+.control-container {
+  padding: 20px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 600px) {
+  .control-container img {
+    height: 20px;
+    width: 20px;
+  }
+}
+</style>

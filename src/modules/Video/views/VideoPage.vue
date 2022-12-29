@@ -12,11 +12,13 @@
       <!-- add name and buffer if the user doesnt join yet -->
       <div class="video-player" id="user-2"></div>
     </div>
+
     <controls-button
       :isVideoMutedProp="isVideoMuted"
       :isAudioMutedProp="isAudioMuted"
       @toggleVideo="toggleVideo"
       @toggleAudio="toggleAudio"
+      @openSelection="openBottomSheet"
     />
     <alert-dialog
       :content="errorMessage"
@@ -27,10 +29,12 @@
       icon="mdi-alert-circle"
       colorIcon="red"
     />
+    <select-bottom-sheet ref="bottomSheetRef" :localTrack="videoTracks" />
   </div>
 </template>
 
 <script lang="ts">
+import Vue from "vue";
 import {
   connect,
   RemoteAudioTrack,
@@ -38,14 +42,16 @@ import {
   RemoteTrack,
   RemoteVideoTrack,
   Room,
+  createLocalTracks,
+  LocalVideoTrack,
+  VideoTrack,
 } from "twilio-video";
-import axios from "axios";
-import Vue from "vue";
+import { mapActions } from "vuex";
+import axios, { AxiosError } from "axios";
 import { Nullable } from "../types";
 import AlertDialog from "@/components/AlertDialog.vue";
 import ControlsButton from "../components/ControlsButton.vue";
-import { AxiosError } from "axios";
-import { mapActions } from "vuex";
+import SelectBottomSheet from "../components/SelectBottomSheet.vue";
 
 export default Vue.extend({
   name: "VideoPage",
@@ -57,17 +63,20 @@ export default Vue.extend({
       errorMessage: "",
       isAudioMuted: false,
       isVideoMuted: false,
+      videoTracks: null as VideoTrack | null,
     };
   },
   components: {
     AlertDialog,
     ControlsButton,
+    SelectBottomSheet,
   },
   async created() {
     const role_id = this.$route.query.identity_id ?? "";
-    const appointMentId = this.$route.params.id;
+    const appointMentId = this.$route.query.id ?? "";
+
     await this.startVideo(role_id, appointMentId);
-    this.setLayout("NoLayout");
+    await this.setLayout("NoLayout");
   },
   beforeRouteLeave(to, from, next) {
     this.room?.disconnect();
@@ -79,13 +88,15 @@ export default Vue.extend({
     }),
     async startVideo(
       identity: string | (string | null)[],
-      appointment_id: string
+      appointment_id: string | (string | null)[]
     ) {
       this.isLoading = true;
+
       try {
         //will use the api helper updated one.
         //creating a vuex for this part is will be verbose and over engineering. because we don't need to
         // use the states and action of this video module.
+
         const { data } = await axios.get(
           `${process.env.VUE_APP_baseUrl}/twilio_token/tokens?appointment_id=${appointment_id}&identity_id=${identity}`
         );
@@ -93,10 +104,25 @@ export default Vue.extend({
           "user-1"
         ) as HTMLDivElement;
 
+        const localTracks = await createLocalTracks({
+          video: {
+            aspectRatio: 4,
+            height: 1920,
+            frameRate: 30,
+            width: 1080,
+            facingMode: "environment",
+          },
+          audio: true,
+        });
+
+        this.videoTracks = localTracks.find(
+          (track) => track.kind === "video"
+        ) as LocalVideoTrack;
+
         this.room = await connect(data.token, {
           name: `room_no_${appointment_id}`,
           audio: { noiseSuppression: true, echoCancellation: true },
-          video: { height: 1280, frameRate: 24, width: 720 },
+          video: { height: 1920, frameRate: 24, width: 1080 },
           bandwidthProfile: {
             video: {
               mode: "collaboration",
@@ -104,12 +130,21 @@ export default Vue.extend({
           },
           preferredVideoCodecs: [{ codec: "VP8", simulcast: false }],
           networkQuality: { local: 1, remote: 1 },
+          tracks: localTracks,
         });
 
-        this.room.localParticipant.videoTracks.forEach((video) => {
-          localMediaContainer?.append(video.track.attach());
+        const localVideoTrack = Array.from(
+          this.room.localParticipant.videoTracks.values()
+        )[0].track;
+
+        localVideoTrack.restart({
+          facingMode: "user",
+          width: 170,
+          height: 300,
+          aspectRatio: 4,
         });
 
+        localMediaContainer.appendChild(this.videoTracks.attach());
         this.room.participants.forEach((participant) =>
           this.manageTracksForRemoteParticipant(participant)
         );
@@ -206,11 +241,16 @@ export default Vue.extend({
     acceptDialog() {
       window.close();
     },
+    openBottomSheet() {
+      const bottomSheet = this.$refs.bottomSheetRef as any;
+      bottomSheet.openSheet();
+    },
   },
 });
 </script>
 <style>
 video {
+  width: 100%;
   max-height: 100%;
 }
 #videos {
@@ -219,7 +259,6 @@ video {
   height: 100vh;
   overflow: hidden;
 }
-
 .video-player {
   background-color: black;
   width: 100%;
@@ -231,48 +270,23 @@ video {
   width: 100%;
   height: 100vh;
 }
-
 .smallFrame {
   position: fixed;
   top: 20px;
   left: 20px;
-  height: 300px;
-  width: 170px;
-  border-radius: 5px;
-  border: 2px solid #b366f9;
-  -webkit-box-shadow: 3px 3px 15px -1px rgba(0, 0, 0, 0.77);
-  box-shadow: 3px 3px 15px -1px rgba(0, 0, 0, 0.77);
+  max-height: 300px;
+  max-width: 170px;
+  height: 100%;
+  width: 100%;
   z-index: 999;
-}
-
-#controls {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 1em;
-}
-
-.control-container {
-  background-color: rgb(179, 102, 249, 0.9);
-  padding: 20px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
+  border-radius: 5px;
+  object-fit: contain;
 }
 
 @media screen and (max-width: 60px) {
   .smallFrame {
     height: 120px;
     width: 60px;
-  }
-
-  .control-container img {
-    height: 20px;
-    width: 20px;
   }
 }
 </style>

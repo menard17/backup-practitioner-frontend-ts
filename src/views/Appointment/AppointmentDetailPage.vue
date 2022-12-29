@@ -727,7 +727,7 @@ export default {
     goToVideo() {
       const appointment_id = this.$route.params.id;
       window.open(
-        `${appointment_id}/video?identity_id=${this.practitionerRole.id}`,
+        `/video?identity_id=${this.practitionerRole.id}&id=${appointment_id}`,
         "newwindow",
         "width=1200,height=800"
       );

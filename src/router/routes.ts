@@ -70,14 +70,6 @@ export const routes: Array<RouteConfig> = [
     },
   },
   {
-    path: "/appointments/:id/video",
-    name: "appointment-video",
-    component: VideoPage,
-    meta: {
-      authRequired: true,
-    },
-  },
-  {
     path: "/patients",
     name: "patients",
     component: PatientsPage,
