@@ -13,8 +13,13 @@
           </v-col>
         </v-row>
       </v-card-title>
-      <div class="text-center mb-3">{{ message }}</div>
+      <v-card-text>
+        <div class="text-center">{{ message }}</div>
+      </v-card-text>
       <v-card-actions>
+        <div>
+          <v-text-field v-model="value" />
+        </div>
         <v-spacer />
         <v-btn
           @click="cancel"
@@ -24,7 +29,12 @@
         >
           {{ this.$t("No") }}
         </v-btn>
-        <v-btn color="primary" class="text-none subtitle-2" @click="save">
+        <v-btn
+          v-if="!this.keyword || this.value == this.keyword"
+          color="primary"
+          class="text-none subtitle-2"
+          @click="save"
+        >
           {{ this.$t("Yes") }}
         </v-btn>
       </v-card-actions>
@@ -44,10 +54,15 @@ export default {
       type: String,
       required: true,
     },
+    keyword: {
+      type: String,
+      required: false,
+    },
   },
   data() {
     return {
       dialog: false,
+      value: "",
     };
   },
   methods: {

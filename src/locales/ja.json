@@ -42,7 +42,7 @@
   "Clinical Notes": "カルテ",
   "Create a Note": "カルテ作成",
   "Cancel Appointment": "キャンセル",
-  "Cancel Description": "診療をキャンセルします。よろしいですか？",
+  "Cancel Description": "診療をキャンセルします。「Cancel」と入力してください。キャンセルするべきか分からない場合は運営に問い合わせください。",
   "No": "いいえ",
   "Yes": "はい",
   "Start Appointment Session": "診療を開始",

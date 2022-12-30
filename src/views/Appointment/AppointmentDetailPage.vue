@@ -384,18 +384,21 @@
       :message="this.$t('Cancel Description')"
       @save="confirmCancelAppointment"
       ref="confirmCancelAppointmentDialogRef"
+      keyword="Cancel"
     />
     <confirm-dialog
       :title="this.$t('Cancel Encounter')"
       :message="this.$t('Cancel Description')"
       @save="cancelEncounter"
       ref="confirmCancelEncounterDialogRef"
+      keyword="Cancel"
     />
     <confirm-dialog
       title="No Show?"
-      message="Are you sure you want to mark this appointment as a no-show?"
+      message="Are you sure you want to mark this appointment as a no-show? Please type cancel"
       @save="confirmNoShow"
       ref="confirmNoShowDialogRef"
+      keyword="Cancel"
     />
     <v-overlay v-model="isCreatingEncounter">
       <v-progress-circular indeterminate />
