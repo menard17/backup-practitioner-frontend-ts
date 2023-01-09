@@ -14,6 +14,7 @@ import PractitionerDetailsWrapperPage from "@/views/Practitioner/PractitionerDet
 import BulkPaymentsPage from "@/views/Payments/BulkPaymentsPage.vue";
 
 const VideoPage = () => import("../modules/Video/views/VideoPage.vue");
+const QueuePage = () => import("@/views/Queue/QueuePage.vue");
 
 export const routes: Array<RouteConfig> = [
   {
@@ -139,6 +140,14 @@ export const routes: Array<RouteConfig> = [
     path: "/video",
     name: "video-room",
     component: VideoPage,
+    meta: {
+      authRequired: true,
+    },
+  },
+  {
+    path: "/queue",
+    name: "queue",
+    component: QueuePage,
     meta: {
       authRequired: true,
     },

@@ -55,6 +55,10 @@
   "Leave page without clinical note": "処方薬・検査・カルテが正しく記入されていません。",
   "Cancel Encounter": "診療をキャンセル",
   "End Session": "診療終了",
-  "join room" : "診察室を開く",
-  "Continue on encounter": "診療に戻る"
+  "join room": "診察室を開く",
+  "Continue on encounter": "診療に戻る",
+  "next patient": "先頭の患者を診察",
+  "queue ending time": "診察終了時間:",
+  "queue start time": "診察開始時間:",
+  "queue number people": "待ち人数:"
 }

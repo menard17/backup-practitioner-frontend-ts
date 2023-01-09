@@ -1,24 +1,40 @@
 <template>
   <v-dialog width="500" v-model="dialog">
-    <v-card>
-      <v-card-title>
+    <v-card class="py-6 px-2">
+      <div class="mx-4">
         <v-row align="start">
-          <v-col align-start cols="auto"> Add a schedule </v-col>
+          <v-col align-start cols="auto" class="title font-weight-bold">
+            Reservation Method
+          </v-col>
           <v-col align="end">
             <v-btn icon @click="cancel">
               <v-icon>mdi-close </v-icon>
             </v-btn>
           </v-col>
         </v-row>
-      </v-card-title>
-      <div class="pa-4">
-        <v-row dense>
+      </div>
+      <div class="mx-4">
+        <v-radio-group row v-model="visit_type">
+          <v-radio label="Date and Time Appointment" value="appointment">
+          </v-radio>
+          <v-radio label="Queue" value="walk-in"></v-radio>
+        </v-radio-group>
+      </div>
+      <div class="mx-4">
+        <v-row>
+          <v-col align-start cols="auto" class="title font-weight-bold">
+            Add a schedule
+          </v-col>
+        </v-row>
+      </div>
+      <div class="mx-4">
+        <v-row no-gutters dense>
           <v-col v-for="day in days" :key="day">
             <v-checkbox v-model="selectedDays" :value="day" :label="day" />
           </v-col>
         </v-row>
       </div>
-      <div class="mx-4">
+      <div class="mx-4 mt-2">
         <v-row>
           <v-col>
             <v-text-field
@@ -44,7 +60,7 @@
           </v-col>
         </v-row>
       </div>
-      <v-card-actions>
+      <v-card-actions class="mt-6">
         <v-spacer />
         <v-btn
           @click="cancel"
@@ -82,6 +98,7 @@ export default {
       days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       startTime: "",
       endTime: "",
+      visit_type: "",
     };
   },
   computed: {
@@ -102,9 +119,10 @@ export default {
       this.startTime = "";
       this.endTime = "";
       this.dialog = false;
+      this.visit_type = "";
     },
     save() {
-      this.$emit("save", this.changeFields);
+      this.$emit("save", this.changeFields, this.visit_type);
       this.cancel();
     },
     openStartTimeSelectDialog() {

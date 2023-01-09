@@ -11,6 +11,7 @@ import $_payments from "./Payments";
 import $_porters from "./Porters";
 import $_practitioners from "./Practitioners";
 import $_commons from "./Commons";
+import $_queues from "./Queue";
 
 Vue.use(Vuex);
 
@@ -31,5 +32,6 @@ export default new Vuex.Store({
     $_porters,
     $_practitioners,
     $_commons,
+    $_queues,
   },
 });

@@ -99,9 +99,10 @@ export default {
       updateMyPractitionerRole: "updateMyPractitionerRole",
       updateMyPractitionerStatus: "updateMyPractitionerStatus",
     }),
-    updateMySchedule(availableTime) {
+    updateMySchedule(availableTime, visitType) {
       const changeFields = {
         available_time: availableTime,
+        visit_type: visitType,
       };
 
       this.updateMyPractitionerRole({ changeFields });

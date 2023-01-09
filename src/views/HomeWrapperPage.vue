@@ -18,8 +18,8 @@
       app
       absolute
       permanent
+      class="m-0 p-0"
       :mini-variant.sync="mini"
-      class="pa-0 text-left"
     >
       <v-list-item>
         <v-list-item-content>
@@ -65,8 +65,14 @@
         </v-row>
       </template>
     </v-navigation-drawer>
-    <v-main class="text-left">
-      <router-view />
+    <v-main class="fill-width">
+      <v-container class="fill-height" fluid>
+        <v-row align="center" justify="center">
+          <v-col>
+            <router-view />
+          </v-col>
+        </v-row>
+      </v-container>
     </v-main>
   </div>
 </template>
@@ -76,6 +82,7 @@ import Vue from "vue";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/plugins/firebase";
 import { mapActions, mapState } from "vuex";
+import { practitionerRoutes, staffRoutes } from "@/routes";
 
 export default Vue.extend({
   name: "HomeWrapperPage",
@@ -90,72 +97,13 @@ export default Vue.extend({
       firebaseRole: "firebaseRole",
     }),
     items() {
-      if (!this.firebaseRole) {
-        return [];
-      } else if (this.firebaseRole == "Staff") {
-        return [
-          {
-            title: "My Account",
-            icon: "mdi-account",
-            to: "/",
-          },
-          {
-            title: "Appointments",
-            icon: "mdi-calendar-multiple",
-            to: "/appointments",
-          },
-          {
-            title: "Patients",
-            icon: "mdi-account-multiple",
-            to: "/patients",
-          },
-          {
-            title: "Practitioners",
-            icon: "mdi-doctor",
-            to: "/practitioners",
-          },
-          {
-            title: "Payments",
-            icon: "mdi-cash-multiple",
-            to: "/payments",
-          },
-          {
-            title: "Bulk Payments",
-            icon: "mdi-cash-multiple",
-            to: "/bulk-payments",
-          },
-          {
-            title: "Porters",
-            icon: "mdi-truck",
-            to: "/porters",
-          },
-          {
-            title: "Orders",
-            icon: "mdi-truck",
-            to: "/orders",
-          },
-        ];
+      if (this.firebaseRole == "Staff") {
+        return staffRoutes;
       } else if (this.firebaseRole == "Practitioner") {
-        return [
-          {
-            title: "My Account",
-            icon: "mdi-account",
-            to: "/",
-          },
-          {
-            title: "My Appointments",
-            icon: "mdi-calendar-multiple",
-            to: "/appointments",
-          },
-          {
-            title: "Patients",
-            icon: "mdi-account-multiple",
-            to: "/patients",
-          },
-        ];
-      } else {
-        return [];
+        return practitionerRoutes;
       }
+
+      return [];
     },
   },
   created() {

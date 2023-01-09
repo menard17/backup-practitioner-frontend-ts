@@ -83,6 +83,12 @@
           label="End"
           :text="practitionerRole.period.end"
         />
+        <label-card
+          v-if="practitionerRole.visitType"
+          class="text-left"
+          label="Visit Type"
+          :text="practitionerRole.visitType"
+        />
       </v-col>
     </v-row>
 

@@ -44,3 +44,11 @@ export interface AvailableTime {
   availableStartTime: string | undefined;
   daysOfWeek: string[];
 }
+
+export type Coding = { coding: [Code] };
+
+export type Code = {
+  code: string;
+  display: string | null;
+  system: string;
+};

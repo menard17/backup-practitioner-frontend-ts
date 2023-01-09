@@ -17,6 +17,21 @@ export function converTimeToInt(time: string): number {
   }
 }
 
+//e.g 17:00:00
+export function convertTimeString(time: string): string {
+  try {
+    const splited = time.split(":");
+    const hours = parseInt(splited[0]);
+    const minutes = parseInt(splited[1]);
+
+    const date = new Date(12, 0, 0, hours, minutes);
+
+    return format(date, "h:mm aaaa");
+  } catch {
+    return "";
+  }
+}
+
 export function fomartStringDate(date: Date) {
   return format(date, "yyyy-M");
 }

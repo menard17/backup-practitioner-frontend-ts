@@ -5,6 +5,8 @@ import {
   Extension,
   HumanName,
   Telecom,
+  Code,
+  Coding,
 } from "./types";
 
 export const practitioner = (state: AccountState) => {
@@ -89,6 +91,14 @@ export const practitionerRole = (state: AccountState) => {
     (av: AvailableTime) => av.availableStartTime !== undefined
   );
 
+  // if(firebaseRole == "Doctor"){}
+  const codes = JSON.parse(JSON.stringify(practitionerRole.code));
+
+  const [, codingVisitType = {}] = codes;
+
+  const { coding } = codingVisitType;
+  const [firstItem] = coding || [];
+
   if (firebaseRole == "Staff") {
     return {
       id: practitionerRole.id,
@@ -106,5 +116,29 @@ export const practitionerRole = (state: AccountState) => {
       start: practitionerRole.period.start,
       end: practitionerRole.period.end,
     },
+    visitType: firstItem?.display ?? "",
   };
+};
+
+export const roleAvailableTime = (state: AccountState) => {
+  const practitionerRole = state.practitionerRole;
+
+  if (!practitionerRole) return;
+
+  return practitionerRole.availableTime.filter(
+    (av: AvailableTime) => av.availableStartTime !== undefined
+  );
+};
+
+//to check if the practitioner role visit type is queue
+export const isVisitType = (state: AccountState) => {
+  const practitionerRole = state.practitionerRole;
+
+  if (!practitionerRole) return;
+
+  const code = JSON.parse(JSON.stringify(practitionerRole.code));
+
+  return code.some((coding: Coding) =>
+    coding.coding.find((c: Code) => c.code === "walk-in")
+  );
 };

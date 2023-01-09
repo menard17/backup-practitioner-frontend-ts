@@ -72,6 +72,7 @@
                     <th class="text-left">Days Of Week</th>
                     <th class="text-left">Start Time</th>
                     <th class="text-left">End Time</th>
+                    <th class="text-left">Type</th>
                     <th class="text-left">Actions</th>
                   </tr>
                 </thead>
@@ -87,6 +88,7 @@
                     </td>
                     <td>{{ time.availableStartTime }}</td>
                     <td>{{ time.availableEndTime }}</td>
+                    <td>--</td>
                     <td>
                       <v-icon @click="deleteScheduleItem(i)">
                         mdi-delete
@@ -216,11 +218,11 @@ export default {
       this.$emit("updateSchedule", currentAvailableTime);
       this.deleteDialog = false;
     },
-    addItemToMySchedule(availableTime) {
+    addItemToMySchedule(availableTime, visit_type) {
       const currentAvailableTime = this.practitionerRole.availableTime;
       const newAvailableTime = [...currentAvailableTime, availableTime];
 
-      this.$emit("updateSchedule", newAvailableTime);
+      this.$emit("updateSchedule", newAvailableTime, visit_type);
     },
     updateMySchedule(availableTime) {
       const changeFields = {
