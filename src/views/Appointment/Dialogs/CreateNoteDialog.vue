@@ -29,7 +29,7 @@
         />
         <v-autocomplete
           v-model="medications"
-          :items="medicalTerms.medications[0].array"
+          :items="medicalTerms.medications[0].array.filter(filterMedications)"
           :label="this.$t('Medications')"
           multiple
           item-value="value"
@@ -123,6 +123,16 @@ export default {
         this.$emit("onSave", this.note, this.medications, this.test);
         this.cancel();
       }
+    },
+    // We want to enforce that
+    //if medication with id=0 is selected, other medications cannot be chosen
+    filterMedications(medication) {
+      if (this.medications.length == 0) return true;
+      if (this.medications[0].id != 0 && medication.id != 0) return true;
+      return !!(
+        this.medications[0].id == 0 &&
+        this.medications[0].value == medication.value
+      );
     },
     cancel() {
       this.note = "";
