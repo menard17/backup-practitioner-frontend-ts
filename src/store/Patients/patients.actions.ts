@@ -185,6 +185,30 @@ export async function moveToNext(context: Context) {
   await getPatients(context, pagination.nextLinkUrl);
 }
 
+export async function searchPatient(context: Context, name: string) {
+  if (!auth.currentUser) {
+    return;
+  }
+  context.commit("setIsLoading", { action: "getPatients", value: true });
+  context.commit("setPatients", []);
+  let params = `count=${context.state.pagination.pageSize}`;
+  if (name !== "") {
+    params = `name=${name}`;
+  }
+  try {
+    const patients: any = await getAll(`patients?${params}`);
+    if (patients.data.entry === undefined) {
+      patients.data.entry = [];
+    }
+    context.commit("setPatients", patients.data.entry);
+  } catch (e) {
+    console.error(e);
+    context.commit("setPatient", undefined);
+  } finally {
+    context.commit("setIsLoading", { action: "getPatients", value: false });
+  }
+}
+
 export async function moveToPrev(context: Context) {
   const pagination = context.state.pagination;
   const prevUrl = pagination.urlStack.pop();

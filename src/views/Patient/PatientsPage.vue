@@ -1,12 +1,21 @@
 <template>
   <div>
     <data-table title="Patients">
+      <v-col cols="12" sm="6" md="4">
+        <v-text-field
+          v-model="search"
+          append-icon="mdi-magnify"
+          label="Search Patients"
+          single-line
+          hide-details
+          @keyup.enter="searchPatientName"
+        ></v-text-field>
+      </v-col>
       <v-data-table
         :headers="headers"
         :items="patients"
         :items-per-page="itemsPerPage"
         class="elevation-0"
-        :search="search"
         :loading="isLoading"
         @click:row="rowClicked"
         hide-default-footer
@@ -87,6 +96,7 @@ export default Vue.extend({
       getPatients: "getPatients",
       moveToNext: "moveToNext",
       moveToPrev: "moveToPrev",
+      searchPatient: "searchPatient",
     }),
     editItem(item: any) {
       console.log("Edit item", item);
@@ -102,6 +112,10 @@ export default Vue.extend({
     },
     prevClicked() {
       this.moveToPrev();
+    },
+    searchPatientName(event: KeyboardEvent) {
+      event.preventDefault();
+      this.searchPatient(this.search);
     },
   },
 });
