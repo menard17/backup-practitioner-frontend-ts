@@ -10,7 +10,7 @@ import { stringToBase64, base64ToString } from "@/utils/fileProcess";
 import { formatDateString } from "@/utils/dateHelpers";
 import { TimeConstants } from "@/utils/constants";
 import { Context } from "../types";
-import { addDays, isAfter, isBefore, subMinutes } from "date-fns";
+import { addDays, isAfter, isBefore, subMinutes, subYears } from "date-fns";
 
 export async function getAppointmentsByPractitionerId(
   context: Context,
@@ -121,9 +121,8 @@ export const getAppointments = async (
     searchParams.push(`start_date=${dateFrom}`);
   } else {
     // default to some hardcoded date
-    const date = new Date();
-    date.setDate(date.getDate() - 30);
-    searchParams.push(`start_date=${date.toISOString()}`);
+    const lastFiveYears = subYears(new Date(), 5);
+    searchParams.push(`start_date=${lastFiveYears.toISOString()}`);
   }
 
   if (dateTo !== undefined) {
