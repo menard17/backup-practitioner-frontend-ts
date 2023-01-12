@@ -551,7 +551,6 @@ export default {
       createTestAction: "createTest",
     }),
     ...mapActions("$_application", {
-      insertSheet: "insertSheet",
       sendEmail: "sendEmail",
     }),
     ...mapActions("$_appointmentHistory", {

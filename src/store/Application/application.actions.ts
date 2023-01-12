@@ -87,19 +87,6 @@ export const sendEmail = async (context: Context, payload: EmailObject) => {
   }
 };
 
-export const insertSheet = async (context: Context, payload: SheetObject) => {
-  context.commit("setIsLoading", { action: "callLogicApp", value: true });
-  context.commit("setSheet", false);
-  try {
-    await callLogicApp(payload, process.env.VUE_APP_logic_app_url_sheet);
-    context.commit("setSheet", true);
-    context.commit("setIsLoading", { action: "callLogicApp", value: false });
-  } catch {
-    context.commit("setIsLoading", { action: "callLogicApp", value: false });
-    context.commit("setSheet", false);
-  }
-};
-
 export async function uploadFileToFirebaseStorage(
   context: Context,
   payload: FileUploadObject

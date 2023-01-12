@@ -374,12 +374,6 @@ export async function updateEncounter(
   try {
     const encounter: any = await patchResource({ url: resource });
     context.commit("setEncounter", encounter.data);
-
-    if (status === "finished") {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      await callLogicApp(payload, process.env.VUE_APP_logic_app_url_sheet);
-    }
   } catch (e) {
     console.error(e);
     context.commit("setEncounter", undefined);

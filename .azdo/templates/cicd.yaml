@@ -38,7 +38,6 @@ jobs:
       VUE_APP_appId: $(appId)
       VUE_APP_baseUrl: $(baseUrl)
       VUE_APP_logic_app_url: $(logicAppUrl)
-      VUE_APP_logic_app_url_sheet: $(logicAppUrlSheet)
   - task: Bash@3
     inputs:
       targetType: 'inline'
@@ -55,7 +54,6 @@ jobs:
       VUE_APP_appId: $(appId)
       VUE_APP_baseUrl: $(baseUrl)
       VUE_APP_logic_app_url: $(logicAppUrl)
-      VUE_APP_logic_app_url_sheet: $(logicAppUrlSheet)
   - task: CopyFiles@2
     inputs:
       sourceFolder: '$(System.DefaultWorkingDirectory)/dist'
