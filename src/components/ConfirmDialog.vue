@@ -17,7 +17,7 @@
         <div class="text-center">{{ message }}</div>
       </v-card-text>
       <v-card-actions>
-        <div>
+        <div v-if="this.keyword">
           <v-text-field v-model="value" />
         </div>
         <v-spacer />
