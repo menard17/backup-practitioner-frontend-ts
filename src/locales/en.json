@@ -60,5 +60,6 @@
   "next patient": "Next Patient",
   "queue ending time": "Your consultation ending time:",
   "queue start time": "Your consultation starting time:",
-  "queue number people": "Number of people waiting::"
+  "queue number people": "Number of people waiting::",
+  "label queue visit": "Please Set your schedule to Walk in to be able to pick-up queue"
 }

@@ -1,6 +1,6 @@
 import * as actions from "./queue.actions";
 import * as mutations from "./queue.mutations";
-import getters from "./queue.getters";
+import * as getters from "./queue.getters";
 import state from "./queue.state";
 
 // make our modules namespaced to avoid method name conflicts

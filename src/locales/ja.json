@@ -60,5 +60,6 @@
   "next patient": "先頭の患者を診察",
   "queue ending time": "診察終了時間:",
   "queue start time": "診察開始時間:",
-  "queue number people": "待ち人数:"
+  "queue number people": "待ち人数:",
+  "label queue visit":"順番待ち予約の形式で診療を行う場合は、My Accountページで順番待ち予約の設定を行って下さい。"
 }

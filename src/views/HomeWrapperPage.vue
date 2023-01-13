@@ -117,6 +117,7 @@ export default Vue.extend({
       }
     });
     this.getCurrentUserRole();
+    this.getListId();
   },
 
   methods: {
@@ -125,6 +126,9 @@ export default Vue.extend({
     }),
     ...mapActions("$_auth", {
       setToken: "setToken",
+    }),
+    ...mapActions({
+      getListId: "$_queues/getListId",
     }),
     signOut() {
       this.$store

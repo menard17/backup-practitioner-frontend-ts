@@ -1,3 +1,5 @@
-const getters = {};
+import { QueueState } from "./types";
 
-export default getters;
+export function loadingData(state: QueueState): boolean {
+  return state.loadingConfig || state.loadingList;
+}

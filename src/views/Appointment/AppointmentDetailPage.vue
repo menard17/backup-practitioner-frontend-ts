@@ -1,5 +1,28 @@
 <template>
   <v-container>
+    <v-overlay :value="loadingNext">
+      <v-progress-circular
+        :indeterminate="true"
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
+    <v-row class="mb-4" v-if="appointmentType === 'queue'">
+      <v-col align="start">
+        <v-btn to="/queue" text color="primary">
+          <v-icon>mdi-chevron-left</v-icon>Queue top
+        </v-btn>
+      </v-col>
+      <v-col align="end">
+        <v-btn
+          v-if="(encounter && encounter.status) === 'finished'"
+          @click="nextQueue"
+          text
+          color="primary"
+        >
+          Next<v-icon>mdi-chevron-right</v-icon>
+        </v-btn>
+      </v-col>
+    </v-row>
     <v-card>
       <v-card-title>
         <v-row>
@@ -400,6 +423,16 @@
       ref="confirmNoShowDialogRef"
       keyword="Cancel"
     />
+    <alert-dialog
+      :content="error"
+      @confirm="toggleErrorDiaglog"
+      @cancel="toggleErrorDiaglog"
+      :isHideOverlay="false"
+      ref="aletDialogRef"
+      withIcon
+      icon="mdi-alert-circle"
+      colorIcon="red"
+    />
     <v-overlay v-model="isCreatingEncounter">
       <v-progress-circular indeterminate />
     </v-overlay>
@@ -408,6 +441,7 @@
 
 <script>
 import LabelTextField from "@/components/LabelCard.vue";
+import AlertDialog from "@/components/AlertDialog.vue";
 import { mapActions, mapGetters, mapState } from "vuex";
 import TitleSubtitle from "@/components/TitleSubtitle.vue";
 import StartEncounterDialog from "./StartEncounterDialog.vue";
@@ -433,6 +467,7 @@ export default {
     TitleSubtitle,
     StartEncounterDialog,
     DocumentReferenceWrapper,
+    AlertDialog,
   },
   name: "AppointmentDetailPage",
   data() {
@@ -440,7 +475,13 @@ export default {
       notes: "",
       patientDetailsExpansionPanel: [],
       appointmentHistoryExpansionPanel: [],
+      routeId: "",
     };
+  },
+  beforeRouteUpdate(to, from, next) {
+    this.routeId = to.params.id;
+    this.fetchData();
+    next();
   },
   watch: {
     patient() {
@@ -480,6 +521,9 @@ export default {
       practitionerNameEn: "practitionerNameEn",
       practitionerNameJp: "practitionerNameJp",
     }),
+    ...mapState("$_queues", {
+      loadingNext: "loadingNext",
+    }),
     ...mapState("$_patients", {
       patientObject: "patient",
       documentReferences: "documentReferences",
@@ -490,6 +534,10 @@ export default {
     }),
     ...mapGetters("$_appointmentHistory", {
       appointmentHistory: "appointments",
+    }),
+    ...mapState("$_queues", {
+      appointmentId: "appointmentId",
+      error: "error",
     }),
     patientDetails() {
       return [
@@ -525,9 +573,14 @@ export default {
         },
       ];
     },
+    appointmentType() {
+      return this.$route.query.type ?? "";
+    },
   },
-  created() {
-    this.populateAppointment(this.$route.params.id);
+  async created() {
+    this.routeId = this.$route.params.id;
+    await this.fetchData();
+    await this.getCurrentUser();
   },
   beforeRouteLeave(to, from, next) {
     if (this.encounter && this.encounter.status == "in-progress") {
@@ -540,6 +593,11 @@ export default {
     next();
   },
   methods: {
+    ...mapActions({
+      getCurrentUser: "$_account/getCurrentUser",
+      nextPatient: "$_queues/nextPatient",
+      setError: "$_queues/setError",
+    }),
     ...mapActions("$_appointments", {
       populateAppointment: "populateAppointment",
       updateAppointment: "updateAppointment",
@@ -733,6 +791,26 @@ export default {
         "newwindow",
         "width=1200,height=800"
       );
+    },
+    async nextQueue() {
+      await this.nextPatient();
+
+      if (this.error) {
+        this.openErrorDialog();
+        return;
+      }
+
+      this.$router.push(`/appointments/${this.appointmentId}?type=queue`);
+    },
+    async fetchData() {
+      await this.populateAppointment(this.routeId);
+    },
+    openErrorDialog() {
+      this.$refs.aletDialogRef.toggleDialog();
+    },
+    toggleErrorDiaglog() {
+      this.openErrorDialog();
+      this.setError("");
     },
   },
 };

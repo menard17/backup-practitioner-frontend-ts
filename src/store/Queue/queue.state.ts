@@ -1,14 +1,18 @@
 import { QueueState } from "./types";
 
 const state: QueueState = {
-  QueueData: {
+  queueData: {
     startTime: undefined,
     endTime: undefined,
     patientLists: undefined,
   },
-  loadingData: false,
   currentPatient: undefined,
   listId: undefined,
+  appointmentId: undefined,
+  error: "",
+  loadingConfig: false,
+  loadingList: false,
+  loadingNext: false,
 };
 
 export default state;

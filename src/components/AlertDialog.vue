@@ -3,7 +3,7 @@
     v-model="dialog"
     max-width="290"
     persistent
-    hide-overlay
+    :hide-overlay="isHideOverlay"
     transition="dialog-bottom-transition"
   >
     <v-card>
@@ -63,6 +63,10 @@ export default Vue.extend({
     colorIcon: {
       type: String,
       default: "red",
+    },
+    isHideOverlay: {
+      type: Boolean,
+      default: true,
     },
   },
 });

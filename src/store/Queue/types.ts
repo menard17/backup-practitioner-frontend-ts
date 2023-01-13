@@ -1,8 +1,12 @@
 export type QueueState = {
-  QueueData: Queue;
-  loadingData: boolean;
+  queueData: Queue;
   currentPatient: object | undefined;
   listId: string | undefined;
+  appointmentId: string | undefined;
+  error: string | undefined;
+  loadingConfig: boolean;
+  loadingList: boolean;
+  loadingNext: boolean;
 };
 
 export type Queue = {
@@ -16,4 +20,15 @@ export type PatientList = {
   meta: any;
   mode: string;
   entry: [];
+};
+
+export type TMapState<T> = Partial<Record<keyof T, (state: T) => T[keyof T]>>;
+
+export type MapStateQueue = {
+  queueData: Queue;
+  listId: string | undefined;
+  appointmentId: string | undefined;
+  error: string | undefined;
+  loadingConfig: boolean;
+  loadingList: boolean;
 };

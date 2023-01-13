@@ -1,5 +1,5 @@
 <template>
-  <v-card class="mb-5 pa-2">
+  <v-card :loading="loadingData" class="mb-5 pa-2">
     <v-card-title class="font-weight-bold title"> Queuing </v-card-title>
     <v-card-text class="mt-8">
       <v-row align="start" class="mx-0">
@@ -36,7 +36,14 @@
       </v-row>
     </v-card-text>
     <v-card-actions>
-      <v-btn class="pa-4 ms-2" depressed color="primary">
+      <v-btn
+        :disabled="disableNextBtn"
+        :loading="loadingNext || loadingData"
+        @click="nextPatient"
+        class="pa-4 ms-2"
+        depressed
+        color="primary"
+      >
         {{ $t("next patient") }}
       </v-btn>
     </v-card-actions>
@@ -46,6 +53,7 @@
 <script lang="ts">
 import Vue, { PropType } from "vue";
 import { Queue } from "@/store/Queue/types";
+import { mapState, mapGetters } from "vuex";
 
 export default Vue.extend({
   name: "QueueDetails",
@@ -64,9 +72,27 @@ export default Vue.extend({
           ? this.queueData.patientLists.entry.length.toString()
           : "None";
       },
-      set(newValue: string): string {
-        return newValue;
+    },
+    disableNextBtn: {
+      get(): boolean {
+        if (!this.queueData.patientLists?.entry) return true;
+
+        if (this.queueData.endTime === "" || this.queueData.startTime === "")
+          return true;
+
+        return false;
       },
+    },
+    ...mapState("$_queues", {
+      loadingNext: "loadingNext",
+    }),
+    ...mapGetters("$_queues", {
+      loadingData: "loadingData",
+    }),
+  },
+  methods: {
+    nextPatient() {
+      this.$emit("next");
     },
   },
 });
