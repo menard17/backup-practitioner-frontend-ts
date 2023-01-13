@@ -165,6 +165,7 @@ export function practitionerRole(state: any) {
     id: practitionerRole.id,
     availableTime: availableTime,
     roleType: practitionerRole.code[0].coding[0].code.toUpperCase(),
+    period: practitionerRole.period,
   };
 }
 

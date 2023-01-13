@@ -103,8 +103,9 @@
   </v-card>
 </template>
 
-<script>
-import LabelCard from "@/components/LabelCard";
+<script lang="ts">
+import LabelCard from "@/components/LabelCard.vue";
+
 export default {
   name: "PractitionerDetailsCard",
   components: { LabelCard },
