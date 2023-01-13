@@ -109,11 +109,10 @@ export const getAppointments = async (
   const searchParams = [
     "include_patient=true",
     "include_practitioner=true",
-    "count=900", // Hardcode one, assuming it should be enough
+    "count=100", // Hardcode one, assuming it should be enough
   ];
 
-  const roleType = context.rootState.$_account.firebaseRole;
-  if (actorId !== "" && actorId !== undefined && roleType != "Staff") {
+  if (actorId) {
     searchParams.push(`actor_id=${actorId}`);
   }
 

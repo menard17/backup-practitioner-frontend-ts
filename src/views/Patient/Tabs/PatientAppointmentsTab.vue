@@ -96,7 +96,7 @@ export default {
         : "There was a problem creating the appointment";
       const status = appointment ? StatusTypes.success : StatusTypes.error;
       if (appointment) {
-        this.getAppointments(this.$route.params.id);
+        this.getAppointments({ actorId: this.$route.params.id });
       }
 
       this.$refs.statusDialogRef.toggleDialog({ title, body, status });
