@@ -28,7 +28,7 @@ export async function getPractitionerRoles({ commit }: any, role: string) {
   }
 
   const practitionerRolesData: any = await getAll(
-    `practitioner_roles?role_type=${role}&include_practitioner=true`
+    `practitioner_roles?role_type=${role}&include_practitioner=true&is_all=true`
   );
 
   const practitionerRoles: any = practitionerRolesData.filter(
