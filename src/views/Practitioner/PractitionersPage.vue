@@ -66,6 +66,10 @@ export default {
           value: "roleType",
         },
         {
+          text: "Visit Type",
+          value: "visitType",
+        },
+        {
           text: "Active",
           value: "active",
         },

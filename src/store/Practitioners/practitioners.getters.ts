@@ -44,6 +44,14 @@ function formatPractitioner(practitioner: any, practitionerRole: any = null) {
   });
   const bioJp = bioJpExt && bioJpExt.valueString;
 
+  const codes =
+    practitionerRole && JSON.parse(JSON.stringify(practitionerRole.code));
+
+  const [, codingVisitType = {}] = codes ?? ["", ""];
+
+  const { coding } = codingVisitType;
+  const [firstItem] = coding || [];
+
   return {
     id: `${practitioner.id}`,
     en: {
@@ -70,6 +78,7 @@ function formatPractitioner(practitioner: any, practitionerRole: any = null) {
     roleType: practitionerRole
       ? practitionerRole.code[0].coding[0].code
       : "Not Provided",
+    visitType: firstItem?.display ?? "Appointment",
   };
 }
 
