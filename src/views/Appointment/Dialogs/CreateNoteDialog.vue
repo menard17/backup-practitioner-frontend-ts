@@ -28,7 +28,7 @@
           rows="18"
         />
         <v-autocomplete
-          v-model="medications"
+          v-model="selectedMedications"
           :items="medicalTerms.medications[0].array.filter(filterMedications)"
           :label="this.$t('Medications')"
           multiple
@@ -41,7 +41,7 @@
           v-if="medicalTerms && medicalTerms.medications"
         />
         <v-select
-          v-model="test"
+          v-model="selectedTest"
           :items="medicalTerms.tests[0].array"
           :label="this.$t('Tests')"
           item-value="value"
@@ -77,7 +77,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapState, mapGetters } from "vuex";
 
 export default {
   name: "CreateNoteDialog",
@@ -86,10 +86,10 @@ export default {
       note: "",
       dialog: false,
       selectedTemplate: null,
+      selectedTest: {},
       isLoadingNote: false,
       noteType: "",
-      medications: [],
-      test: {},
+      selectedMedications: [],
       searchInput: "",
     };
   },
@@ -97,6 +97,10 @@ export default {
     ...mapState("$_application", {
       templates: "templates",
       medicalTerms: "medicalTerms",
+    }),
+    ...mapGetters("$_application", {
+      getmedicalTermsTest: "medicalTermsForTests",
+      getmedicalTermsMedications: "medicalTermsForMedications",
     }),
     noteTypeTitle() {
       switch (this.noteType) {
@@ -109,6 +113,10 @@ export default {
       }
     },
   },
+  async created() {
+    await this.getMedicalTerms({ type: "tests" });
+    await this.getMedicalTerms({ type: "medications" });
+  },
   methods: {
     ...mapActions("$_application", {
       getTemplates: "getTemplates",
@@ -117,21 +125,27 @@ export default {
     save() {
       if (
         this.note &&
-        this.medications.length > 0 &&
-        JSON.stringify(this.test) !== "{}"
+        this.selectedMedications.length > 0 &&
+        JSON.stringify(this.selectedTest) !== "{}"
       ) {
-        this.$emit("onSave", this.note, this.medications, this.test);
+        this.$emit(
+          "onSave",
+          this.note,
+          this.selectedMedications,
+          this.selectedTest
+        );
         this.cancel();
       }
     },
     // We want to enforce that
     //if medication with id=0 is selected, other medications cannot be chosen
     filterMedications(medication) {
-      if (this.medications.length == 0) return true;
-      if (this.medications[0].id != 0 && medication.id != 0) return true;
+      if (this.selectedMedications.length == 0) return true;
+      if (this.selectedMedications[0].id != 0 && medication.id != 0)
+        return true;
       return !!(
-        this.medications[0].id == 0 &&
-        this.medications[0].value == medication.value
+        this.selectedMedications[0].id == 0 &&
+        this.selectedMedications[0].value == medication.value
       );
     },
     cancel() {
@@ -139,24 +153,38 @@ export default {
       this.selectedTemplate = null;
       this.noteType = "";
       this.dialog = false;
+      this.selectedMedications = [];
     },
     async toggleDialog(type, note, isEditing = false, test, medications) {
       this.dialog = !this.dialog;
       if (this.dialog) {
         this.noteType = type;
         this.getTemplates({ type: this.noteType });
-        this.getMedicalTerms({ type: "tests" });
-        this.getMedicalTerms({ type: "medications" });
-
         if (isEditing) {
           this.note = note;
-          this.test = test;
-          this.medications = medications;
+          this.getSelectedTest(test);
+          this.getSelectedMedications(medications);
         }
       }
     },
     setNoteTemplate(note) {
       this.note = note.replaceAll("\\n", "\n");
+    },
+    getSelectedTest(test) {
+      const medicalTermsTest = this.getmedicalTermsTest.find(
+        (medicalTermsTest) => medicalTermsTest.display === test
+      );
+      this.selectedTest = medicalTermsTest;
+    },
+    getSelectedMedications(medications) {
+      const listMedicationsName = medications.split(",");
+      listMedicationsName.forEach((name) => {
+        this.selectedMedications.push(
+          this.getmedicalTermsMedications.find(
+            (medicalTerms) => medicalTerms.display === name
+          )
+        );
+      });
     },
   },
 };

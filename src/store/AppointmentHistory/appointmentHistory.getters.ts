@@ -74,14 +74,16 @@ export function appointments(state: any, getters: any, rootState: any) {
               medication?.encounter?.reference.split("/")[1] === encounter.id
           )
           .map((medication: any) => {
-            return medication?.medicationCodeableConcept?.coding.map(
-              (code: any) => {
-                return {
-                  display: code?.display,
-                  value: code?.code,
-                };
-              }
-            );
+            if (medication.medicationCodeableConcept.coding) {
+              return medication.medicationCodeableConcept.coding.map(
+                (code: any) => {
+                  return {
+                    display: code.display,
+                    value: code.code,
+                  };
+                }
+              );
+            }
           });
       }
 

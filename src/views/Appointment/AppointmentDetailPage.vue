@@ -289,7 +289,9 @@
                           openCreateNoteDialog(
                             'clinicalNote',
                             clinicalNote.note,
-                            true
+                            true,
+                            test[0].display,
+                            medications
                           )
                         "
                       >
