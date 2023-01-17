@@ -1,5 +1,17 @@
 <template>
   <v-card :loading="loadingData" class="mb-5 pa-2">
+    <v-row class="mt-2">
+      <v-col align="end">
+        <v-btn
+          @click="refresh"
+          :loading="loadingNext || loadingData"
+          depressed
+          raised
+        >
+          <v-icon>mdi-refresh</v-icon>
+        </v-btn>
+      </v-col>
+    </v-row>
     <v-card-title class="font-weight-bold title"> Queuing </v-card-title>
     <v-card-text class="mt-8">
       <v-row align="start" class="mx-0">
@@ -93,6 +105,9 @@ export default Vue.extend({
   methods: {
     nextPatient() {
       this.$emit("next");
+    },
+    refresh() {
+      this.$emit("refresh");
     },
   },
 });

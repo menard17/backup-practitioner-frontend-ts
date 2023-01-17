@@ -4,6 +4,7 @@
       v-if="isVisitTypeQueue"
       :queueData="queueData"
       @next="pickUpPatient"
+      @refresh="refreshData"
     />
 
     <div v-else>
@@ -31,6 +32,11 @@ import { QueueState, TMapState } from "@/store/Queue/types";
 
 export default defineComponent({
   name: "QueuePage",
+  data() {
+    return {
+      polling: null as any,
+    };
+  },
   components: {
     QueueDetails: defineAsyncComponent(
       () => import("./components/QueueDetails.vue")
@@ -82,15 +88,30 @@ export default defineComponent({
       const alertDialogRef = this.$refs.aletDialogRef as any;
       alertDialogRef.toggleDialog();
     },
+    pollData() {
+      this.polling = setInterval(async () => {
+        await this.getQueueToday({
+          availableTime: this.availableTime,
+        });
+      }, 30000);
+    },
+    async refreshData() {
+      await this.getQueueToday({
+        availableTime: this.availableTime,
+      });
+    },
+  },
+  beforeDestroy() {
+    clearInterval(this.polling);
   },
   async created() {
     if (!this.availableTime) {
       await this.getCurrentUser();
     }
-
     await this.getQueueToday({
       availableTime: this.availableTime,
     });
+    this.pollData();
   },
 });
 </script>
