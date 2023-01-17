@@ -49,8 +49,8 @@ export const getQueueToday = async (
 export const getListId = async (context: Context) => {
   try {
     context.commit("setLoadingConfig", true);
-    const { patient_queue_list_id }: any = await getAll("config");
-    context.commit("setListId", patient_queue_list_id);
+    const { patientQueueListId }: any = await getAll("config");
+    context.commit("setListId", patientQueueListId);
   } catch (e) {
     console.error("Failed to get the List id");
   } finally {
