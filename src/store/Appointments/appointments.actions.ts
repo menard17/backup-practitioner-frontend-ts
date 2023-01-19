@@ -22,11 +22,13 @@ export async function getAppointmentsByPractitionerId(
   });
   context.commit("setAppointments", []);
   let actorId = "";
-  if (!practitionerId) {
-    await context.dispatch("$_account/getCurrentUser", null, { root: true });
-    actorId = context.rootState.$_account.practitionerRole.id;
-  } else {
-    actorId = practitionerId;
+  await context.dispatch("$_account/getCurrentUser", null, { root: true });
+  if (context.rootState.$_account.firebaseRole !== "Staff") {
+    if (!practitionerId) {
+      actorId = context.rootState.$_account.practitionerRole.id;
+    } else {
+      actorId = practitionerId;
+    }
   }
 
   const appointments: any = await getAppointments(context, {

@@ -501,7 +501,6 @@ export default Vue.extend({
     },
     ...mapActions("$_appointments", {
       getAppointmentsByPractitionerId: "getAppointmentsByPractitionerId",
-      getAppointments: "getAppointments",
       getSlotsByPractitionerRoleId: "getSlotsByPractitionerRoleId",
       createSlot: "createSlot",
       freeSlot: "freeSlot",
