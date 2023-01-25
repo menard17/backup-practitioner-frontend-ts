@@ -60,53 +60,92 @@
             :practitioner="practitioner"
             :practitionerRole="practitionerRole"
             :user="user"
-            @edit="openPractitionerRequestDialog(false)"
+            @edit="openPractitionerRequestDialog(false, 'Practitioner')"
           />
         </v-tab-item>
         <v-tab-item>
-          <v-card>
-            <v-simple-table>
-              <template v-slot:default>
-                <thead>
-                  <tr>
-                    <th class="text-left">Days Of Week</th>
-                    <th class="text-left">Start Time</th>
-                    <th class="text-left">End Time</th>
-                    <th class="text-left">Type</th>
-                    <th class="text-left">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    v-for="(time, i) in practitionerRole.availableTime"
-                    :key="i"
-                  >
-                    <td>
-                      <span v-for="day in time.daysOfWeek" :key="day">
-                        {{ day.toUpperCase() }},
-                      </span>
-                    </td>
-                    <td>{{ time.availableStartTime }}</td>
-                    <td>{{ time.availableEndTime }}</td>
-                    <td>--</td>
-                    <td>
-                      <v-icon @click="deleteScheduleItem(i)">
-                        mdi-delete
-                      </v-icon>
-                    </td>
-                  </tr>
-                </tbody>
-              </template>
-            </v-simple-table>
+          <v-card class="pa-4">
+            <v-row class="mt-5" dense>
+              <v-col cols="12">
+                <div
+                  class="subtitle-1 text-left"
+                  v-if="practitionerRole.period"
+                >
+                  Serving Date Range
+                </div>
+              </v-col>
+              <v-col>
+                <label-card
+                  v-if="practitionerRole.visitType"
+                  class="text-left mt-2"
+                  label="Visit Type"
+                  :text="practitionerRole.visitType"
+                />
+                <label-card
+                  class="text-left mt-2"
+                  label="Start"
+                  :text="practitionerRole.period.start"
+                />
+                <label-card
+                  v-if="practitionerRole.period && practitionerRole.period.end"
+                  class="text-left mt-2"
+                  label="End"
+                  :text="practitionerRole.period.end"
+                />
+              </v-col>
+              <v-btn
+                @click="openPractitionerRequestDialog(false, 'Scheduled')"
+                block
+                color="primary"
+                class="mt-4 subtitle-2 text-none"
+              >
+                Edit
+              </v-btn>
+            </v-row>
+            <v-card class="mt-5" dense>
+              <v-col cols="12">
+                <v-simple-table>
+                  <template v-slot:default>
+                    <thead>
+                      <tr>
+                        <th class="text-left">Days Of Week</th>
+                        <th class="text-left">Start Time</th>
+                        <th class="text-left">End Time</th>
+                        <th class="text-left">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        v-for="(time, i) in practitionerRole.availableTime"
+                        :key="i"
+                      >
+                        <td>
+                          <span v-for="day in time.daysOfWeek" :key="day">
+                            {{ day.toUpperCase() }},
+                          </span>
+                        </td>
+                        <td>{{ time.availableStartTime }}</td>
+                        <td>{{ time.availableEndTime }}</td>
+                        <td>
+                          <v-icon @click="deleteScheduleItem(i)">
+                            mdi-delete
+                          </v-icon>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </template>
+                </v-simple-table>
+                <v-btn
+                  @click="openScheduleDialog"
+                  class="text-none subtitle-2 mt-5"
+                  color="primary"
+                  block
+                >
+                  Add a schedule
+                </v-btn>
+              </v-col>
+            </v-card>
           </v-card>
-          <v-btn
-            @click="openScheduleDialog"
-            class="text-none subtitle-2 mt-5"
-            color="primary"
-            block
-          >
-            Add a schedule
-          </v-btn>
         </v-tab-item>
       </v-tabs>
     </v-card>
@@ -154,6 +193,7 @@
 </template>
 
 <script>
+import LabelCard from "@/components/LabelCard.vue";
 import PractitionerDetailsCard from "@/views/Practitioner/PractitionerDetailsCard";
 import { mapState } from "vuex";
 import ScheduleDialog from "@/views/Practitioner/Dialogs/ScheduleDialog";
@@ -163,6 +203,7 @@ export default {
   name: "PractitionerDetailsPage",
   components: {
     ConfirmDialog,
+    LabelCard,
     PractitionerRequestDialog,
     ScheduleDialog,
     PractitionerDetailsCard,
@@ -231,8 +272,8 @@ export default {
 
       this.$emit("updatePractitionerRole", { changeFields });
     },
-    openPractitionerRequestDialog: function (isNewPractitioner) {
-      this.title = "Practitioner";
+    openPractitionerRequestDialog: function (isNewPractitioner, title) {
+      this.title = title;
       this.$refs.practitionerRequestDialogRef?.toggleDialog(
         this.practitioner,
         this.practitionerRole,

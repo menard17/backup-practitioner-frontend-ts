@@ -12,171 +12,200 @@
         </v-row>
       </v-card-title>
       <v-form class="text-left px-5">
-        <v-row>
-          <v-col v-if="user">
-            <label-card label="Email" :text="user.email" />
-          </v-col>
-        </v-row>
-        <v-row dense>
-          <v-col>
-            <div class="subtitle-2 mb-2">Role Type</div>
-            <v-select
-              :disabled="!this.isNewPractitioner"
-              v-model="selectedRoleType"
-              outlined
-              hide-details
-              dense
-              :items="['DOCTOR', 'NURSE', 'STAFF']"
-            />
-            <span :class="getClass(selectedRoleType)" class="error-style">
-              Please Select Role Type
-            </span>
-          </v-col>
-          <v-col align="start">
-            <div class="subtitle-2 mb-2">Gender</div>
-            <v-select
-              v-model="selectedGender"
-              outlined
-              hide-details
-              dense
-              :items="['MALE', 'FEMALE']"
-            />
-            <span :class="getClass(selectedGender)" class="error-style">
-              Please Select Gender
-            </span>
-          </v-col>
-        </v-row>
-        <v-row dense>
-          <v-col>
-            <div class="title mb-2">Practitioner Details (JP)</div>
-            <v-row dense>
-              <v-col>
-                <label-text-field label="Family Name" v-model="familyNameJp" />
-                <span
-                  :class="getClass(familyNameJp.trim())"
-                  class="error-style"
-                >
-                  Family Name Required
-                </span>
-              </v-col>
-              <v-col>
-                <label-text-field label="First Name" v-model="firstNameJp" />
-                <span :class="getClass(firstNameJp.trim())" class="error-style">
-                  First Name Required
-                </span>
-              </v-col>
-              <v-col cols="12" v-if="this.selectedRoleType != 'STAFF'">
-                <label-text-area label="Biography" v-model="bioJp" />
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
-        <v-row dense>
-          <v-col>
-            <div class="title mb-2">Practitioner Details (EN)</div>
-            <v-row dense>
-              <v-col>
-                <label-text-field label="Family Name" v-model="familyNameEn" />
-                <span :class="getClass(familyNameEn)" class="error-style">
-                  English Family Name Required
-                </span>
-              </v-col>
-              <v-col>
-                <label-text-field label="First Name" v-model="firstNameEn" />
-                <span :class="getClass(firstNameEn)" class="error-style">
-                  English First Name Required
-                </span>
-              </v-col>
-              <v-col cols="12" v-if="this.selectedRoleType != 'STAFF'">
-                <label-text-area label="Biography" v-model="bioEn" />
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
-
-        <v-row dense>
-          <v-col v-if="this.selectedRoleType != 'STAFF'">
-            <div class="title mb-2">Serving Date Range</div>
-            <v-row dense>
-              <v-col cols="12">
-                <v-menu
-                  ref="menuFrom"
-                  v-model="menuFrom"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  max-width="290px"
-                  min-width="290px"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      outlined
-                      v-model="date"
-                      label="Select Range"
-                      append-icon="mdi-calendar"
-                      v-bind="attrs"
-                      v-on="on"
-                    />
-                    <span
-                      :class="getClass('dateRangeField')"
-                      class="date-error"
-                    >
-                      Please Select From and To Date
-                    </span>
-                  </template>
-                  <v-date-picker
-                    v-model="dateRange"
-                    color="primary"
-                    no-title
-                    range
-                    @input="menuFrom = false"
-                    :min="minCurrentMonth"
-                  />
-                </v-menu>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
-
-        <v-row dense class="mt-2">
-          <v-col v-if="this.selectedRoleType != 'STAFF'">
-            <div class="title">Upload a Photo</div>
-            <div
-              v-if="image"
-              class="d-flex align-content-center justify-center mb-2"
-            >
-              <v-avatar
-                color="blue"
-                min-height="150"
-                min-width="150"
-                size="150"
-              >
-                <v-img :src="photo" cover />
-              </v-avatar>
-            </div>
-            <v-file-input
-              dense
-              outlined
-              @change="previewImage"
-              v-model="image"
-              accept="image/png"
-              :rules="rules"
-            />
-            <span :class="getClass(image)" class="image-error">
-              Photo is required
-            </span>
-          </v-col>
-        </v-row>
-
-        <v-row dense class="mt-2">
-          <v-col>
-            <div class="mb-3 email-error">
-              <span :class="getClass('emailField')">
-                Please verify your email first
+        <div v-if="title == 'Practitioner'">
+          <v-row>
+            <v-col v-if="user">
+              <label-card label="Email" :text="user.email" />
+            </v-col>
+          </v-row>
+          <v-row dense>
+            <v-col>
+              <div class="subtitle-2 mb-2">Role Type</div>
+              <v-select
+                :disabled="!this.isNewPractitioner"
+                v-model="selectedRoleType"
+                outlined
+                hide-details
+                dense
+                :items="['DOCTOR', 'NURSE', 'STAFF']"
+              />
+              <span :class="getClass(selectedRoleType)" class="error-style">
+                Please Select Role Type
               </span>
-            </div>
-          </v-col>
-        </v-row>
+            </v-col>
+            <v-col align="start">
+              <div class="subtitle-2 mb-2">Gender</div>
+              <v-select
+                v-model="selectedGender"
+                outlined
+                hide-details
+                dense
+                :items="['MALE', 'FEMALE']"
+              />
+              <span :class="getClass(selectedGender)" class="error-style">
+                Please Select Gender
+              </span>
+            </v-col>
+          </v-row>
+          <v-row dense>
+            <v-col>
+              <div class="title mb-2">Practitioner Details (JP)</div>
+              <v-row dense>
+                <v-col>
+                  <label-text-field
+                    label="Family Name"
+                    v-model="familyNameJp"
+                  />
+                  <span
+                    :class="getClass(familyNameJp.trim())"
+                    class="error-style"
+                  >
+                    Family Name Required
+                  </span>
+                </v-col>
+                <v-col>
+                  <label-text-field label="First Name" v-model="firstNameJp" />
+                  <span
+                    :class="getClass(firstNameJp.trim())"
+                    class="error-style"
+                  >
+                    First Name Required
+                  </span>
+                </v-col>
+                <v-col cols="12" v-if="this.selectedRoleType != 'STAFF'">
+                  <label-text-area label="Biography" v-model="bioJp" />
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+          <v-row dense>
+            <v-col>
+              <div class="title mb-2">Practitioner Details (EN)</div>
+              <v-row dense>
+                <v-col>
+                  <label-text-field
+                    label="Family Name"
+                    v-model="familyNameEn"
+                  />
+                  <span :class="getClass(familyNameEn)" class="error-style">
+                    English Family Name Required
+                  </span>
+                </v-col>
+                <v-col>
+                  <label-text-field label="First Name" v-model="firstNameEn" />
+                  <span :class="getClass(firstNameEn)" class="error-style">
+                    English First Name Required
+                  </span>
+                </v-col>
+                <v-col cols="12" v-if="this.selectedRoleType != 'STAFF'">
+                  <label-text-area label="Biography" v-model="bioEn" />
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+
+          <v-row dense class="mt-2">
+            <v-col v-if="this.selectedRoleType != 'STAFF'">
+              <div class="title">Upload a Photo</div>
+              <div
+                v-if="image"
+                class="d-flex align-content-center justify-center mb-2"
+              >
+                <v-avatar
+                  color="blue"
+                  min-height="150"
+                  min-width="150"
+                  size="150"
+                >
+                  <v-img :src="photo" cover />
+                </v-avatar>
+              </div>
+              <v-file-input
+                dense
+                outlined
+                @change="previewImage"
+                v-model="image"
+                accept="image/png"
+                :rules="rules"
+              />
+              <span :class="getClass(image)" class="image-error">
+                Photo is required
+              </span>
+            </v-col>
+          </v-row>
+
+          <v-row dense class="mt-2">
+            <v-col>
+              <div class="mb-3 email-error">
+                <span :class="getClass('emailField')">
+                  Please verify your email first
+                </span>
+              </div>
+            </v-col>
+          </v-row>
+        </div>
+        <div v-else-if="title == 'Scheduled'">
+          <v-row dense>
+            <v-col>
+              <div class="subtitle-2 mb-2">Visit Type</div>
+              <v-select
+                v-model="selectedVisitType"
+                outlined
+                hide-details
+                dense
+                :items="visitTypeItems"
+                item-value="value"
+                item-text="display"
+              />
+              <span :class="getClass(selectedRoleType)" class="error-style">
+                Please Select Role Type
+              </span>
+            </v-col>
+          </v-row>
+          <v-row dense>
+            <v-col v-if="this.selectedRoleType != 'STAFF'">
+              <div class="title mb-2">Serving Date Range</div>
+              <v-row dense>
+                <v-col>
+                  <v-menu
+                    ref="menuFrom"
+                    v-model="menuFrom"
+                    :close-on-content-click="false"
+                    transition="scale-transition"
+                    offset-y
+                    max-width="290px"
+                    min-width="290px"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        outlined
+                        v-model="date"
+                        label="Select Range"
+                        append-icon="mdi-calendar"
+                        v-bind="attrs"
+                        v-on="on"
+                      />
+                      <span
+                        :class="getClass('dateRangeField')"
+                        class="date-error"
+                      >
+                        Please Select From and To Date
+                      </span>
+                    </template>
+                    <v-date-picker
+                      v-model="dateRange"
+                      color="primary"
+                      no-title
+                      range
+                      @input="menuFrom = false"
+                      :min="minCurrentMonth"
+                    />
+                  </v-menu>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+        </div>
       </v-form>
       <v-card-actions>
         <v-spacer />
@@ -220,6 +249,7 @@ export default {
   },
   data() {
     return {
+      editType: null,
       isSaveButtonClicked: false,
       dialog: false,
       familyNameJp: "",
@@ -231,6 +261,11 @@ export default {
       photo: null,
       image: null,
       selectedGender: "",
+      selectedVisitType: "",
+      visitTypeItems: [
+        { display: "Walk In", value: "walk-in" },
+        { display: "Appointment", value: "appointment" },
+      ],
       selectedRoleType: "",
       isNewPractitioner: false,
       isNewPhoto: false,
@@ -260,6 +295,7 @@ export default {
         given_name_ja: this.firstNameJp,
         bio_en: this.bioEn,
         bio_ja: this.bioJp,
+        visit_type: this.selectedVisitType,
       };
 
       if (this.photo) {
@@ -403,6 +439,9 @@ export default {
         this.firstNameEn = practitioner.en.firstName;
         this.bioEn = practitioner.en.bio;
         this.selectedRoleType = practitionerRole.roleType.toUpperCase();
+        this.selectedVisitType = this.getSelectedVisitType(
+          practitionerRole.visitType
+        );
         this.practitionerRoleId = practitionerRole.id;
         this.photo = practitioner.photo
           ? `data:${practitioner.photo.type};base64,${practitioner.photo.data}`
@@ -422,6 +461,9 @@ export default {
           this.dateRange = [this.start, this.end];
         }
       }
+    },
+    getSelectedVisitType(visitType) {
+      return this.visitTypeItems.find((x) => x.display === visitType);
     },
     save() {
       if (!this.isMyPractitioner) {
