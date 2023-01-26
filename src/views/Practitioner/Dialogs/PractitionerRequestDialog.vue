@@ -156,6 +156,7 @@
                 :items="visitTypeItems"
                 item-value="value"
                 item-text="display"
+                return-object
               />
               <span :class="getClass(selectedRoleType)" class="error-style">
                 Please Select Role Type
@@ -295,7 +296,7 @@ export default {
         given_name_ja: this.firstNameJp,
         bio_en: this.bioEn,
         bio_ja: this.bioJp,
-        visit_type: this.selectedVisitType,
+        visit_type: this.selectedVisitType.value,
       };
 
       if (this.photo) {
