@@ -37,3 +37,7 @@ export function setMedications(state: any, medications: any) {
 export function setTest(state: any, test: any) {
   state.test = test;
 }
+
+export function setError(state: any, value: any) {
+  state.error = value;
+}

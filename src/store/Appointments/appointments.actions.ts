@@ -11,6 +11,7 @@ import { formatDateString } from "@/utils/dateHelpers";
 import { TimeConstants } from "@/utils/constants";
 import { Context } from "../types";
 import { addDays, isAfter, isBefore, subMinutes, subYears } from "date-fns";
+import { AxiosError } from "axios";
 
 export async function getAppointmentsByPractitionerId(
   context: Context,
@@ -785,3 +786,32 @@ export async function getTest(context: Context, { encounter }: any) {
     value: false,
   });
 }
+
+export const callPatient = async (
+  context: Context,
+  { patient_id = "", appointment_id = "" }
+) => {
+  context.commit("setIsLoading", {
+    action: "callPatient",
+    value: true,
+  });
+
+  try {
+    await callLogicApp(
+      {
+        patient: patient_id,
+        appointment: appointment_id,
+      },
+      `calls`
+    );
+  } catch (error) {
+    const err = error as AxiosError;
+    const message = err.response?.data ?? err.message;
+    context.commit("setError", message);
+  } finally {
+    context.commit("setIsLoading", {
+      action: "callPatient",
+      value: false,
+    });
+  }
+};

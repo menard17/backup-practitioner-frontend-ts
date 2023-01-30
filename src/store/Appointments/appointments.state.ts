@@ -7,6 +7,7 @@ const state = {
   test: undefined,
   medications: undefined,
   slots: [],
+  error: "",
   loadingData: {
     createAppointment: { isLoading: false },
     updateAppointment: { isLoading: false },
@@ -27,6 +28,7 @@ const state = {
     getMedications: { isLoading: false },
     createTest: { isLoading: false },
     getTest: { isLoading: false },
+    callPatient: { isLoading: false },
   },
 };
 

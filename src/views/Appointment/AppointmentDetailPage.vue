@@ -213,6 +213,20 @@
               {{ this.$t("join room") }}
             </v-btn>
           </v-col>
+          <v-col>
+            <v-btn
+              @click="call"
+              :loading="isLoadingCallPatient"
+              :disable="isLoadingCallPatient"
+              class="text-none subtitle-2 py-5"
+              color="primary"
+            >
+              Call Patient
+              <template v-slot:loader>
+                <span class="text-sm">Calling Patient...</span>
+              </template>
+            </v-btn>
+          </v-col>
         </v-row>
         <v-row v-if="encounter">
           <v-col>
@@ -426,7 +440,7 @@
       keyword="Cancel"
     />
     <alert-dialog
-      :content="error"
+      :content="error || errorCall"
       @confirm="toggleErrorDiaglog"
       @cancel="toggleErrorDiaglog"
       :isHideOverlay="false"
@@ -501,6 +515,7 @@ export default {
       isLoading: (state) => state.loadingData.populateAppointment.isLoading,
       isCreatingEncounter: (state) =>
         state.loadingData.createEncounter.isLoading,
+      isLoadingCallPatient: (state) => state.loadingData.callPatient.isLoading,
       isCreatingClinicalNote: (state) =>
         state.loadingData.createClinicalNote.isLoading,
       isCreatingDoctorNote: (state) =>
@@ -508,6 +523,7 @@ export default {
       encounter: (state) => state.encounter,
       clinicalNote: (state) => state.clinicalNote,
       test: (state) => state.test,
+      errorCall: (state) => state.error,
     }),
     ...mapGetters("$_appointments", {
       appointment: "appointment",
@@ -599,6 +615,7 @@ export default {
       getCurrentUser: "$_account/getCurrentUser",
       nextPatient: "$_queues/nextPatient",
       setError: "$_queues/setError",
+      callPatient: "$_appointments/callPatient",
     }),
     ...mapActions("$_appointments", {
       populateAppointment: "populateAppointment",
@@ -786,10 +803,9 @@ export default {
       const superUser = "super";
       return this.$route.query.user == superUser;
     },
-    goToVideo() {
-      const appointment_id = this.$route.params.id;
+    async goToVideo() {
       window.open(
-        `/video?identity_id=${this.practitionerRole.id}&id=${appointment_id}`,
+        `/video?identity_id=${this.practitionerRole.id}&id=${this.routeId}`,
         "newwindow",
         "width=1200,height=800"
       );
@@ -814,6 +830,16 @@ export default {
       this.openErrorDialog();
       this.setError("");
     },
+    async call() {
+      await this.callPatient({
+        appointment_id: this.routeId,
+        patient_id: this.patient.id,
+      });
+      if (this.errorCall) {
+        this.openErrorDialog();
+        return;
+      }
+    },
   },
 };
 </script>
@@ -821,5 +847,9 @@ export default {
 <style scoped>
 .v-expansion-panel-content >>> .v-expansion-panel-content__wrap {
   padding: 0 !important;
+}
+
+.text-sm {
+  font-size: 0.75em;
 }
 </style>
