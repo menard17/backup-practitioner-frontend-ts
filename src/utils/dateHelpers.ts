@@ -1,5 +1,4 @@
-import { format, parseJSON } from "date-fns";
-
+import { addDays, format, parseJSON } from "date-fns";
 export function formatDateString(date: string, dateTimeFormat: string) {
   return format(parseJSON(date), dateTimeFormat);
 }
@@ -47,4 +46,12 @@ export function compareDate(date1: string, date2: string) {
   if (month1 > month2) return true;
   if (day1 > day2) return true;
   return false;
+}
+
+export function convertExclusiveToInclusive(date: string): string {
+  return addDays(new Date(date), 1).toLocaleDateString("sv");
+}
+
+export function convertInclusiveToExlusive(date: string): string {
+  return addDays(new Date(date), -1).toLocaleDateString("sv");
 }

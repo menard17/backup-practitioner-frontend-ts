@@ -90,7 +90,7 @@
                   v-if="practitionerRole.period && practitionerRole.period.end"
                   class="text-left mt-2"
                   label="End"
-                  :text="practitionerRole.period.end"
+                  :text="endDate"
                 />
               </v-col>
               <v-btn
@@ -196,6 +196,7 @@
 import LabelCard from "@/components/LabelCard.vue";
 import PractitionerDetailsCard from "@/views/Practitioner/PractitionerDetailsCard";
 import { mapState } from "vuex";
+import { convertInclusiveToExlusive } from "@/utils/dateHelpers";
 import ScheduleDialog from "@/views/Practitioner/Dialogs/ScheduleDialog";
 import PractitionerRequestDialog from "@/views/Practitioner/Dialogs/PractitionerRequestDialog";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -241,6 +242,9 @@ export default {
     }),
     isLoading() {
       return this.isLoadingCurrentUser || this.isUpdatingPractitionerRole;
+    },
+    endDate() {
+      return convertInclusiveToExlusive(this.practitionerRole.period.end);
     },
   },
   methods: {

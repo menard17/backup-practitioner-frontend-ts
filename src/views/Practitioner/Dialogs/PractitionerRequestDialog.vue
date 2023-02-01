@@ -234,7 +234,10 @@ import { toBase64, resizeImage } from "@/utils/fileProcess";
 import { mapActions } from "vuex";
 import { formatDateString } from "@/utils/dateHelpers";
 import { auth } from "@/plugins/firebase";
-
+import {
+  convertExclusiveToInclusive,
+  convertInclusiveToExlusive,
+} from "@/utils/dateHelpers";
 export default {
   name: "PractitionerRequestDialog",
   components: { LabelCard, LabelTextArea, LabelTextField },
@@ -289,7 +292,7 @@ export default {
         family_name_en: this.familyNameEn,
         given_name_en: this.firstNameEn,
         start: this.dateRange[0],
-        end: this.dateRange[1],
+        end: convertExclusiveToInclusive(this.dateRange[1]),
         role_type: this.selectedRoleType.toLowerCase(),
         gender: this.selectedGender.toLowerCase(),
         family_name_ja: this.familyNameJp,
@@ -304,7 +307,7 @@ export default {
       }
       if (this.dateRange) {
         output["start"] = this.dateRange[0];
-        output["end"] = this.dateRange[1];
+        output["end"] = convertExclusiveToInclusive(this.dateRange[1]);
       }
       return output;
     },
@@ -458,7 +461,7 @@ export default {
           : null;
         if (practitionerRole.period) {
           this.start = practitionerRole.period.start;
-          this.end = practitionerRole.period.end;
+          this.end = convertInclusiveToExlusive(practitionerRole.period.end);
           this.dateRange = [this.start, this.end];
         }
       }
