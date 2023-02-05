@@ -12,6 +12,8 @@ import { TimeConstants } from "@/utils/constants";
 import { Context } from "../types";
 import { addDays, isAfter, isBefore, subMinutes, subYears } from "date-fns";
 import { AxiosError } from "axios";
+import { firestore } from "@/plugins/firebase";
+import { onSnapshot, doc } from "firebase/firestore";
 
 export async function getAppointmentsByPractitionerId(
   context: Context,
@@ -814,4 +816,26 @@ export const callPatient = async (
       value: false,
     });
   }
+};
+
+export const getStatusCall = async (
+  context: Context,
+  { appointment_id = "" }
+) => {
+  onSnapshot(doc(firestore, "patient_call_logs", appointment_id), (doc) => {
+    if (!doc.exists()) return;
+    const result = doc.data() as documentCallLog;
+    const { status } = result;
+    context.commit("setStatusCall", status);
+  });
+};
+
+export const setStatus = (context: Context, status: string) => {
+  context.commit("setStatusCall", status);
+};
+
+type documentCallLog = {
+  appointment_id?: string;
+  status: string;
+  patient_id?: string;
 };

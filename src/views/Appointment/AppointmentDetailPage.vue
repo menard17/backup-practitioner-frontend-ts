@@ -222,9 +222,6 @@
               color="primary"
             >
               Call Patient
-              <template v-slot:loader>
-                <span class="text-sm">Calling Patient...</span>
-              </template>
             </v-btn>
           </v-col>
         </v-row>
@@ -449,6 +446,12 @@
       icon="mdi-alert-circle"
       colorIcon="red"
     />
+    <dialog-call-status
+      v-if="callStatusDialogShow"
+      :status="callStatus"
+      :isHideOverlay="false"
+      ref="aletDialogRef"
+    />
     <v-overlay v-model="isCreatingEncounter">
       <v-progress-circular indeterminate />
     </v-overlay>
@@ -471,6 +474,7 @@ import DocumentReferenceWrapper from "../Patient/DocumentReferenceWrapper.vue";
 import ConfirmDialog from "@/components/ConfirmDialog";
 const CreateAppointmentDialog = () =>
   import("@/views/Appointment/Dialogs/CreateAppointmentDialog");
+const DialogCallStatus = () => import("./components/DialogCallStatus");
 
 export default {
   components: {
@@ -484,6 +488,7 @@ export default {
     StartEncounterDialog,
     DocumentReferenceWrapper,
     AlertDialog,
+    DialogCallStatus,
   },
   name: "AppointmentDetailPage",
   data() {
@@ -509,7 +514,13 @@ export default {
       this.getMedicationsByPatientId({ patientId: this.patient.id });
       this.getTestsByPatientId({ patientId: this.patient.id });
     },
+    callStatus() {
+      if (this.callStatus === "accepted") {
+        this.goToVideo();
+      }
+    },
   },
+
   computed: {
     ...mapState("$_appointments", {
       isLoading: (state) => state.loadingData.populateAppointment.isLoading,
@@ -557,6 +568,9 @@ export default {
       appointmentId: "appointmentId",
       error: "error",
     }),
+    ...mapState("$_appointments", {
+      callStatus: "callStatus",
+    }),
     patientDetails() {
       return [
         {
@@ -594,6 +608,16 @@ export default {
     appointmentType() {
       return this.$route.query.type ?? "";
     },
+    callStatusDialogShow() {
+      if (
+        this.callStatus == "calling" ||
+        this.callStatus == "declined" ||
+        this.callStatus == "timeout"
+      )
+        return true;
+
+      return false;
+    },
   },
   async created() {
     this.routeId = this.$route.params.id;
@@ -616,6 +640,7 @@ export default {
       nextPatient: "$_queues/nextPatient",
       setError: "$_queues/setError",
       callPatient: "$_appointments/callPatient",
+      getStatusCall: "$_appointments/getStatusCall",
     }),
     ...mapActions("$_appointments", {
       populateAppointment: "populateAppointment",
@@ -839,6 +864,9 @@ export default {
         this.openErrorDialog();
         return;
       }
+      await this.getStatusCall({
+        appointment_id: this.routeId,
+      });
     },
   },
 };

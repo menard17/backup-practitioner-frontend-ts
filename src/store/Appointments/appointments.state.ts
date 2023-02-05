@@ -8,6 +8,7 @@ const state = {
   medications: undefined,
   slots: [],
   error: "",
+  callStatus: undefined,
   loadingData: {
     createAppointment: { isLoading: false },
     updateAppointment: { isLoading: false },
