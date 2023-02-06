@@ -730,8 +730,7 @@ export default {
         this.insuranceCard[0] &&
         this.insuranceCard[0].attachment &&
         fomartStringDate(new Date(this.appointment.date)) &&
-        this.insuranceCard[0].attachment.url &&
-        this.insuranceCard[this.insuranceCard.length - 1].attachment.url
+        this.insuranceCard[0].attachment.url
       ) {
         // Finish Encounter
         this.updateEncounter({
@@ -750,8 +749,6 @@ export default {
             start: this.appointment.start,
             worksheet: fomartStringDate(new Date(this.appointment.date)),
             insuranceFront: this.insuranceCard[0].attachment.url,
-            insuranceBack:
-              this.insuranceCard[this.insuranceCard.length - 1].attachment.url,
             dob: this.patient.birthDate,
             sex: this.patient.sex,
             prescription: this.medications,
