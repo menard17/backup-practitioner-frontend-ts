@@ -146,3 +146,21 @@ export function medicalRecord(state: any) {
 
   return medicalRecord.content;
 }
+
+export function medicalCard(state: any) {
+  const documentReferences = state.documentReferences;
+
+  if (!documentReferences.length) {
+    return [];
+  }
+
+  const medicalCard = documentReferences.find((document: any) =>
+    document.type.coding.find((code: any) => code.code === "00001-1")
+  );
+
+  if (!medicalCard) {
+    return null;
+  }
+
+  return medicalCard.content;
+}

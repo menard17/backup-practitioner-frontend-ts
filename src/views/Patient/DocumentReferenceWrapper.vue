@@ -10,9 +10,16 @@
     <v-btn
       v-if="medicalRecord"
       @click="openDocumentReferenceDialog('medicalRecord')"
-      class="subtitle-2 text-none"
+      class="mr-2 subtitle-2 text-none"
     >
       {{ this.$t("Medical Record") }}
+    </v-btn>
+    <v-btn
+      v-if="medicalCard"
+      @click="openDocumentReferenceDialog('medicalCard')"
+      class="mr-2 subtitle-2 text-none"
+    >
+      {{ this.$t("Medical Card") }}
     </v-btn>
     <document-reference-dialog ref="documentReferenceDialogRef" />
   </v-row>
@@ -29,6 +36,7 @@ export default {
       patient: "patient",
       insuranceCard: "insuranceCard",
       medicalRecord: "medicalRecord",
+      medicalCard: "medicalCard",
     }),
     ...mapState("$_patients", {
       isLoading: (state) => state.loadingData.getPatientById.isLoading,
@@ -47,6 +55,12 @@ export default {
           this.$refs.documentReferenceDialogRef.toggleDialog(
             this.medicalRecord,
             this.$t("Medical Record")
+          );
+          break;
+        case "medicalCard":
+          this.$refs.documentReferenceDialogRef.toggleDialog(
+            this.medicalCard,
+            this.$t("Medical Card")
           );
           break;
       }
