@@ -306,8 +306,12 @@ export default {
         output["photo"] = this.photo;
       }
       if (this.dateRange) {
-        output["start"] = this.dateRange[0];
-        output["end"] = convertExclusiveToInclusive(this.dateRange[1]);
+        output["start"] =
+          this.dateRange[0] != undefined ? this.dateRange[0] : "2023-01-01";
+        output["end"] =
+          this.dateRange[1] != undefined
+            ? convertExclusiveToInclusive(this.dateRange[1])
+            : "2024-01-01";
       }
       return output;
     },
@@ -376,7 +380,6 @@ export default {
           this.familyNameJp.trim() &&
           this.firstNameJp.trim() &&
           this.selectedGender &&
-          this.dateRange.length > 1 &&
           this.image &&
           this.familyNameEn.trim() &&
           this.firstNameEn.trim() &&
@@ -385,7 +388,6 @@ export default {
           this.familyNameJp.trim() &&
           this.firstNameJp.trim() &&
           this.selectedGender &&
-          this.dateRange.length > 1 &&
           this.image &&
           this.familyNameEn.trim() &&
           this.firstNameEn.trim() &&
