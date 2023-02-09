@@ -299,7 +299,6 @@ export default {
         given_name_ja: this.firstNameJp,
         bio_en: this.bioEn,
         bio_ja: this.bioJp,
-        visit_type: this.selectedVisitType.value,
       };
 
       if (this.photo) {
@@ -312,6 +311,9 @@ export default {
           this.dateRange[1] != undefined
             ? convertExclusiveToInclusive(this.dateRange[1])
             : "2024-01-01";
+      }
+      if (this.selectedVisitType) {
+        output["visit_type"] = this.selectedVisitType.value;
       }
       return output;
     },
