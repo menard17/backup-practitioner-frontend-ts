@@ -40,6 +40,12 @@
           <v-text-field v-model="item.porter" readonly></v-text-field>
         </div>
       </template>
+      <template v-slot:[`item.history`]="{ item }">
+        <v-btn icon @click="onHistoryToggle(item)">
+          <img alt="History" src="@/assets/history.svg" ref="toggleHistory" />
+        </v-btn>
+        <history-dialog ref="historyDialogRef" />
+      </template>
       <template v-slot:[`item.required`]="{ item }">
         <div v-if="item.required">✅</div>
         <div v-if="!item.required">❌</div>
@@ -71,6 +77,7 @@
 
 <script lang="ts">
 import { Order, OrderGetter } from "@/store/Orders/types";
+import HistoryDialog from "@/components/HistoryDialog.vue";
 import Vue from "vue";
 import { mapActions, mapGetters } from "vuex";
 import { Status } from "@/store/Orders/constants";
@@ -78,6 +85,9 @@ import * as _ from "lodash";
 
 export default Vue.extend({
   name: "OrdersPage",
+  components: {
+    HistoryDialog,
+  },
   data() {
     return {
       expanded: [],
@@ -87,8 +97,9 @@ export default Vue.extend({
         { text: "Address", value: "address" },
         { text: "Phone", value: "phone" },
         { text: "Status", value: "status" },
-        { text: "Area", value: "area" },
+        { text: "Areas", value: "areas" },
         { text: "Porter", value: "porter" },
+        { text: "", value: "history" },
         { text: "", value: "data-table-expand" },
       ],
       statsHeaders: [
@@ -130,6 +141,9 @@ export default Vue.extend({
       updateOrder: "$_orders/updateOrder",
       updateStatus: "$_orders/updateStatus",
     }),
+    onHistoryToggle(order: Order): void {
+      (this.$refs.historyDialogRef as any).toggleDialog(order.documentId);
+    },
     porterSelected(order: Order): void {
       order.porterId = this.porterId(order.porter);
       this.updateOrder(order);

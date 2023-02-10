@@ -1,8 +1,8 @@
 import { Unsubscribe } from "firebase/firestore";
-import { Order, OrdersState } from "./types";
+import { Order, OrderHistory, OrdersState } from "./types";
 
 type loadingAction = {
-  action: "orders";
+  action: "orders" | "history";
   value: boolean;
 };
 
@@ -15,6 +15,15 @@ export const setIsLoading = (
 
 export const setOrders = (state: OrdersState, orders: Order[]) => {
   state.orders = orders;
+};
+
+export const appendHistory = (
+  state: OrdersState,
+  orderHistories: OrderHistory[]
+) => {
+  if (orderHistories.length > 0) {
+    state.ordersHistories.set(orderHistories[0].encounterId, orderHistories);
+  }
 };
 
 export const setOrder = (state: OrdersState, order: Order) => {

@@ -55,3 +55,7 @@ export function convertExclusiveToInclusive(date: string): string {
 export function convertInclusiveToExlusive(date: string): string {
   return addDays(new Date(date), -1).toLocaleDateString("sv");
 }
+
+export function getToday(): string {
+  return new Date().toLocaleDateString("sv").replaceAll("-", "");
+}

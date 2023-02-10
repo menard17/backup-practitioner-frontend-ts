@@ -5,6 +5,7 @@ export const orders = (state: OrdersState) => {
     // TODO: AB#1229, Factoring these logic to make it more testable
     let hasMedicine = true;
     let hasTest = true;
+
     if (order.medicines.length == 0) {
       hasMedicine = false;
     }
@@ -40,6 +41,17 @@ export const orders = (state: OrdersState) => {
   });
 };
 
+export const getHistoryByOrderId = (state: OrdersState) => {
+  return (orderId: string) => {
+    const histories = state.ordersHistories.get(orderId);
+    return histories == undefined ? [] : histories;
+  };
+};
+
 export const isLoading = (state: OrdersState): boolean => {
   return state.loadingData.orders.isLoading;
+};
+
+export const isLoadingHistory = (state: OrdersState): boolean => {
+  return state.loadingData.history.isLoading;
 };

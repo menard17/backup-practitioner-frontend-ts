@@ -1,10 +1,13 @@
 import { DocumentReference, DocumentData } from "@firebase/firestore";
 import { Unsubscribe } from "firebase/auth";
+import { Timestamp } from "firebase/firestore";
 
 export type OrdersState = {
   orders: Order[];
+  ordersHistories: Map<string, OrderHistory[]>;
   loadingData: {
     orders: { isLoading: boolean };
+    history: { isLoading: boolean };
   };
   listener: Unsubscribe | null;
 };
@@ -40,4 +43,14 @@ export type Test = {
   display: string;
   value: string;
   verified?: string;
+};
+
+export type OrderHistory = {
+  encounterId: string;
+  fieldUpdated: string;
+  newData: string;
+  timeStamp: Timestamp;
+  documentId: string;
+  userUid: string;
+  userDisplayName: string;
 };
