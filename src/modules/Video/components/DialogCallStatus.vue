@@ -5,14 +5,22 @@
     persistent
     :hide-overlay="isHideOverlay"
     transition="dialog-bottom-transition"
+    class="overflow-hidden"
   >
     <v-card>
+      <v-row>
+        <v-col align="end">
+          <v-btn @click="close" icon>
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-col>
+      </v-row>
       <v-card-title class="flex-column center text-center">
         <span class="text-body1">{{ labelCallStatus }}</span>
         <div v-if="status === 'calling'" class="dot-pulse mt-5 mb-10"></div>
       </v-card-title>
       <v-card-actions v-if="status == 'declined' || status == 'timeout'">
-        <v-btn color="red darken-1" text @click="onConfirm">Close</v-btn>
+        <v-btn color="red darken-1" text @click="close"> Close </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -39,7 +47,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    onConfirm() {
+    close() {
       this.setStatus(undefined);
     },
     toggleDialog() {

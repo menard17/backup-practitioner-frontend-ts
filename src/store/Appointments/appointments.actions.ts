@@ -818,7 +818,7 @@ export const callPatient = async (
   }
 };
 
-export const getStatusCall = async (
+export const getCallStatus = async (
   context: Context,
   { appointment_id = "" }
 ) => {
@@ -826,12 +826,12 @@ export const getStatusCall = async (
     if (!doc.exists()) return;
     const result = doc.data() as documentCallLog;
     const { status } = result;
-    context.commit("setStatusCall", status);
+    context.commit("setCallStatus", status);
   });
 };
 
 export const setStatus = (context: Context, status: string) => {
-  context.commit("setStatusCall", status);
+  context.commit("setCallStatus", status);
 };
 
 type documentCallLog = {

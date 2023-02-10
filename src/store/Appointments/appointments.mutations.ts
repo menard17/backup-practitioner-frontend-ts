@@ -42,6 +42,6 @@ export function setError(state: any, value: any) {
   state.error = value;
 }
 
-export function setStatusCall(state: any, value: any) {
+export function setCallStatus(state: any, value: any) {
   state.callStatus = value;
 }

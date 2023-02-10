@@ -24,17 +24,25 @@
       :content="errorMessage"
       @confirm="acceptDialog"
       @cancel="acceptDialog"
-      ref="aletDialogRef"
+      ref="alertDialogRef"
       withIcon
       icon="mdi-alert-circle"
       colorIcon="red"
     />
     <select-bottom-sheet ref="bottomSheetRef" :localTrack="videoTracks" />
+
+    <dialog-call-status
+      v-if="callStatusDialogShow"
+      :status="callStatus"
+      :isHideOverlay="false"
+      ref="aletDialogRef"
+    />
   </div>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import { defineComponent } from "vue";
+import { mapActions, mapState } from "vuex";
 import {
   connect,
   RemoteAudioTrack,
@@ -46,14 +54,14 @@ import {
   LocalVideoTrack,
   VideoTrack,
 } from "twilio-video";
-import { mapActions } from "vuex";
 import axios, { AxiosError } from "axios";
 import { Nullable } from "../types";
 import AlertDialog from "@/components/AlertDialog.vue";
 import ControlsButton from "../components/ControlsButton.vue";
 import SelectBottomSheet from "../components/SelectBottomSheet.vue";
+const DialogCallStatus = () => import("../components/DialogCallStatus.vue");
 
-export default Vue.extend({
+export default defineComponent({
   name: "VideoPage",
   data() {
     return {
@@ -66,21 +74,23 @@ export default Vue.extend({
       videoTracks: null as VideoTrack | null,
     };
   },
+  computed: {
+    ...mapState("$_appointments", {
+      callStatus: "callStatus",
+    }),
+    callStatusDialogShow: function (): boolean {
+      return (
+        this.callStatus == "calling" ||
+        this.callStatus == "declined" ||
+        this.callStatus == "timeout"
+      );
+    },
+  },
   components: {
     AlertDialog,
     ControlsButton,
     SelectBottomSheet,
-  },
-  async created() {
-    const role_id = this.$route.query.identity_id ?? "";
-    const appointMentId = this.$route.query.id ?? "";
-
-    await this.startVideo(role_id, appointMentId);
-    await this.setLayout("NoLayout");
-  },
-  beforeRouteLeave(to, from, next) {
-    this.room?.disconnect();
-    next();
+    DialogCallStatus,
   },
   methods: {
     ...mapActions("$_commons", {
@@ -207,7 +217,7 @@ export default Vue.extend({
       participant.on("trackUnsubscribed", this.onTrackUnsubscribed);
     },
     openNoShowConfirmDialog() {
-      const alertDialogRef = this.$refs.aletDialogRef as any;
+      const alertDialogRef = this.$refs.alertDialogRef as any;
       alertDialogRef.toggleDialog();
     },
     toggleVideo() {
@@ -245,6 +255,17 @@ export default Vue.extend({
       const bottomSheet = this.$refs.bottomSheetRef as any;
       bottomSheet.openSheet();
     },
+  },
+  async created() {
+    const role_id = this.$route.query.identity_id ?? "";
+    const appointMentId = this.$route.query.id ?? "";
+
+    await this.startVideo(role_id, appointMentId);
+    await this.setLayout("NoLayout");
+  },
+  beforeRouteLeave(to, from, next) {
+    this.room?.disconnect();
+    next();
   },
 });
 </script>

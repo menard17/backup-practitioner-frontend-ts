@@ -213,17 +213,6 @@
               {{ this.$t("join room") }}
             </v-btn>
           </v-col>
-          <v-col>
-            <v-btn
-              @click="call"
-              :loading="isLoadingCallPatient"
-              :disable="isLoadingCallPatient"
-              class="text-none subtitle-2 py-5"
-              color="primary"
-            >
-              Call Patient
-            </v-btn>
-          </v-col>
         </v-row>
         <v-row v-if="encounter">
           <v-col>
@@ -437,7 +426,7 @@
       keyword="Cancel"
     />
     <alert-dialog
-      :content="error || errorCall"
+      :content="error"
       @confirm="toggleErrorDiaglog"
       @cancel="toggleErrorDiaglog"
       :isHideOverlay="false"
@@ -446,12 +435,7 @@
       icon="mdi-alert-circle"
       colorIcon="red"
     />
-    <dialog-call-status
-      v-if="callStatusDialogShow"
-      :status="callStatus"
-      :isHideOverlay="false"
-      ref="aletDialogRef"
-    />
+
     <v-overlay v-model="isCreatingEncounter">
       <v-progress-circular indeterminate />
     </v-overlay>
@@ -474,7 +458,6 @@ import DocumentReferenceWrapper from "../Patient/DocumentReferenceWrapper.vue";
 import ConfirmDialog from "@/components/ConfirmDialog";
 const CreateAppointmentDialog = () =>
   import("@/views/Appointment/Dialogs/CreateAppointmentDialog");
-const DialogCallStatus = () => import("./components/DialogCallStatus");
 
 export default {
   components: {
@@ -488,7 +471,6 @@ export default {
     StartEncounterDialog,
     DocumentReferenceWrapper,
     AlertDialog,
-    DialogCallStatus,
   },
   name: "AppointmentDetailPage",
   data() {
@@ -514,13 +496,7 @@ export default {
       this.getMedicationsByPatientId({ patientId: this.patient.id });
       this.getTestsByPatientId({ patientId: this.patient.id });
     },
-    callStatus() {
-      if (this.callStatus === "accepted") {
-        this.goToVideo();
-      }
-    },
   },
-
   computed: {
     ...mapState("$_appointments", {
       isLoading: (state) => state.loadingData.populateAppointment.isLoading,
@@ -534,14 +510,12 @@ export default {
       encounter: (state) => state.encounter,
       clinicalNote: (state) => state.clinicalNote,
       test: (state) => state.test,
-      errorCall: (state) => state.error,
     }),
     ...mapGetters("$_appointments", {
       appointment: "appointment",
       diagnosticReports: "diagnosticReports",
       medications: "medications",
     }),
-
     ...mapGetters("$_patients", {
       patient: "patient",
       insuranceCard: "insuranceCard",
@@ -549,9 +523,6 @@ export default {
     ...mapGetters("$_practitioners", {
       practitionerNameEn: "practitionerNameEn",
       practitionerNameJp: "practitionerNameJp",
-    }),
-    ...mapState("$_queues", {
-      loadingNext: "loadingNext",
     }),
     ...mapState("$_patients", {
       patientObject: "patient",
@@ -567,9 +538,7 @@ export default {
     ...mapState("$_queues", {
       appointmentId: "appointmentId",
       error: "error",
-    }),
-    ...mapState("$_appointments", {
-      callStatus: "callStatus",
+      loadingNext: "loadingNext",
     }),
     patientDetails() {
       return [
@@ -608,16 +577,6 @@ export default {
     appointmentType() {
       return this.$route.query.type ?? "";
     },
-    callStatusDialogShow() {
-      if (
-        this.callStatus == "calling" ||
-        this.callStatus == "declined" ||
-        this.callStatus == "timeout"
-      )
-        return true;
-
-      return false;
-    },
   },
   async created() {
     this.routeId = this.$route.params.id;
@@ -639,8 +598,6 @@ export default {
       getCurrentUser: "$_account/getCurrentUser",
       nextPatient: "$_queues/nextPatient",
       setError: "$_queues/setError",
-      callPatient: "$_appointments/callPatient",
-      getStatusCall: "$_appointments/getStatusCall",
     }),
     ...mapActions("$_appointments", {
       populateAppointment: "populateAppointment",
@@ -827,7 +784,7 @@ export default {
     },
     async goToVideo() {
       window.open(
-        `/video?identity_id=${this.practitionerRole.id}&id=${this.routeId}`,
+        `/video?identity_id=${this.practitionerRole.id}&id=${this.routeId}&patient_id=${this.patient.id}`,
         "newwindow",
         "width=1200,height=800"
       );
@@ -851,19 +808,6 @@ export default {
     toggleErrorDiaglog() {
       this.openErrorDialog();
       this.setError("");
-    },
-    async call() {
-      await this.callPatient({
-        appointment_id: this.routeId,
-        patient_id: this.patient.id,
-      });
-      if (this.errorCall) {
-        this.openErrorDialog();
-        return;
-      }
-      await this.getStatusCall({
-        appointment_id: this.routeId,
-      });
     },
   },
 };

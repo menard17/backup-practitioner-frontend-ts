@@ -15,6 +15,10 @@
       <v-icon color="white">mdi-exit-to-app</v-icon>
     </v-btn>
 
+    <v-btn color="primary" fab large dark @click="call">
+      <v-icon color="white">mdi-phone</v-icon>
+    </v-btn>
+
     <v-btn color="primary" fab large dark @click="openSettings">
       <v-icon color="white">mdi-dots-vertical</v-icon>
     </v-btn>
@@ -23,6 +27,7 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { mapActions, mapState } from "vuex";
 
 export default Vue.extend({
   name: "ControlButton",
@@ -49,6 +54,29 @@ export default Vue.extend({
     openSettings() {
       this.$emit("openSelection");
     },
+    ...mapActions({
+      callPatient: "$_appointments/callPatient",
+      getCallStatus: "$_appointments/getCallStatus",
+    }),
+    async call() {
+      const appointment_id = this.$route.query.id ?? "";
+      const patient_id = this.$route.query.patient_id ?? "";
+
+      await this.callPatient({
+        appointment_id: appointment_id,
+        patient_id: patient_id,
+      });
+
+      await this.getCallStatus({
+        appointment_id: appointment_id,
+      });
+    },
+  },
+  computed: {
+    ...mapState("$_appointments", {
+      callStatus: "callStatus",
+      errorCall: "error",
+    }),
   },
 });
 </script>
