@@ -97,7 +97,7 @@ export default Vue.extend({
         { text: "Address", value: "address" },
         { text: "Phone", value: "phone" },
         { text: "Status", value: "status" },
-        { text: "Areas", value: "areas" },
+        { text: "Area", value: "area" },
         { text: "Porter", value: "porter" },
         { text: "", value: "history" },
         { text: "", value: "data-table-expand" },
