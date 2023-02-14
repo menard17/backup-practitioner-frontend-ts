@@ -43,6 +43,7 @@ export const startListenerForOrders = (context: Context) => {
       querySnapshot.forEach((doc) => {
         const order = doc.data();
         order.documentId = doc.id;
+        order.ref = doc.ref;
         orders.push(order as Order);
       });
       context.commit(SetOrders, orders);
