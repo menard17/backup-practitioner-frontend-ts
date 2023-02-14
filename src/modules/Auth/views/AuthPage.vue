@@ -22,22 +22,53 @@
         </v-tabs-items>
       </v-card>
     </v-layout>
+    <v-snackbar
+      v-model="showResetPasswordToast"
+      :timeout="toastDurationInMillis"
+    >
+      We've sent you an email to reset your password.
+    </v-snackbar>
   </v-container>
 </template>
 
 <script>
 import ELoginForm from "../components/ELoginForm.vue";
 import ERegisterForm from "../components/ERegisterForm.vue";
+import { mapGetters, mapMutations } from "vuex";
 
 export default {
   components: {
     ELoginForm,
     ERegisterForm,
   },
+  watch: {
+    showEmailSentToast(newState) {
+      if (newState) {
+        this.showResetPasswordToast = newState;
+      }
+    },
+    showResetPasswordToast(newState) {
+      if (!newState) {
+        this.setShowEmailSentToast(newState);
+      }
+    },
+  },
+  computed: {
+    ...mapGetters("$_auth", {
+      showEmailSentToast: "showEmailSentToast",
+    }),
+  },
   data() {
     return {
       tab: 0,
+      showResetPasswordToast: false,
+      toastDurationInMillis: 3000,
     };
+  },
+  methods: {
+    ...mapMutations("$_auth", {
+      setShowEmailSentToast: "setShowEmailSentToast",
+    }),
   },
 };
 </script>

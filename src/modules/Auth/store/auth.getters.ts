@@ -1,3 +1,9 @@
-const getters = {};
+import { AuthState } from "./types";
 
-export default getters;
+export const isSendingPasswordResetLink = (state: AuthState): boolean => {
+  return state.loading.isSendingPasswordResetLink;
+};
+
+export const showEmailSentToast = (state: AuthState): boolean => {
+  return state.flags.showEmailSentToast;
+};

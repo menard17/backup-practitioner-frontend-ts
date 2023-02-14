@@ -8,7 +8,9 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
   updateProfile,
+  sendPasswordResetEmail,
 } from "firebase/auth";
+import { LoginParams, RegisterParams } from "./types";
 
 export async function signOut(context: Context) {
   localStorage.removeItem("token");
@@ -27,7 +29,10 @@ export async function signOut(context: Context) {
   });
 }
 
-export const login = async (context: Context, { email, password }: any) => {
+export const login = async (
+  context: Context,
+  { email, password }: LoginParams
+) => {
   try {
     const firebaseUser = await signInWithEmailAndPassword(
       auth,
@@ -44,7 +49,10 @@ export const login = async (context: Context, { email, password }: any) => {
   }
 };
 
-export async function userLogin(context: Context, { email, password }: any) {
+export async function userLogin(
+  context: Context,
+  { email, password }: LoginParams
+) {
   return new Promise<void>((resolve, reject) =>
     signInWithEmailAndPassword(auth, email, password)
       .then((firebaseUser: UserCredential) => {
@@ -59,7 +67,7 @@ export async function userLogin(context: Context, { email, password }: any) {
 
 export async function userRegister(
   context: Context,
-  { email, password, firstName, lastName }: any
+  { email, password, firstName, lastName }: RegisterParams
 ) {
   return new Promise<void>((resolve, reject) =>
     createUserWithEmailAndPassword(auth, email, password)
@@ -107,6 +115,13 @@ export async function socialLogin(context: Context, website: string) {
     }
     return;
   });
+}
+
+export async function forgotPassword(context: Context, email: string) {
+  context.commit("setIsSendingPasswordResetLink", true);
+  await sendPasswordResetEmail(auth, email);
+  context.commit("setShowEmailSentToast", true);
+  context.commit("setIsSendingPasswordResetLink", false);
 }
 
 export function setToken(context: Context, token: string) {

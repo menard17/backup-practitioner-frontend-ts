@@ -1,6 +1,6 @@
 import * as actions from "./auth.actions";
 import * as mutations from "./auth.mutations";
-import getters from "./auth.getters";
+import * as getters from "./auth.getters";
 import state from "./auth.state";
 
 // make our modules namespaced to avoid method name conflicts
