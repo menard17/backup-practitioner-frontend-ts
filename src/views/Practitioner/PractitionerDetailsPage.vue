@@ -82,6 +82,9 @@
                   :text="practitionerRole.visitType"
                 />
                 <label-card
+                  v-if="
+                    practitionerRole.period && practitionerRole.period.start
+                  "
                   class="text-left mt-2"
                   label="Start"
                   :text="practitionerRole.period.start"
@@ -94,6 +97,7 @@
                 />
               </v-col>
               <v-btn
+                v-if="practitionerRole.period"
                 @click="openPractitionerRequestDialog(false, 'Scheduled')"
                 block
                 color="primary"
@@ -102,7 +106,7 @@
                 Edit
               </v-btn>
             </v-row>
-            <v-card class="mt-5" dense>
+            <v-card class="mt-5" dense v-if="practitionerRole.period">
               <v-col cols="12">
                 <v-simple-table>
                   <template v-slot:default>
