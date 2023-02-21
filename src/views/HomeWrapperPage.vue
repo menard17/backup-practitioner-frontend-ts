@@ -1,5 +1,11 @@
 <template>
   <div>
+    <v-overlay :value="isCreatingPractitionerWithPractitionerRole">
+      <div class="practitioner-role-loader">
+        <div>Setting Practitioner Role...</div>
+        <v-progress-circular indeterminate size="64"></v-progress-circular>
+      </div>
+    </v-overlay>
     <v-app-bar color="primary" dark>
       <div>
         <v-layout align-center>
@@ -81,7 +87,7 @@
 import Vue from "vue";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/plugins/firebase";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import { practitionerRoutes, staffRoutes } from "@/routes";
 
 export default Vue.extend({
@@ -95,6 +101,10 @@ export default Vue.extend({
   computed: {
     ...mapState("$_account", {
       firebaseRole: "firebaseRole",
+    }),
+    ...mapGetters("$_account", {
+      isCreatingPractitionerWithPractitionerRole:
+        "isCreatingPractitionerWithPractitionerRole",
     }),
     items() {
       if (this.firebaseRole == "Staff") {
@@ -144,4 +154,8 @@ export default Vue.extend({
 });
 </script>
 
-<style></style>
+<style scoped>
+.practitioner-role-loader {
+  text-align: center;
+}
+</style>

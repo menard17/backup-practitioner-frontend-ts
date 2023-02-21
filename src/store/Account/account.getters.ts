@@ -142,3 +142,9 @@ export const isVisitType = (state: AccountState) => {
     coding.coding.find((c: Code) => c.code === "walk-in")
   );
 };
+
+export const isCreatingPractitionerWithPractitionerRole = (
+  state: AccountState
+) => {
+  return state.loadingData.createMyPractitionerWithPractitionerRole.isLoading;
+};

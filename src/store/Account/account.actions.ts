@@ -169,6 +169,7 @@ export async function createMyPractitionerWithPractitionerRole(
       resourceId: practitionerId,
     });
 
+    await auth.currentUser?.getIdToken(true);
     context.commit("setPractitionerRole", practitionerRole.data);
     context.commit("setPractitioner", practitioner);
   } catch (e) {
