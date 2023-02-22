@@ -5,6 +5,7 @@ export const orders = (state: OrdersState) => {
     // TODO: AB#1229, Factoring these logic to make it more testable
     let hasMedicine = true;
     let hasTest = true;
+    const exceptionMedicineOptions = ["NA", "Other", "Mail"];
 
     if (order.medicines.length == 0) {
       hasMedicine = false;
@@ -12,12 +13,10 @@ export const orders = (state: OrdersState) => {
     if (order.tests.length == 0) {
       hasTest = false;
     }
-    if (
-      order.medicines.length == 1 &&
-      (order.medicines[0].value === "NA" ||
-        order.medicines[0].value === "Other")
-    ) {
-      hasMedicine = false;
+    if (order.medicines.length == 1) {
+      hasMedicine = !exceptionMedicineOptions.includes(
+        order.medicines[0].value
+      );
     }
     if (order.tests.length == 1 && order.tests[0].value === "NA") {
       hasTest = false;
