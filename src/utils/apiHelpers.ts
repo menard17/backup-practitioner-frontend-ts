@@ -1,5 +1,4 @@
 import { auth } from "@/plugins/firebase";
-// import axios from "axios";
 import axios from "./axiosHelpers";
 
 export const createResource = async ({ resource, payload }: any) => {

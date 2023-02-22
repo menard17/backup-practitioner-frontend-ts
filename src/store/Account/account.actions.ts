@@ -22,7 +22,7 @@ export const getCurrentUser = async (context: Context) => {
   });
 
   const practitionerRoles: any = await getAll(
-    `practitioner_roles?practitioner_id=${practitionerId}`
+    `practitioner_roles?practitioner_id=${practitionerId}&is_all=true`
   );
 
   const practitionerRole = practitionerRoles[0];
